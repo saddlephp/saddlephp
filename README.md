@@ -6,8 +6,8 @@
 ---
 
 **RodeoPHP** is the open-source admin & content framework for Laravel, built the modern way for **Inertia and
-Vue**. A friendly frontier alternative to Filament: round up your Eloquent models into polished resource panels,
-with form & table builders, roles & access, plugins, and multi-tenancy.
+Vue**. Round up your Eloquent models into polished resource panels, with form & table builders, roles & access,
+plugins, and multi-tenancy.
 
 > **Status: early frontier (`v0.1.0-dev`).** This repository is being staged. The marketing site lives at
 > **[rodeophp.com](https://rodeophp.com)** ([RodeoPHP/rodeophp.com](https://github.com/RodeoPHP/rodeophp.com)).

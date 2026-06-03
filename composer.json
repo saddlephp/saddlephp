@@ -1,7 +1,7 @@
 {
     "name": "rodeophp/rodeophp",
-    "description": "The open-source admin & content framework for Laravel. A friendly Filament alternative, built for Inertia and Vue.",
-    "keywords": ["laravel", "admin", "cmf", "filament-alternative", "inertia", "vue", "panel", "rodeophp"],
+    "description": "The open-source admin & content framework for Laravel, built for Inertia and Vue. Define a resource, get a polished panel.",
+    "keywords": ["laravel", "admin", "admin-panel", "cmf", "crud", "inertia", "vue", "panel", "rodeophp"],
     "homepage": "https://rodeophp.com",
     "license": "MIT",
     "type": "library",
