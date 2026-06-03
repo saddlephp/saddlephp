@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP;
+namespace SaddlePHP;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use RodeoPHP\Support\ResourceDiscovery;
+use SaddlePHP\Support\ResourceDiscovery;
 
-class Rodeo
+class Saddle
 {
     public const VERSION = '0.1.0';
 
@@ -44,8 +44,8 @@ class Rodeo
         }
 
         $this->discovered ??= ResourceDiscovery::in(
-            config('rodeo.resources.path', app_path('Rodeo')),
-            config('rodeo.resources.namespace', 'App\\Rodeo'),
+            config('saddle.resources.path', app_path('Saddle')),
+            config('saddle.resources.namespace', 'App\\Saddle'),
         );
 
         return collect($this->discovered);
@@ -59,7 +59,7 @@ class Rodeo
 
     public function path(): string
     {
-        return trim((string) config('rodeo.path', 'admin'), '/');
+        return trim((string) config('saddle.path', 'admin'), '/');
     }
 
     /** @return array<int, array{group: string|null, items: array<int, array<string, mixed>>}> */

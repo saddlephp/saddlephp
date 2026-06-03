@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace {{ namespace }};
 
-use RodeoPHP\Fields\Text;
-use RodeoPHP\Forms\Form;
-use RodeoPHP\Resource;
-use RodeoPHP\Tables\Columns\TextColumn;
-use RodeoPHP\Tables\Table;
+use SaddlePHP\Fields\Text;
+use SaddlePHP\Forms\Form;
+use SaddlePHP\Resource;
+use SaddlePHP\Tables\Columns\TextColumn;
+use SaddlePHP\Tables\Table;
 
 class {{ class }} extends Resource
 {

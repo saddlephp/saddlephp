@@ -7,9 +7,9 @@ const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 
 
 export default defineConfig({
     plugins: [vue(), tailwindcss()],
-    base: '/vendor/rodeo/',
+    base: '/vendor/saddle/',
     define: {
-        __RODEO_VERSION__: JSON.stringify(pkg.version),
+        __SADDLE_VERSION__: JSON.stringify(pkg.version),
     },
     build: {
         outDir: 'dist',

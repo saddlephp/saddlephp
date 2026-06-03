@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Tests\Fixtures\Discovery;
+namespace SaddlePHP\Tests\Fixtures\Discovery;
 
-use RodeoPHP\Forms\Form;
-use RodeoPHP\Resource;
-use RodeoPHP\Tables\Table;
+use SaddlePHP\Forms\Form;
+use SaddlePHP\Resource;
+use SaddlePHP\Tables\Table;
 use Workbench\App\Models\Horse;
 
 class PonyResource extends Resource

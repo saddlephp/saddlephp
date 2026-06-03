@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Http\Controllers;
+namespace SaddlePHP\Http\Controllers;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -43,7 +43,7 @@ class ResourceIndexController extends Controller
         $query->orderBy($sort, $direction);
 
         $rows = $query
-            ->paginate((int) config('rodeo.per_page', 25))
+            ->paginate((int) config('saddle.per_page', 25))
             ->withQueryString()
             ->through(fn (Model $record) => [
                 'id' => $record->getKey(),

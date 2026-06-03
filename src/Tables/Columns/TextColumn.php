@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Tables\Columns;
+namespace SaddlePHP\Tables\Columns;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;

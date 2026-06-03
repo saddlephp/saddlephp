@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Support;
+namespace SaddlePHP\Support;
 
 use ReflectionClass;
-use RodeoPHP\Resource;
+use SaddlePHP\Resource;
 
 class ResourceDiscovery
 {

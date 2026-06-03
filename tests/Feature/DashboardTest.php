@@ -9,13 +9,13 @@ it('renders the dashboard with shared panel props', function () {
 
     $this->get('/admin')
         ->assertOk()
-        ->assertViewIs('rodeo::app')
+        ->assertViewIs('saddle::app')
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard')
-            ->where('rodeo.name', 'RodeoPHP')
-            ->where('rodeo.path', 'admin')
-            ->where('rodeo.nav.0.items.0.uriKey', 'horses')
-            ->has('rodeo.user.name')
+            ->where('saddle.name', 'SaddlePHP')
+            ->where('saddle.path', 'admin')
+            ->where('saddle.nav.0.items.0.uriKey', 'horses')
+            ->has('saddle.user.name')
         );
 });
 

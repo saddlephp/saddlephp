@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use RodeoPHP\Tables\Columns\TextColumn;
-use RodeoPHP\Tables\Table;
+use SaddlePHP\Tables\Columns\TextColumn;
+use SaddlePHP\Tables\Table;
 use Workbench\App\Models\Horse;
 
 function horseTable(): Table

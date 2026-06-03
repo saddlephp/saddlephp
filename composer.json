@@ -1,12 +1,12 @@
 {
-    "name": "rodeophp/rodeophp",
+    "name": "saddlephp/saddlephp",
     "description": "The open-source admin panel framework for Laravel, built for Inertia and Vue. Define a resource, get a polished panel.",
-    "keywords": ["laravel", "admin", "admin-panel", "crud", "inertia", "vue", "panel", "rodeophp"],
-    "homepage": "https://rodeophp.com",
+    "keywords": ["laravel", "admin", "admin-panel", "crud", "inertia", "vue", "panel", "saddlephp"],
+    "homepage": "https://saddlephp.com",
     "license": "MIT",
     "type": "library",
     "authors": [
-        { "name": "RodeoPHP", "homepage": "https://rodeophp.com" }
+        { "name": "SaddlePHP", "homepage": "https://saddlephp.com" }
     ],
     "require": {
         "php": "^8.4",
@@ -22,12 +22,12 @@
     },
     "autoload": {
         "psr-4": {
-            "RodeoPHP\\": "src/"
+            "SaddlePHP\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "RodeoPHP\\Tests\\": "tests/",
+            "SaddlePHP\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/",
             "Workbench\\Database\\Factories\\": "workbench/database/factories/"
         }
@@ -35,10 +35,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "RodeoPHP\\RodeoServiceProvider"
+                "SaddlePHP\\SaddleServiceProvider"
             ],
             "aliases": {
-                "Rodeo": "RodeoPHP\\Facades\\Rodeo"
+                "Saddle": "SaddlePHP\\Facades\\Saddle"
             }
         }
     },

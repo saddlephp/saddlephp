@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Http\Controllers;
+namespace SaddlePHP\Http\Controllers;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use RodeoPHP\Resource;
-use RodeoPHP\Rodeo;
+use SaddlePHP\Resource;
+use SaddlePHP\Saddle;
 
 abstract class Controller
 {
     /** @return class-string<resource> */
     protected function resolveResource(string $uriKey): string
     {
-        return app(Rodeo::class)->resourceFor($uriKey) ?? abort(404);
+        return app(Saddle::class)->resourceFor($uriKey) ?? abort(404);
     }
 
     /** @param class-string<resource> $resource */

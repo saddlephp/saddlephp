@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Facades;
+namespace SaddlePHP\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\Facade;
  * @method static string version()
  * @method static string greeting()
  *
- * @see \RodeoPHP\Rodeo
+ * @see \SaddlePHP\Saddle
  */
-class Rodeo extends Facade
+class Saddle extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \RodeoPHP\Rodeo::class;
+        return \SaddlePHP\Saddle::class;
     }
 }

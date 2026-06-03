@@ -2,6 +2,6 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Tests\Fixtures\Discovery;
+namespace SaddlePHP\Tests\Fixtures\Discovery;
 
 class NotAResource {}

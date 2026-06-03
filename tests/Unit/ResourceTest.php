@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Workbench\App\Models\Horse;
-use Workbench\App\Rodeo\HorseResource;
+use Workbench\App\Saddle\HorseResource;
 
 it('derives labels and uri key from the class name', function () {
     expect(HorseResource::label())->toBe('Horses')

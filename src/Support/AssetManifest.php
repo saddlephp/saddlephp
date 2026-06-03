@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Support;
+namespace SaddlePHP\Support;
 
 class AssetManifest
 {
@@ -11,7 +11,7 @@ class AssetManifest
     /** @return array<string, mixed>|null */
     public static function manifest(): ?array
     {
-        $path = public_path('vendor/rodeo/manifest.json');
+        $path = public_path('vendor/saddle/manifest.json');
 
         if (! is_file($path)) {
             return null;
@@ -22,7 +22,7 @@ class AssetManifest
 
     public static function hash(): ?string
     {
-        $path = public_path('vendor/rodeo/manifest.json');
+        $path = public_path('vendor/saddle/manifest.json');
 
         return is_file($path) ? md5_file($path) : null;
     }
@@ -31,7 +31,7 @@ class AssetManifest
     {
         $entry = static::manifest()[self::ENTRY] ?? null;
 
-        return $entry ? asset('vendor/rodeo/'.$entry['file']) : null;
+        return $entry ? asset('vendor/saddle/'.$entry['file']) : null;
     }
 
     /** @return array<int, string> */
@@ -40,7 +40,7 @@ class AssetManifest
         $entry = static::manifest()[self::ENTRY] ?? null;
 
         return collect($entry['css'] ?? [])
-            ->map(fn (string $file) => asset('vendor/rodeo/'.$file))
+            ->map(fn (string $file) => asset('vendor/saddle/'.$file))
             ->all();
     }
 }

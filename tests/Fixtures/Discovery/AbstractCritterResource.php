@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Tests\Fixtures\Discovery;
+namespace SaddlePHP\Tests\Fixtures\Discovery;
 
-use RodeoPHP\Resource;
+use SaddlePHP\Resource;
 
 abstract class AbstractCritterResource extends Resource {}

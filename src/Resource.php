@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP;
+namespace SaddlePHP;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -10,8 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
-use RodeoPHP\Forms\Form;
-use RodeoPHP\Tables\Table;
+use SaddlePHP\Forms\Form;
+use SaddlePHP\Tables\Table;
 
 abstract class Resource
 {

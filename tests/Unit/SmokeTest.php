@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use RodeoPHP\Rodeo;
+use SaddlePHP\Saddle;
 
 it('boots the service provider and resolves the manager', function () {
-    expect(app(Rodeo::class))->toBeInstanceOf(Rodeo::class)
-        ->and(config('rodeo.path'))->toBe('admin');
+    expect(app(Saddle::class))->toBeInstanceOf(Saddle::class)
+        ->and(config('saddle.path'))->toBe('admin');
 });

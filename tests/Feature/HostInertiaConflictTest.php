@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Tests\Feature;
+namespace SaddlePHP\Tests\Feature;
 
 use Inertia\Testing\AssertableInertia as Assert;
-use RodeoPHP\Tests\TestCase;
+use SaddlePHP\Tests\TestCase;
 use Workbench\App\Http\Middleware\HostInertiaMiddleware;
 
 class HostInertiaConflictTest extends TestCase
@@ -25,7 +25,7 @@ class HostInertiaConflictTest extends TestCase
 
         $this->get('/admin')
             ->assertOk()
-            ->assertViewIs('rodeo::app')
+            ->assertViewIs('saddle::app')
             ->assertInertia(fn (Assert $page) => $page->component('Dashboard'));
     }
 }

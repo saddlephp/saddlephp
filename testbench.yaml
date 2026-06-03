@@ -1,5 +1,5 @@
 providers:
-  - RodeoPHP\RodeoServiceProvider
+  - SaddlePHP\SaddleServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider
   - Inertia\ServiceProvider
 

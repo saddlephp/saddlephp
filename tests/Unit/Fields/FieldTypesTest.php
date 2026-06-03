@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Illuminate\Validation\Rules\In;
-use RodeoPHP\Fields\Select;
-use RodeoPHP\Fields\Textarea;
-use RodeoPHP\Fields\Toggle;
-use RodeoPHP\Tests\Fixtures\Breed;
+use SaddlePHP\Fields\Select;
+use SaddlePHP\Fields\Textarea;
+use SaddlePHP\Fields\Toggle;
+use SaddlePHP\Tests\Fixtures\Breed;
 use Workbench\App\Models\Horse;
 
 it('textarea exposes rows meta and string rule', function () {

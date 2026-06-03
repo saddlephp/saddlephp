@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Tables;
+namespace SaddlePHP\Tables;
 
-use RodeoPHP\Tables\Columns\TextColumn;
+use SaddlePHP\Tables\Columns\TextColumn;
 
 class Table
 {

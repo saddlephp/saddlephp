@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Fields;
+namespace SaddlePHP\Fields;
 
 class Textarea extends Field
 {

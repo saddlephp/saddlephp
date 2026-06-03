@@ -8,14 +8,14 @@ return [
     'middleware' => ['web', 'auth'],
 
     'resources' => [
-        'path' => app_path('Rodeo'),
-        'namespace' => 'App\\Rodeo',
+        'path' => app_path('Saddle'),
+        'namespace' => 'App\\Saddle',
     ],
 
     'per_page' => 25,
 
     'brand' => [
-        'name' => 'RodeoPHP',
+        'name' => 'SaddlePHP',
         'accent' => '#d9501f',
     ],
 ];

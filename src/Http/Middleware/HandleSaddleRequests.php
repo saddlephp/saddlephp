@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Http\Middleware;
+namespace SaddlePHP\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use RodeoPHP\Rodeo;
-use RodeoPHP\Support\AssetManifest;
+use SaddlePHP\Saddle;
+use SaddlePHP\Support\AssetManifest;
 
-class HandleRodeoRequests extends Middleware
+class HandleSaddleRequests extends Middleware
 {
-    protected $rootView = 'rodeo::app';
+    protected $rootView = 'saddle::app';
 
     public function version(Request $request): ?string
     {
@@ -20,15 +20,15 @@ class HandleRodeoRequests extends Middleware
 
     public function share(Request $request): array
     {
-        $rodeo = app(Rodeo::class);
+        $saddle = app(Saddle::class);
 
         return array_merge(parent::share($request), [
-            'rodeo' => [
-                'name' => config('rodeo.brand.name', 'RodeoPHP'),
-                'accent' => config('rodeo.brand.accent', '#d9501f'),
-                'version' => Rodeo::VERSION,
-                'path' => $rodeo->path(),
-                'nav' => $rodeo->nav($request),
+            'saddle' => [
+                'name' => config('saddle.brand.name', 'SaddlePHP'),
+                'accent' => config('saddle.brand.accent', '#d9501f'),
+                'version' => Saddle::VERSION,
+                'path' => $saddle->path(),
+                'nav' => $saddle->nav($request),
                 'user' => $request->user() ? [
                     'name' => (string) $request->user()->name,
                     'email' => (string) $request->user()->email,

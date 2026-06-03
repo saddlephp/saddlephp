@@ -10,7 +10,7 @@
     --color-ink-3: #8c867e;
     --color-line: #eceae6;
     --color-line-2: #ddd9d2;
-    --color-accent: var(--rodeo-accent, #d9501f);
+    --color-accent: var(--saddle-accent, #d9501f);
 }
 
 body {

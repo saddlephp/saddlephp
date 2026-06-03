@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use RodeoPHP\Fields\Text;
+use SaddlePHP\Fields\Text;
 use Workbench\App\Models\Horse;
 
 it('serializes to a payload with derived label and defaults', function () {

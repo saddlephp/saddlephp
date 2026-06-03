@@ -1,13 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use RodeoPHP\Http\Controllers\DashboardController;
-use RodeoPHP\Http\Controllers\ResourceCreateController;
-use RodeoPHP\Http\Controllers\ResourceDestroyController;
-use RodeoPHP\Http\Controllers\ResourceEditController;
-use RodeoPHP\Http\Controllers\ResourceIndexController;
-use RodeoPHP\Http\Controllers\ResourceStoreController;
-use RodeoPHP\Http\Controllers\ResourceUpdateController;
+use SaddlePHP\Http\Controllers\DashboardController;
+use SaddlePHP\Http\Controllers\ResourceCreateController;
+use SaddlePHP\Http\Controllers\ResourceDestroyController;
+use SaddlePHP\Http\Controllers\ResourceEditController;
+use SaddlePHP\Http\Controllers\ResourceIndexController;
+use SaddlePHP\Http\Controllers\ResourceStoreController;
+use SaddlePHP\Http\Controllers\ResourceUpdateController;
 
 Route::get('/', DashboardController::class)->name('dashboard');
 

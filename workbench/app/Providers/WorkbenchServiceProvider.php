@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Workbench\App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use RodeoPHP\Rodeo;
-use Workbench\App\Rodeo\HorseResource;
+use SaddlePHP\Saddle;
+use Workbench\App\Saddle\HorseResource;
 
 class WorkbenchServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        $this->app->make(Rodeo::class)->register([HorseResource::class]);
+        $this->app->make(Saddle::class)->register([HorseResource::class]);
     }
 }

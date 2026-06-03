@@ -11,8 +11,8 @@ const props = defineProps({
     query: Object,
 });
 
-const { rodeo } = usePage().props;
-const base = `/${rodeo.path}/resources/${props.resource.uriKey}`;
+const { saddle } = usePage().props;
+const base = `/${saddle.path}/resources/${props.resource.uriKey}`;
 
 const search = ref(props.query.search);
 let timer;

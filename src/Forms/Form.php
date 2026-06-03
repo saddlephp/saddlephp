@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Forms;
+namespace SaddlePHP\Forms;
 
 use Illuminate\Database\Eloquent\Model;
-use RodeoPHP\Fields\Field;
+use SaddlePHP\Fields\Field;
 
 class Form
 {

@@ -26,7 +26,7 @@ it('lists records with columns, cells and abilities', function () {
 
 it('paginates at the configured page size', function () {
     $this->actingAsUser();
-    config(['rodeo.per_page' => 10]);
+    config(['saddle.per_page' => 10]);
     Horse::factory()->count(15)->create();
 
     $this->get('/admin/resources/horses')

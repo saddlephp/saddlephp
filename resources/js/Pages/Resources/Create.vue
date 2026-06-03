@@ -5,8 +5,8 @@ import FormRenderer from '../../Components/FormRenderer.vue';
 
 const props = defineProps({ resource: Object, fields: Array });
 
-const { rodeo } = usePage().props;
-const base = `/${rodeo.path}/resources/${props.resource.uriKey}`;
+const { saddle } = usePage().props;
+const base = `/${saddle.path}/resources/${props.resource.uriKey}`;
 
 const form = useForm(Object.fromEntries(props.fields.map((field) => [field.name, field.value])));
 </script>

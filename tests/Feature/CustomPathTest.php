@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Tests\Feature;
+namespace SaddlePHP\Tests\Feature;
 
 use Inertia\Testing\AssertableInertia as Assert;
-use RodeoPHP\Tests\TestCase;
+use SaddlePHP\Tests\TestCase;
 
 class CustomPathTest extends TestCase
 {
     protected function defineEnvironment($app): void
     {
         parent::defineEnvironment($app);
-        $app['config']->set('rodeo.path', 'ranch');
+        $app['config']->set('saddle.path', 'ranch');
     }
 
     public function test_panel_mounts_at_a_custom_path(): void

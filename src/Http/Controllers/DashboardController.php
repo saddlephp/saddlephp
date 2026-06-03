@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Http\Controllers;
+namespace SaddlePHP\Http\Controllers;
 
 use Inertia\Inertia;
 use Inertia\Response;

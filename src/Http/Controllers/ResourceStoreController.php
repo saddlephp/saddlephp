@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Http\Controllers;
+namespace SaddlePHP\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,7 +22,7 @@ class ResourceStoreController extends Controller
         $record->save();
 
         return redirect()
-            ->route('rodeo.resources.index', $resource::uriKey())
+            ->route('saddle.resources.index', $resource::uriKey())
             ->with('success', $resource::singularLabel().' created.');
     }
 }

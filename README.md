@@ -1,45 +1,45 @@
 <p align="center">
-  <strong>RodeoPHP</strong><br>
+  <strong>SaddlePHP</strong><br>
   <em>Saddle up cowboy, there's a new admin panel in town.</em>
 </p>
 
 ---
 
-**RodeoPHP** is the open-source admin panel framework for Laravel, built the modern way for **Inertia and
+**SaddlePHP** is the open-source admin panel framework for Laravel, built the modern way for **Inertia and
 Vue**. Round up your Eloquent models into polished resource panels, with form and table builders, roles and access,
 plugins, and multi-tenancy.
 
-> **Status: v0.1 core loop ships.** Resource panels with full CRUD, form builder, table builder (search, sort, paginate), install and upgrade commands, and the Inertia+Vue panel shell are all working. The marketing site lives at **[rodeophp.com](https://rodeophp.com)** ([RodeoPHP/rodeophp.com](https://github.com/RodeoPHP/rodeophp.com)).
+> **Status: v0.1 core loop ships.** Resource panels with full CRUD, form builder, table builder (search, sort, paginate), install and upgrade commands, and the Inertia+Vue panel shell are all working. The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
 
 ## Installation
 
 ```bash
-composer require rodeophp/rodeophp
-php artisan rodeo:install
-php artisan rodeo:resource HorseResource --model=Horse
+composer require saddlephp/saddlephp
+php artisan saddle:install
+php artisan saddle:resource HorseResource --model=Horse
 ```
 
-The service provider is auto-discovered. `rodeo:install` publishes the config file, publishes panel assets, and creates `app/Rodeo/` for your resource classes. Visit `/admin` to see the panel.
+The service provider is auto-discovered. `saddle:install` publishes the config file, publishes panel assets, and creates `app/Saddle/` for your resource classes. Visit `/admin` to see the panel.
 
 ## Define a resource
 
-Place resource classes in `app/Rodeo/`. Each class extends `RodeoPHP\Resource` and implements `form()` and `table()`.
+Place resource classes in `app/Saddle/`. Each class extends `SaddlePHP\Resource` and implements `form()` and `table()`.
 
 ```php
 <?php
 
 declare(strict_types=1);
 
-namespace App\Rodeo;
+namespace App\Saddle;
 
-use RodeoPHP\Fields\Select;
-use RodeoPHP\Fields\Text;
-use RodeoPHP\Fields\Textarea;
-use RodeoPHP\Fields\Toggle;
-use RodeoPHP\Forms\Form;
-use RodeoPHP\Resource;
-use RodeoPHP\Tables\Columns\TextColumn;
-use RodeoPHP\Tables\Table;
+use SaddlePHP\Fields\Select;
+use SaddlePHP\Fields\Text;
+use SaddlePHP\Fields\Textarea;
+use SaddlePHP\Fields\Toggle;
+use SaddlePHP\Forms\Form;
+use SaddlePHP\Resource;
+use SaddlePHP\Tables\Columns\TextColumn;
+use SaddlePHP\Tables\Table;
 use App\Models\Horse;
 
 class HorseResource extends Resource
@@ -75,29 +75,29 @@ class HorseResource extends Resource
 }
 ```
 
-Resources are discovered automatically by scanning `app/Rodeo/` at boot — no manual registration needed.
+Resources are discovered automatically by scanning `app/Saddle/` at boot — no manual registration needed.
 
 ## Configuration
 
-`rodeo:install` publishes `config/rodeo.php`. Available keys:
+`saddle:install` publishes `config/saddle.php`. Available keys:
 
 | Key | Default | Description |
 |---|---|---|
 | `path` | `'admin'` | URL prefix for the panel (e.g. `'admin'` → `/admin`). |
 | `middleware` | `['web', 'auth']` | Middleware stack applied to all panel routes. |
-| `resources.path` | `app_path('Rodeo')` | Filesystem path scanned for resource classes. |
-| `resources.namespace` | `'App\\Rodeo'` | PHP namespace corresponding to `resources.path`. |
+| `resources.path` | `app_path('Saddle')` | Filesystem path scanned for resource classes. |
+| `resources.namespace` | `'App\\Saddle'` | PHP namespace corresponding to `resources.path`. |
 | `per_page` | `25` | Default rows per page on index tables. |
-| `brand.name` | `'RodeoPHP'` | Panel name (sidebar + browser tab). |
+| `brand.name` | `'SaddlePHP'` | Panel name (sidebar + browser tab). |
 | `brand.accent` | `'#d9501f'` | Accent colour (buttons, active states). |
 
 ## Commands
 
 | Command | Description |
 |---|---|
-| `rodeo:install` | Publish config, publish panel assets, create `app/Rodeo/`. Offers to add `rodeo:upgrade` to `composer post-update-cmd` so assets stay fresh. |
-| `rodeo:upgrade` | Re-publish panel assets. Run after every package update. |
-| `rodeo:resource NameResource --model=Name` | Scaffold a new resource class. The `--model` option is optional; it is inferred from the resource name when omitted. |
+| `saddle:install` | Publish config, publish panel assets, create `app/Saddle/`. Offers to add `saddle:upgrade` to `composer post-update-cmd` so assets stay fresh. |
+| `saddle:upgrade` | Re-publish panel assets. Run after every package update. |
+| `saddle:resource NameResource --model=Name` | Scaffold a new resource class. The `--model` option is optional; it is inferred from the resource name when omitted. |
 
 ## Local development
 
@@ -108,7 +108,7 @@ npm run build
 vendor/bin/pest
 ```
 
-The `workbench/` directory contains a minimal host application used by the test suite and for manual poking. `vendor/bin/testbench serve` boots it with `HorseResource` registered; note that panel routes sit behind the `auth` middleware and the workbench ships only a stub `/login` route, so for interactive browsing either temporarily set `'middleware' => ['web']` in `config/rodeo.php` or browse through the feature tests instead. There is no demo seeder yet.
+The `workbench/` directory contains a minimal host application used by the test suite and for manual poking. `vendor/bin/testbench serve` boots it with `HorseResource` registered; note that panel routes sit behind the `auth` middleware and the workbench ships only a stub `/login` route, so for interactive browsing either temporarily set `'middleware' => ['web']` in `config/saddle.php` or browse through the feature tests instead. There is no demo seeder yet.
 
 ## Roadmap
 

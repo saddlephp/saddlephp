@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Tests;
+namespace SaddlePHP\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;
-use RodeoPHP\Rodeo;
+use SaddlePHP\Saddle;
 use Workbench\App\Models\User;
-use Workbench\App\Rodeo\HorseResource;
+use Workbench\App\Saddle\HorseResource;
 
 abstract class TestCase extends Orchestra
 {
@@ -21,7 +21,7 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        $this->app->make(Rodeo::class)->register([HorseResource::class]);
+        $this->app->make(Saddle::class)->register([HorseResource::class]);
 
         Gate::guessPolicyNamesUsing(fn () => null);
     }
@@ -33,7 +33,7 @@ abstract class TestCase extends Orchestra
             'driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '',
         ]);
         $app['config']->set('auth.providers.users.model', User::class);
-        $app['config']->set('rodeo.middleware', ['web', 'auth']);
+        $app['config']->set('saddle.middleware', ['web', 'auth']);
         $app['config']->set('inertia.testing.ensure_pages_exist', false);
     }
 

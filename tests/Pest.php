@@ -2,6 +2,6 @@
 
 declare(strict_types=1);
 
-use RodeoPHP\Tests\TestCase;
+use SaddlePHP\Tests\TestCase;
 
 uses(TestCase::class)->in('Unit', 'Feature');

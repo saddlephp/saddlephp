@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RodeoPHP\Console;
+namespace SaddlePHP\Console;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
@@ -10,9 +10,9 @@ use Symfony\Component\Console\Input\InputOption;
 
 class ResourceMakeCommand extends GeneratorCommand
 {
-    protected $name = 'rodeo:resource';
+    protected $name = 'saddle:resource';
 
-    protected $description = 'Create a new RodeoPHP resource class';
+    protected $description = 'Create a new SaddlePHP resource class';
 
     protected $type = 'Resource';
 
@@ -23,7 +23,7 @@ class ResourceMakeCommand extends GeneratorCommand
 
     protected function getDefaultNamespace($rootNamespace): string
     {
-        return $rootNamespace.'\\Rodeo';
+        return $rootNamespace.'\\Saddle';
     }
 
     protected function buildClass($name): string

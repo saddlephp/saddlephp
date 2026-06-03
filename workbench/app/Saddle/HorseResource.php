@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Workbench\App\Rodeo;
+namespace Workbench\App\Saddle;
 
-use RodeoPHP\Fields\Select;
-use RodeoPHP\Fields\Text;
-use RodeoPHP\Fields\Textarea;
-use RodeoPHP\Fields\Toggle;
-use RodeoPHP\Forms\Form;
-use RodeoPHP\Resource;
-use RodeoPHP\Tables\Columns\TextColumn;
-use RodeoPHP\Tables\Table;
+use SaddlePHP\Fields\Select;
+use SaddlePHP\Fields\Text;
+use SaddlePHP\Fields\Textarea;
+use SaddlePHP\Fields\Toggle;
+use SaddlePHP\Forms\Form;
+use SaddlePHP\Resource;
+use SaddlePHP\Tables\Columns\TextColumn;
+use SaddlePHP\Tables\Table;
 use Workbench\App\Models\Horse;
 
 class HorseResource extends Resource
