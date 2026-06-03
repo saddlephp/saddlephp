@@ -3,29 +3,20 @@
 declare(strict_types=1);
 
 return [
+    'path' => 'admin',
 
-    /*
-    |--------------------------------------------------------------------------
-    | Brand
-    |--------------------------------------------------------------------------
-    */
+    'middleware' => ['web', 'auth'],
 
-    'name' => 'RodeoPHP',
+    'resources' => [
+        'path' => app_path('Rodeo'),
+        'namespace' => 'App\\Rodeo',
+    ],
+
+    'per_page' => 25,
 
     'brand' => [
         'title' => 'RodeoPHP',
-        'accent' => '#c1481f',
+        'name' => 'RodeoPHP',
+        'accent' => '#d9501f',
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Panel path
-    |--------------------------------------------------------------------------
-    |
-    | The URL prefix that generated admin panels will be mounted under.
-    |
-    */
-
-    'path' => 'admin',
-
 ];

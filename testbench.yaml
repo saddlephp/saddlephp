@@ -1,6 +1,7 @@
 providers:
   - RodeoPHP\RodeoServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider
+  - Inertia\ServiceProvider
 
 migrations:
   - workbench/database/migrations
@@ -8,3 +9,5 @@ migrations:
 workbench:
   start: /admin
   install: false
+  discovers:
+    web: true

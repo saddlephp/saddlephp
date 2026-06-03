@@ -15,6 +15,9 @@ class Rodeo
     /** @var array<int, class-string<Resource>> */
     protected array $registered = [];
 
+    /** @var array<int, class-string<Resource>>|null */
+    protected ?array $discovered = null;
+
     public function version(): string
     {
         return self::VERSION;
@@ -40,10 +43,12 @@ class Rodeo
             return collect($this->registered);
         }
 
-        return collect(ResourceDiscovery::in(
+        $this->discovered ??= ResourceDiscovery::in(
             config('rodeo.resources.path', app_path('Rodeo')),
             config('rodeo.resources.namespace', 'App\\Rodeo'),
-        ));
+        );
+
+        return collect($this->discovered);
     }
 
     /** @return class-string<Resource>|null */
