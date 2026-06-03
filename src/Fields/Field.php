@@ -9,12 +9,14 @@ use Illuminate\Support\Str;
 
 abstract class Field
 {
+    /** The frontend component that renders this field. Subclasses MUST set this. */
     protected string $component;
 
     protected ?string $label = null;
 
     protected bool $required = false;
 
+    /** @var array<int, string|\Stringable|\Illuminate\Contracts\Validation\ValidationRule|object> Custom validation rules appended after type rules. */
     protected array $rules = [];
 
     protected mixed $default = null;
