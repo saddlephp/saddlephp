@@ -1,6 +1,6 @@
 <p align="center">
   <strong>RodeoPHP</strong><br>
-  <em>Saddle up cowboy, there's a new sheriff in town.</em>
+  <em>Saddle up cowboy, there's a new admin panel in town.</em>
 </p>
 
 ---
