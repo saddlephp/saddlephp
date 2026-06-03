@@ -15,7 +15,6 @@ return [
     'per_page' => 25,
 
     'brand' => [
-        'title' => 'RodeoPHP',
         'name' => 'RodeoPHP',
         'accent' => '#d9501f',
     ],

@@ -88,8 +88,7 @@ Resources are discovered automatically by scanning `app/Rodeo/` at boot — no m
 | `resources.path` | `app_path('Rodeo')` | Filesystem path scanned for resource classes. |
 | `resources.namespace` | `'App\\Rodeo'` | PHP namespace corresponding to `resources.path`. |
 | `per_page` | `25` | Default rows per page on index tables. |
-| `brand.title` | `'RodeoPHP'` | Browser tab title. |
-| `brand.name` | `'RodeoPHP'` | Panel sidebar name. |
+| `brand.name` | `'RodeoPHP'` | Panel name (sidebar + browser tab). |
 | `brand.accent` | `'#d9501f'` | Accent colour (buttons, active states). |
 
 ## Commands
@@ -109,13 +108,7 @@ npm run build
 vendor/bin/pest
 ```
 
-The `workbench/` directory contains a minimal Laravel application for manual testing. Spin it up with:
-
-```bash
-vendor/bin/testbench serve
-```
-
-Then visit `http://localhost:8000/admin`. The workbench registers `HorseResource` and seeds a handful of horses so the index table renders out of the box.
+The `workbench/` directory contains a minimal host application used by the test suite and for manual poking. `vendor/bin/testbench serve` boots it with `HorseResource` registered; note that panel routes sit behind the `auth` middleware and the workbench ships only a stub `/login` route, so for interactive browsing either temporarily set `'middleware' => ['web']` in `config/rodeo.php` or browse through the feature tests instead. There is no demo seeder yet.
 
 ## Roadmap
 
