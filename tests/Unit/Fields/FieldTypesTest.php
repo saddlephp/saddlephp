@@ -6,13 +6,8 @@ use Illuminate\Validation\Rules\In;
 use RodeoPHP\Fields\Select;
 use RodeoPHP\Fields\Textarea;
 use RodeoPHP\Fields\Toggle;
+use RodeoPHP\Tests\Fixtures\Breed;
 use Workbench\App\Models\Horse;
-
-enum Breed: string
-{
-    case Quarter = 'quarter';
-    case Mustang = 'mustang';
-}
 
 it('textarea exposes rows meta and string rule', function () {
     $payload = Textarea::make('notes')->rows(6)->toArray();
@@ -57,4 +52,31 @@ it('toggle is always boolean, fills a cast bool and defaults false', function ()
 
     $field->fill($horse, null);
     expect($horse->is_saddled)->toBeFalse();
+});
+
+it('select accepts list arrays using values as labels', function () {
+    $payload = Select::make('breed')->options(['quarter', 'mustang'])->toArray();
+
+    expect($payload['options'])->toBe([
+        ['value' => 'quarter', 'label' => 'quarter'],
+        ['value' => 'mustang', 'label' => 'mustang'],
+    ]);
+});
+
+it('select rejects non-enum class strings', function () {
+    Select::make('breed')->options('NotAnEnumClass');
+})->throws(InvalidArgumentException::class);
+
+it('select without options fails closed via an empty in rule', function () {
+    $rules = Select::make('breed')->getRules();
+
+    expect($rules[0])->toBe('nullable')
+        ->and($rules[1])->toBeInstanceOf(Illuminate\Validation\Rules\In::class);
+});
+
+it('toggle ignores required to keep serialization and rules consistent', function () {
+    $field = Toggle::make('is_saddled')->required();
+
+    expect($field->toArray()['required'])->toBeFalse()
+        ->and($field->getRules())->toBe(['nullable', 'boolean']);
 });

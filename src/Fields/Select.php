@@ -17,23 +17,29 @@ class Select extends Field
     public function options(array|string $options): static
     {
         if (is_string($options)) {
+            if (! is_subclass_of($options, \BackedEnum::class)) {
+                throw new \InvalidArgumentException(
+                    'Select options expect an array or a backed enum class-string.',
+                );
+            }
+
             $this->options = collect($options::cases())
                 ->map(fn (\BackedEnum $case) => ['value' => $case->value, 'label' => $case->name])
                 ->values()->all();
-        } else {
-            $this->options = collect($options)
-                ->map(fn ($label, $value) => ['value' => $value, 'label' => $label])
-                ->values()->all();
+
+            return $this;
         }
+
+        $this->options = array_is_list($options)
+            ? collect($options)->map(fn ($option) => ['value' => $option, 'label' => (string) $option])->values()->all()
+            : collect($options)->map(fn ($label, $key) => ['value' => $key, 'label' => $label])->values()->all();
 
         return $this;
     }
 
     protected function typeRules(): array
     {
-        return $this->options === []
-            ? []
-            : [Rule::in(array_column($this->options, 'value'))];
+        return [Rule::in(array_column($this->options, 'value'))];
     }
 
     protected function meta(): array

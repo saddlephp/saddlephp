@@ -12,6 +12,15 @@ class Toggle extends Field
 
     protected mixed $default = false;
 
+    /**
+     * Toggles cannot be required — an absent or unchecked toggle is valid by design,
+     * so this is a deliberate no-op to keep serialization and validation consistent.
+     */
+    public function required(bool $required = true): static
+    {
+        return $this;
+    }
+
     /** Toggles are always nullable booleans; absent/false must validate. */
     public function getRules(): array
     {
