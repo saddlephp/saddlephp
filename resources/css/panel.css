@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+
+@theme {
+    --font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --color-bg: #ffffff;
+    --color-surface: #fafaf9;
+    --color-surface-2: #f4f3f1;
+    --color-ink: #0c0b0a;
+    --color-ink-2: #57534e;
+    --color-ink-3: #8c867e;
+    --color-line: #eceae6;
+    --color-line-2: #ddd9d2;
+    --color-accent: var(--rodeo-accent, #d9501f);
+}
+
+body {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+}
