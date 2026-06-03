@@ -71,7 +71,7 @@ it('select without options fails closed via an empty in rule', function () {
     $rules = Select::make('breed')->getRules();
 
     expect($rules[0])->toBe('nullable')
-        ->and($rules[1])->toBeInstanceOf(Illuminate\Validation\Rules\In::class);
+        ->and($rules[1])->toBeInstanceOf(In::class);
 });
 
 it('toggle ignores required to keep serialization and rules consistent', function () {

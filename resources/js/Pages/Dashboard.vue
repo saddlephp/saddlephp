@@ -10,7 +10,7 @@ const { rodeo } = usePage().props;
         <h1 class="text-2xl font-semibold tracking-tight">Howdy{{ rodeo.user ? `, ${rodeo.user.name}` : '' }}.</h1>
         <p class="mt-1 text-ink-2">Pick a resource and get ridin'.</p>
         <div class="mt-6 grid max-w-3xl gap-3 sm:grid-cols-2">
-            <template v-for="group in rodeo.nav">
+            <template v-for="(group, gi) in rodeo.nav" :key="gi">
                 <Link
                     v-for="item in group.items"
                     :key="item.uriKey"

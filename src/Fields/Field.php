@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RodeoPHP\Fields;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -16,7 +17,7 @@ abstract class Field
 
     protected bool $required = false;
 
-    /** @var array<int, string|\Stringable|\Illuminate\Contracts\Validation\ValidationRule|object> Custom validation rules appended after type rules. */
+    /** @var array<int, string|\Stringable|ValidationRule|object> Custom validation rules appended after type rules. */
     protected array $rules = [];
 
     protected mixed $default = null;

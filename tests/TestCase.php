@@ -8,7 +8,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;
+use RodeoPHP\Rodeo;
 use Workbench\App\Models\User;
+use Workbench\App\Rodeo\HorseResource;
 
 abstract class TestCase extends Orchestra
 {
@@ -19,7 +21,7 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        $this->app->make(\RodeoPHP\Rodeo::class)->register([\Workbench\App\Rodeo\HorseResource::class]);
+        $this->app->make(Rodeo::class)->register([HorseResource::class]);
 
         Gate::guessPolicyNamesUsing(fn () => null);
     }

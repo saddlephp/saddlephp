@@ -9,6 +9,7 @@ it('renders the dashboard with shared panel props', function () {
 
     $this->get('/admin')
         ->assertOk()
+        ->assertViewIs('rodeo::app')
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard')
             ->where('rodeo.name', 'RodeoPHP')

@@ -9,7 +9,7 @@ use RodeoPHP\Resource;
 
 class ResourceDiscovery
 {
-    /** @return array<int, class-string<Resource>> */
+    /** @return array<int, class-string<resource>> */
     public static function in(string $directory, string $namespace): array
     {
         if (! is_dir($directory)) {

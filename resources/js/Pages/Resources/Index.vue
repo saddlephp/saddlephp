@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onUnmounted } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import PanelLayout from '../../Components/PanelLayout.vue';
 import ConfirmDialog from '../../Components/ConfirmDialog.vue';
@@ -23,6 +23,7 @@ watch(search, (value) => {
         350,
     );
 });
+onUnmounted(() => clearTimeout(timer));
 
 function sortBy(column) {
     if (!column.sortable) return;

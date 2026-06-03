@@ -6,6 +6,9 @@ namespace RodeoPHP;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use RodeoPHP\Console\InstallCommand;
+use RodeoPHP\Console\ResourceMakeCommand;
+use RodeoPHP\Console\UpgradeCommand;
 use RodeoPHP\Http\Middleware\HandleRodeoRequests;
 
 class RodeoServiceProvider extends ServiceProvider
@@ -34,9 +37,9 @@ class RodeoServiceProvider extends ServiceProvider
             ], 'rodeo-assets');
 
             $this->commands([
-                \RodeoPHP\Console\ResourceMakeCommand::class,
-                \RodeoPHP\Console\InstallCommand::class,
-                \RodeoPHP\Console\UpgradeCommand::class,
+                ResourceMakeCommand::class,
+                InstallCommand::class,
+                UpgradeCommand::class,
             ]);
         }
     }

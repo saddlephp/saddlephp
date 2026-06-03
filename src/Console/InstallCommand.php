@@ -45,6 +45,11 @@ class InstallCommand extends Command
         }
 
         $composer = json_decode(File::get($path), true);
+
+        if (! is_array($composer)) {
+            return;
+        }
+
         $hooks = $composer['scripts']['post-update-cmd'] ?? [];
 
         if (in_array('@php artisan rodeo:upgrade', $hooks, true)) {

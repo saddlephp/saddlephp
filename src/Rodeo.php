@@ -12,10 +12,10 @@ class Rodeo
 {
     public const VERSION = '0.1.0-dev';
 
-    /** @var array<int, class-string<Resource>> */
+    /** @var array<int, class-string<resource>> */
     protected array $registered = [];
 
-    /** @var array<int, class-string<Resource>>|null */
+    /** @var array<int, class-string<resource>>|null */
     protected ?array $discovered = null;
 
     public function version(): string
@@ -28,7 +28,7 @@ class Rodeo
         return "Saddle up, cowboy. There's a new CMF in town.";
     }
 
-    /** @param array<int, class-string<Resource>> $resources */
+    /** @param array<int, class-string<resource>> $resources */
     public function register(array $resources): static
     {
         $this->registered = array_values(array_unique(array_merge($this->registered, $resources)));
@@ -36,7 +36,7 @@ class Rodeo
         return $this;
     }
 
-    /** @return Collection<int, class-string<Resource>> */
+    /** @return Collection<int, class-string<resource>> */
     public function resources(): Collection
     {
         if ($this->registered !== []) {
@@ -51,7 +51,7 @@ class Rodeo
         return collect($this->discovered);
     }
 
-    /** @return class-string<Resource>|null */
+    /** @return class-string<resource>|null */
     public function resourceFor(string $uriKey): ?string
     {
         return $this->resources()->first(fn (string $resource) => $resource::uriKey() === $uriKey);

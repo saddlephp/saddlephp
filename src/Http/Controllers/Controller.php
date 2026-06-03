@@ -11,13 +11,13 @@ use RodeoPHP\Rodeo;
 
 abstract class Controller
 {
-    /** @return class-string<Resource> */
+    /** @return class-string<resource> */
     protected function resolveResource(string $uriKey): string
     {
         return app(Rodeo::class)->resourceFor($uriKey) ?? abort(404);
     }
 
-    /** @param class-string<Resource> $resource */
+    /** @param class-string<resource> $resource */
     protected function resolveRecord(Request $request, string $resource, string|int $recordId): Model
     {
         return $resource::query($request)->findOrFail($recordId);
