@@ -17,6 +17,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'password' => 'password',
+            'is_admin' => false,
         ];
     }
 }

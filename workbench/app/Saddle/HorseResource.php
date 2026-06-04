@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Workbench\App\Saddle;
 
+use Illuminate\Http\Request;
 use SaddlePHP\Fields\BelongsTo;
 use SaddlePHP\Fields\Date;
 use SaddlePHP\Fields\Number;
@@ -40,7 +41,8 @@ class HorseResource extends Resource
                 'mustang' => 'Mustang',
                 'appaloosa' => 'Appaloosa',
             ]),
-            Textarea::make('notes')->rows(3),
+            Textarea::make('notes')->rows(3)
+                ->canSee(fn (Request $request) => (bool) $request->user()?->is_admin),
             Toggle::make('is_saddled'),
             BelongsTo::make('rider')->searchable(),
             Number::make('age')->integer()->min(0)->max(50),

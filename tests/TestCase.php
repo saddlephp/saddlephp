@@ -38,9 +38,10 @@ abstract class TestCase extends Orchestra
         $app['config']->set('inertia.testing.ensure_pages_exist', false);
     }
 
-    protected function actingAsUser(): User
+    /** @param array<string, mixed> $attributes */
+    protected function actingAsUser(array $attributes = []): User
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(array_merge(['is_admin' => true], $attributes));
         $this->actingAs($user);
 
         return $user;

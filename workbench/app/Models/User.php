@@ -13,7 +13,9 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'email', 'password'];
+    protected $fillable = ['name', 'email', 'password', 'is_admin'];
+
+    protected $casts = ['is_admin' => 'boolean'];
 
     protected static function newFactory(): UserFactory
     {
