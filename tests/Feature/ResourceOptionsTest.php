@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Gate;
+use SaddlePHP\Tests\Fixtures\LockedDownHorsePolicy;
 use Workbench\App\Models\Horse;
 use Workbench\App\Models\Rider;
 use Workbench\App\Policies\HorsePolicy;
@@ -46,9 +47,19 @@ it('returns 404 for fields that are not relations', function () {
     $this->getJson('/admin/resources/horses/options/name')->assertNotFound();
 });
 
-it('denies users who cannot create or update the resource', function () {
-    Gate::policy(Horse::class, HorsePolicy::class);
+it('denies users who can neither create nor update the resource', function () {
+    Gate::policy(Horse::class, LockedDownHorsePolicy::class);
     $this->actingAsUser();
 
     $this->getJson('/admin/resources/horses/options/rider_id')->assertForbidden();
+});
+
+it('serves options to users who can update but not create', function () {
+    Gate::policy(Horse::class, HorsePolicy::class);
+    $this->actingAsUser();
+    Rider::factory()->create(['name' => 'Amos']);
+
+    $this->getJson('/admin/resources/horses/options/rider_id')
+        ->assertOk()
+        ->assertJsonCount(1, 'options');
 });

@@ -78,11 +78,7 @@ abstract class Resource
             return true;
         }
 
-        try {
-            return (bool) Auth::user()?->can($ability, $target ?? static::$model);
-        } catch (\ArgumentCountError) {
-            return false;
-        }
+        return (bool) Auth::user()?->can($ability, $target ?? static::$model);
     }
 
     protected static function baseName(): string
