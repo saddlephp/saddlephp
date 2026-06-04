@@ -10,7 +10,7 @@ use SaddlePHP\Support\ResourceDiscovery;
 
 class Saddle
 {
-    public const VERSION = '0.1.0';
+    public const VERSION = '0.2.0';
 
     /** @var array<int, class-string<resource>> */
     protected array $registered = [];

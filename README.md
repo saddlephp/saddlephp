@@ -13,7 +13,7 @@
 Vue**. Round up your Eloquent models into polished resource panels, with form and table builders, roles and access,
 plugins, and multi-tenancy.
 
-> **Status: v0.1 core loop ships.** Resource panels with full CRUD, form builder, table builder (search, sort, paginate), install and upgrade commands, and the Inertia+Vue panel shell are all working. The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
+> **Status: v0.2 ships relations and richer fields.** v0.2 adds BelongsTo relation selects, Number and Date inputs, BadgeColumn and BooleanColumn table cells, eager loading via `$with`, and a typed date column formatter. The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
 
 ## Installation
 
@@ -36,12 +36,17 @@ declare(strict_types=1);
 
 namespace App\Saddle;
 
+use SaddlePHP\Fields\BelongsTo;
+use SaddlePHP\Fields\Date;
+use SaddlePHP\Fields\Number;
 use SaddlePHP\Fields\Select;
 use SaddlePHP\Fields\Text;
 use SaddlePHP\Fields\Textarea;
 use SaddlePHP\Fields\Toggle;
 use SaddlePHP\Forms\Form;
 use SaddlePHP\Resource;
+use SaddlePHP\Tables\Columns\BadgeColumn;
+use SaddlePHP\Tables\Columns\BooleanColumn;
 use SaddlePHP\Tables\Columns\TextColumn;
 use SaddlePHP\Tables\Table;
 use App\Models\Horse;
@@ -54,6 +59,8 @@ class HorseResource extends Resource
 
     public static ?string $icon = 'collection';
 
+    public static array $with = ['rider'];
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -65,6 +72,9 @@ class HorseResource extends Resource
             ]),
             Textarea::make('notes')->rows(3),
             Toggle::make('is_saddled'),
+            BelongsTo::make('rider'),
+            Number::make('age')->integer()->min(0)->max(50),
+            Date::make('foaled_on'),
         ]);
     }
 
@@ -72,14 +82,42 @@ class HorseResource extends Resource
     {
         return $table->columns([
             TextColumn::make('name')->sortable()->searchable(),
-            TextColumn::make('breed')->sortable(),
-            TextColumn::make('created_at')->sortable(),
+            BadgeColumn::make('breed')->colors([
+                'quarter' => 'accent',
+                'mustang' => 'ink',
+                'appaloosa' => 'muted',
+            ]),
+            BooleanColumn::make('is_saddled'),
+            TextColumn::make('rider.name')->label('Rider'),
+            TextColumn::make('created_at')->date('M j, Y')->sortable(),
         ]);
     }
 }
 ```
 
 Resources are discovered automatically by scanning `app/Saddle/` at boot — no manual registration needed.
+
+## Fields
+
+| Field | Description |
+|---|---|
+| `Text` | Single-line text input. Modifiers: `required()`, `rules(string\|array)`, `placeholder()`. |
+| `Textarea` | Multi-line text input. Modifiers: `rows(int)`. |
+| `Select` | Fixed-options dropdown. Pass an associative array to `options(['value' => 'Label'])`. |
+| `Toggle` | Boolean switch. Stores `true`/`false`. |
+| `BelongsTo` | Relation select. The argument is the Eloquent relation method name on the model (`BelongsTo::make('rider')` reads `$model->rider()` and submits the foreign key). Option labels resolve from `titleAttribute('name')`, falling back to the related model's registered resource `$title`, then its key. Options are capped at 100 by default; override with `limit(int)`. Async/searchable selects are planned. |
+| `Number` | Numeric input. Modifiers: `min()`, `max()`, `step()`, `integer()`. |
+| `Date` | Date input. Values render as `Y-m-d`. |
+
+## Columns
+
+| Column | Description |
+|---|---|
+| `TextColumn` | Renders the raw attribute value. Modifiers: `sortable()`, `searchable()`, `label(string)`, `date(string $format)` (formats DateTime attributes; default format `Y-m-d H:i`). |
+| `BadgeColumn` | Renders a pill badge. Use `colors(['value' => 'token'])` to map option values to color tokens (`accent`, `ink`, `muted`). |
+| `BooleanColumn` | Renders a check mark for truthy values and a dash for falsy ones. |
+
+**Relation columns and eager loading.** Dotted names like `TextColumn::make('rider.name')` read through a loaded relation. Declare `public static array $with = ['rider']` on the resource so the index query eager-loads the relation before rendering. Relation columns are not sortable or searchable yet.
 
 ## Configuration
 
@@ -119,6 +157,7 @@ The `workbench/` directory contains a minimal host application used by the test 
 - [x] Resource panels (CRUD from an Eloquent model)
 - [x] Form builder
 - [x] Table builder
+- [x] Relations (BelongsTo)
 - [ ] Roles and access (policy-driven)
 - [ ] Plugins
 - [ ] Multi-tenancy
