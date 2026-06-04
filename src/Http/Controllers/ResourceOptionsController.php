@@ -13,7 +13,7 @@ class ResourceOptionsController extends Controller
     public function __invoke(Request $request, string $resourceKey, string $field): JsonResponse
     {
         $resource = $this->resolveResource($resourceKey);
-        abort_unless($resource::allows('viewAny'), 403);
+        abort_unless($resource::allows('create') || $resource::allows('update'), 403);
 
         $match = collect($resource::makeForm()->fields())
             ->first(fn ($formField) => $formField instanceof BelongsTo && $formField->name() === $field);

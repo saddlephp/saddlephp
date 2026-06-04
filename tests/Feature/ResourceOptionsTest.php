@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Gate;
+use Workbench\App\Models\Horse;
 use Workbench\App\Models\Rider;
+use Workbench\App\Policies\HorsePolicy;
 
 it('serves relation options as json', function () {
     $this->actingAsUser();
@@ -41,4 +44,11 @@ it('returns 404 for fields that are not relations', function () {
     $this->actingAsUser();
 
     $this->getJson('/admin/resources/horses/options/name')->assertNotFound();
+});
+
+it('denies users who cannot create or update the resource', function () {
+    Gate::policy(Horse::class, HorsePolicy::class);
+    $this->actingAsUser();
+
+    $this->getJson('/admin/resources/horses/options/rider_id')->assertForbidden();
 });
