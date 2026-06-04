@@ -141,7 +141,7 @@ Filters are declared on the table via `->filters([...])`. On the index, the pane
 
 ## Authorization
 
-SaddlePHP consumes standard Laravel policies. Register a policy for a model and the panel enforces it everywhere — index, forms, row actions, and relation pickers. With no policy registered, all abilities are allowed for every authenticated user. Roles stay in your application: any role package or homegrown layer that backs your policies works unchanged.
+SaddlePHP consumes standard Laravel policies. Register a policy for a model and the panel enforces it everywhere: index, forms, row actions, and relation pickers. With no policy registered, all abilities are allowed for every authenticated user. Roles stay in your application: any role package or homegrown layer that backs your policies works unchanged.
 
 | Ability | Where it is checked |
 |---|---|
@@ -161,7 +161,7 @@ Textarea::make('notes')->rows(3)
     ->canSee(fn (Request $request) => (bool) $request->user()?->is_admin),
 ```
 
-Hidden fields are stripped from the form payload (stored values are never serialized to the frontend), contribute no validation rules, are never written on save, and their relation options endpoint returns 404. The callback may run several times per request, so keep it cheap and return a real boolean. For example, use `Gate::allows('view-notes', $model)` rather than `Gate::inspect(...)` — a `Response` object is always truthy and will never hide the field.
+Hidden fields are stripped from the form payload (stored values are never serialized to the frontend), contribute no validation rules, are never written on save, and their relation options endpoint returns 404. The callback may run several times per request, so keep it cheap and return a real boolean. For example, use `Gate::allows('view-notes', $model)` rather than `Gate::inspect(...)`, whose `Response` object is always truthy and will never hide the field.
 
 ## Configuration
 
