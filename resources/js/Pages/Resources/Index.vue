@@ -93,9 +93,10 @@ function badgeClass(column, value) {
                             >{{ row.cells[column.name] }}</span>
                             <svg
                                 v-else-if="column.type === 'boolean' && row.cells[column.name]"
+                                role="img" aria-label="Yes"
                                 viewBox="0 0 24 24" class="h-4 w-4 text-accent" fill="none" stroke="currentColor" stroke-width="2.4"
                             ><path d="m20 6-11 11-5-5" /></svg>
-                            <span v-else-if="column.type === 'boolean'" class="text-ink-3">&mdash;</span>
+                            <span v-else-if="column.type === 'boolean'" aria-label="No" class="text-ink-3">&mdash;</span>
                             <template v-else>{{ row.cells[column.name] }}</template>
                         </td>
                         <td class="px-4 py-3 text-right text-xs">
