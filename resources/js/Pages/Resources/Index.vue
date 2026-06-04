@@ -35,6 +35,16 @@ const deleting = ref(null);
 function destroy() {
     router.delete(`${base}/${deleting.value.id}`, { onFinish: () => (deleting.value = null) });
 }
+
+const badgeStyles = {
+    accent: 'bg-accent/10 text-accent',
+    ink: 'bg-ink text-white',
+    muted: 'bg-surface-2 text-ink-2',
+};
+
+function badgeClass(column, value) {
+    return badgeStyles[column.colors?.[value]] ?? badgeStyles.muted;
+}
 </script>
 
 <template>
@@ -76,7 +86,18 @@ function destroy() {
                 </thead>
                 <tbody class="divide-y divide-line">
                     <tr v-for="row in rows.data" :key="row.id" class="transition hover:bg-surface">
-                        <td v-for="column in columns" :key="column.name" class="px-4 py-3">{{ row.cells[column.name] }}</td>
+                        <td v-for="column in columns" :key="column.name" class="px-4 py-3">
+                            <span
+                                v-if="column.type === 'badge' && row.cells[column.name] != null"
+                                :class="['inline-flex rounded-full px-2 py-0.5 text-[0.72rem] font-medium', badgeClass(column, row.cells[column.name])]"
+                            >{{ row.cells[column.name] }}</span>
+                            <svg
+                                v-else-if="column.type === 'boolean' && row.cells[column.name]"
+                                viewBox="0 0 24 24" class="h-4 w-4 text-accent" fill="none" stroke="currentColor" stroke-width="2.4"
+                            ><path d="m20 6-11 11-5-5" /></svg>
+                            <span v-else-if="column.type === 'boolean'" class="text-ink-3">&mdash;</span>
+                            <template v-else>{{ row.cells[column.name] }}</template>
+                        </td>
                         <td class="px-4 py-3 text-right text-xs">
                             <Link v-if="row.can.update" :href="`${base}/${row.id}/edit`" class="text-ink-2 hover:text-ink">Edit</Link>
                             <button v-if="row.can.delete" type="button" class="ml-3 text-accent" @click="deleting = row">Delete</button>

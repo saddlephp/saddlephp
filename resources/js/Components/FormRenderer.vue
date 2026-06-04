@@ -3,6 +3,8 @@ import TextField from './Fields/TextField.vue';
 import TextareaField from './Fields/TextareaField.vue';
 import SelectField from './Fields/SelectField.vue';
 import ToggleField from './Fields/ToggleField.vue';
+import NumberField from './Fields/NumberField.vue';
+import DateField from './Fields/DateField.vue';
 
 defineProps({ fields: Array, form: Object });
 
@@ -11,6 +13,8 @@ const map = {
     'textarea-field': TextareaField,
     'select-field': SelectField,
     'toggle-field': ToggleField,
+    'number-field': NumberField,
+    'date-field': DateField,
 };
 </script>
 
