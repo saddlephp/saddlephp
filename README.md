@@ -13,7 +13,7 @@
 Vue**. Round up your Eloquent models into polished resource panels, with form and table builders, roles and access,
 plugins, and multi-tenancy.
 
-> **Status: v0.3 ships table filters and searchable relation pickers.** v0.3 adds `SelectFilter` and `BooleanFilter` for the index table, and `searchable()` plus `modifyOptionsQuery()` on `BelongsTo` for async, scope-aware relation selects. The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
+> **Status: v0.4 lands policy-driven access.** Navigation and individual fields now respect your Laravel policies. The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
 
 ## Installation
 
@@ -37,6 +37,7 @@ declare(strict_types=1);
 namespace App\Saddle;
 
 use App\Models\Horse;
+use Illuminate\Http\Request;
 use SaddlePHP\Fields\BelongsTo;
 use SaddlePHP\Fields\Date;
 use SaddlePHP\Fields\Number;
@@ -72,7 +73,8 @@ class HorseResource extends Resource
                 'mustang' => 'Mustang',
                 'appaloosa' => 'Appaloosa',
             ]),
-            Textarea::make('notes')->rows(3),
+            Textarea::make('notes')->rows(3)
+                ->canSee(fn (Request $request) => (bool) $request->user()?->is_admin),
             Toggle::make('is_saddled'),
             BelongsTo::make('rider')->searchable(),
             Number::make('age')->integer()->min(0)->max(50),
@@ -137,6 +139,30 @@ Filters are declared on the table via `->filters([...])`. On the index, the pane
 | `SelectFilter` | Exact-match dropdown. `options(['value' => 'Label'])` defines both the dropdown choices and the allowlist of accepted values. |
 | `BooleanFilter` | Yes/No dropdown over a boolean column. |
 
+## Authorization
+
+SaddlePHP consumes standard Laravel policies. Register a policy for a model and the panel enforces it everywhere — index, forms, row actions, and relation pickers. With no policy registered, all abilities are allowed for every authenticated user. Roles stay in your application: any role package or homegrown layer that backs your policies works unchanged.
+
+| Ability | Where it is checked |
+|---|---|
+| `viewAny` | Resource index page, sidebar visibility |
+| `create` | Create form, store action, relation options endpoint |
+| `update` | Edit form, update action, per-row Edit link, relation options endpoint (checked against a fresh model when no record is in scope) |
+| `delete` | Destroy action, per-row Delete button |
+
+### Field visibility with `canSee`
+
+Individual fields can be gated per request using `canSee`. The `notes` field in `HorseResource` is a working example:
+
+```php
+use Illuminate\Http\Request;
+
+Textarea::make('notes')->rows(3)
+    ->canSee(fn (Request $request) => (bool) $request->user()?->is_admin),
+```
+
+Hidden fields are stripped from the form payload (stored values are never serialized to the frontend), contribute no validation rules, are never written on save, and their relation options endpoint returns 404. The callback may run several times per request, so keep it cheap and return a real boolean. For example, use `Gate::allows('view-notes', $model)` rather than `Gate::inspect(...)` — a `Response` object is always truthy and will never hide the field.
+
 ## Configuration
 
 `saddle:install` publishes `config/saddle.php`. Available keys:
@@ -177,7 +203,7 @@ The `workbench/` directory contains a minimal host application used by the test 
 - [x] Table builder
 - [x] Relations (BelongsTo)
 - [x] Table filters
-- [ ] Roles and access (policy-driven)
+- [x] Roles and access (policy-driven)
 - [ ] Plugins
 - [ ] Multi-tenancy
 
