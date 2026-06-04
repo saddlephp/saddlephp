@@ -25,4 +25,11 @@ it('boolean serializes its type and resolves to a real bool', function () {
 
     $horse->is_saddled = false;
     expect($column->resolve($horse))->toBeFalse();
+
+    // the cast must coerce non-boolean attributes to real bools
+    $horse->age = 7;
+    expect(BooleanColumn::make('age')->resolve($horse))->toBeTrue();
+
+    $horse->age = 0;
+    expect(BooleanColumn::make('age')->resolve($horse))->toBeFalse();
 });
