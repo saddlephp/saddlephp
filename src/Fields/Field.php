@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace SaddlePHP\Fields;
 
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 abstract class Field
@@ -73,6 +75,21 @@ abstract class Field
         $this->helper = $helper;
 
         return $this;
+    }
+
+    protected ?Closure $canSee = null;
+
+    /** Gate this field per request. Hidden fields are excluded from the form payload, validation, and fill. */
+    public function canSee(Closure $callback): static
+    {
+        $this->canSee = $callback;
+
+        return $this;
+    }
+
+    public function visibleTo(Request $request): bool
+    {
+        return $this->canSee === null || (bool) ($this->canSee)($request);
     }
 
     public function name(): string

@@ -37,6 +37,17 @@ class Form
         return $this->fields;
     }
 
+    /** @return array<int, Field> Fields the current request may see. */
+    public function visibleFields(): array
+    {
+        $request = app('request');
+
+        return array_values(array_filter(
+            $this->fields(),
+            fn (Field $field) => $field->visibleTo($request),
+        ));
+    }
+
     public function model(Model $model): static
     {
         $this->model = $model;
@@ -65,9 +76,7 @@ class Form
     /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
-        $this->prepare();
-
-        return collect($this->fields)
+        return collect($this->visibleFields())
             ->mapWithKeys(fn (Field $field) => [$field->name() => $field->getRules()])
             ->all();
     }
@@ -75,9 +84,7 @@ class Form
     /** @param array<string, mixed> $validated */
     public function fill(Model $record, array $validated): void
     {
-        $this->prepare();
-
-        foreach ($this->fields as $field) {
+        foreach ($this->visibleFields() as $field) {
             if (array_key_exists($field->name(), $validated)) {
                 $field->fill($record, $validated[$field->name()]);
             }
@@ -87,9 +94,7 @@ class Form
     /** @return array<int, array<string, mixed>> */
     public function toInertia(?Model $record = null): array
     {
-        $this->prepare();
-
-        return collect($this->fields)
+        return collect($this->visibleFields())
             ->map(fn (Field $field) => $field->toArray($record))
             ->values()->all();
     }
