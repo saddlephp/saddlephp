@@ -37,7 +37,16 @@ class Form
         return $this->fields;
     }
 
-    /** @return array<int, Field> Fields the current request may see. */
+    /**
+     * Return the fields the current request may see.
+     *
+     * Resolves the HTTP request from the container via `app('request')`. Outside
+     * a real request context (console commands, queued jobs) the request object
+     * is empty, so any user- or session-dependent gate will fail closed and hide
+     * those fields. Design gates defensively with this in mind.
+     *
+     * @return array<int, Field>
+     */
     public function visibleFields(): array
     {
         $request = app('request');

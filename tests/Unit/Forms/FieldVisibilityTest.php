@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Request;
+use SaddlePHP\Fields\BelongsTo;
 use SaddlePHP\Fields\Text;
 use SaddlePHP\Forms\Form;
 use Workbench\App\Models\Horse;
@@ -51,9 +53,39 @@ it('keeps fields() returning the full schema', function () {
 it('passes the request to the callback', function () {
     $field = Text::make('name')->canSee(fn ($request) => $request->query('show') === 'yes');
 
-    $requestYes = \Illuminate\Http\Request::create('/x', 'GET', ['show' => 'yes']);
-    $requestNo  = \Illuminate\Http\Request::create('/x', 'GET', []);
+    $requestYes = Request::create('/x', 'GET', ['show' => 'yes']);
+    $requestNo  = Request::create('/x', 'GET', []);
 
     expect($field->visibleTo($requestYes))->toBeTrue()
         ->and($field->visibleTo($requestNo))->toBeFalse();
+});
+
+it('filters through the container request', function () {
+    $this->app->instance('request', Request::create('/x', 'GET', ['show' => 'yes']));
+
+    $form = Form::make()->schema([
+        Text::make('name'),
+        Text::make('breed')->canSee(fn ($request) => $request->query('show') === 'yes'),
+        Text::make('notes')->canSee(fn ($request) => $request->query('show') === 'no'),
+    ]);
+
+    expect(collect($form->visibleFields())->map->name()->all())->toBe(['name', 'breed'])
+        ->and($form->rules())->toHaveKeys(['name', 'breed'])
+        ->and($form->rules())->not->toHaveKey('notes');
+});
+
+it('still binds hidden relation fields before filtering', function () {
+    $field = BelongsTo::make('rider')->canSee(fn () => false);
+
+    $form = Form::make()->model(new Horse)->schema([Text::make('name'), $field]);
+
+    expect($form->visibleFields())->toHaveCount(1)
+        ->and($field->name())->toBe('rider_id');
+});
+
+it('coerces truthy and falsy callback results', function () {
+    $request = Request::create('/x');
+
+    expect(Text::make('a')->canSee(fn () => 1)->visibleTo($request))->toBeTrue()
+        ->and(Text::make('b')->canSee(fn () => null)->visibleTo($request))->toBeFalse();
 });

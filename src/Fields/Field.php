@@ -79,7 +79,20 @@ abstract class Field
 
     protected ?Closure $canSee = null;
 
-    /** Gate this field per request. Hidden fields are excluded from the form payload, validation, and fill. */
+    /**
+     * Gate this field per request.
+     *
+     * Hidden fields are excluded from the form payload, validation, and fill —
+     * they will not appear in `visibleFields()`, `rules()`, `fill()`, or `toInertia()`.
+     *
+     * The callback may be invoked several times per request (once per call to
+     * `visibleFields()`), so keep it cheap and idempotent. Prefer pre-loaded
+     * authorisation decisions over database queries inside the closure.
+     *
+     * Return a real boolean. For example, use `Gate::allows('view', $model)`
+     * rather than `Gate::inspect(...)` — a `Response` object is always truthy
+     * and will never hide the field.
+     */
     public function canSee(Closure $callback): static
     {
         $this->canSee = $callback;
