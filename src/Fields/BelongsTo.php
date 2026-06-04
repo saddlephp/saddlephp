@@ -95,7 +95,7 @@ class BelongsTo extends Field
         }
 
         $title = $this->resolveTitleAttribute();
-        $orderBy = $title ?? (new $this->relatedModel)->getKeyName();
+        $orderBy = $title ?? $this->relatedKeyName;
 
         return $this->relatedModel::query()
             ->orderBy($orderBy)
