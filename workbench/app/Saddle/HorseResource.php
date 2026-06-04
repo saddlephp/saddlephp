@@ -42,7 +42,7 @@ class HorseResource extends Resource
             ]),
             Textarea::make('notes')->rows(3),
             Toggle::make('is_saddled'),
-            BelongsTo::make('rider'),
+            BelongsTo::make('rider')->searchable(),
             Number::make('age')->integer()->min(0)->max(50),
             Date::make('foaled_on'),
         ]);

@@ -6,19 +6,18 @@ use Inertia\Testing\AssertableInertia as Assert;
 use Workbench\App\Models\Horse;
 use Workbench\App\Models\Rider;
 
-it('serves relation options on the create form', function () {
+it('serves an async relation picker on the create form', function () {
     $this->actingAsUser();
     Rider::factory()->create(['name' => 'Amos']);
-    Rider::factory()->create(['name' => 'Billie']);
 
     $this->get('/admin/resources/horses/create')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->where('fields.4.component', 'select-field')
+            ->where('fields.4.component', 'search-select-field')
             ->where('fields.4.name', 'rider_id')
             ->where('fields.4.label', 'Rider')
-            ->count('fields.4.options', 2)
-            ->where('fields.4.options.0.label', 'Amos')
+            ->where('fields.4.async', true)
+            ->count('fields.4.options', 0)
         );
 });
 
@@ -71,4 +70,20 @@ it('validates the number bounds', function () {
 
     $this->post('/admin/resources/horses', ['name' => 'Cisco', 'age' => 99])
         ->assertSessionHasErrors(['age']);
+});
+
+it('embeds the current selection on the edit form', function () {
+    $this->actingAsUser();
+    Rider::factory()->create(['name' => 'Amos']);
+    $tex = Rider::factory()->create(['name' => 'Tex']);
+    $horse = Horse::factory()->create(['rider_id' => $tex->id]);
+
+    $this->get("/admin/resources/horses/{$horse->id}/edit")
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->count('fields.4.options', 1)
+            ->where('fields.4.options.0.value', $tex->id)
+            ->where('fields.4.options.0.label', 'Tex')
+            ->where('fields.4.value', $tex->id)
+        );
 });
