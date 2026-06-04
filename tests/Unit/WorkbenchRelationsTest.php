@@ -17,5 +17,5 @@ it('casts the new horse attributes', function () {
     $horse = Horse::factory()->create(['age' => 7, 'foaled_on' => '2019-05-01']);
 
     expect($horse->age)->toBe(7)
-        ->and($horse->foaled_on)->toBeInstanceOf(\DateTimeInterface::class);
+        ->and($horse->foaled_on)->toBeInstanceOf(DateTimeInterface::class);
 });

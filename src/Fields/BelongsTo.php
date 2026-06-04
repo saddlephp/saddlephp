@@ -121,7 +121,7 @@ class BelongsTo extends Field
         return $resource !== null ? $resource::$title : null;
     }
 
-    /** @return class-string<Resource>|null */
+    /** @return class-string<resource>|null */
     protected function relatedResource(): ?string
     {
         return app(Saddle::class)->resources()
