@@ -13,7 +13,7 @@
 Vue**. Round up your Eloquent models into polished resource panels, with form and table builders, roles and access,
 plugins, and multi-tenancy.
 
-> **Status: v0.2 ships relations and richer fields.** v0.2 adds BelongsTo relation selects, Number and Date inputs, BadgeColumn and BooleanColumn table cells, eager loading via `$with`, and a typed date column formatter. The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
+> **Status: v0.3 ships table filters and searchable relation pickers.** v0.3 adds `SelectFilter` and `BooleanFilter` for the index table, and `searchable()` plus `modifyOptionsQuery()` on `BelongsTo` for async, scope-aware relation selects. The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
 
 ## Installation
 
@@ -49,6 +49,8 @@ use SaddlePHP\Resource;
 use SaddlePHP\Tables\Columns\BadgeColumn;
 use SaddlePHP\Tables\Columns\BooleanColumn;
 use SaddlePHP\Tables\Columns\TextColumn;
+use SaddlePHP\Tables\Filters\BooleanFilter;
+use SaddlePHP\Tables\Filters\SelectFilter;
 use SaddlePHP\Tables\Table;
 
 class HorseResource extends Resource
@@ -72,7 +74,7 @@ class HorseResource extends Resource
             ]),
             Textarea::make('notes')->rows(3),
             Toggle::make('is_saddled'),
-            BelongsTo::make('rider'),
+            BelongsTo::make('rider')->searchable(),
             Number::make('age')->integer()->min(0)->max(50),
             Date::make('foaled_on'),
         ]);
@@ -90,6 +92,13 @@ class HorseResource extends Resource
             BooleanColumn::make('is_saddled'),
             TextColumn::make('rider.name')->label('Rider'),
             TextColumn::make('created_at')->date('M j, Y')->sortable(),
+        ])->filters([
+            SelectFilter::make('breed')->options([
+                'quarter' => 'Quarter Horse',
+                'mustang' => 'Mustang',
+                'appaloosa' => 'Appaloosa',
+            ]),
+            BooleanFilter::make('is_saddled'),
         ]);
     }
 }
@@ -105,7 +114,7 @@ Resources are discovered automatically by scanning `app/Saddle/` at boot — no 
 | `Textarea` | Multi-line text input. Modifiers: `rows(int)`. |
 | `Select` | Fixed-options dropdown. Pass an associative array to `options(['value' => 'Label'])`. |
 | `Toggle` | Boolean switch. Stores `true`/`false`. |
-| `BelongsTo` | Relation select. The argument is the Eloquent relation method name on the model (`BelongsTo::make('rider')` reads `$model->rider()` and submits the foreign key). Option labels resolve from `titleAttribute('name')`, falling back to the related model's registered resource `$title`, then its key. If neither a `titleAttribute()` nor a registered resource is available, options are labeled by primary key, so set `titleAttribute('name')` for readable labels. Options are capped at 100 by default; override with `limit(int)`. Async/searchable selects are planned. |
+| `BelongsTo` | Relation select. The argument is the Eloquent relation method name on the model (`BelongsTo::make('rider')` reads `$model->rider()` and submits the foreign key). Option labels resolve from `titleAttribute('name')`, falling back to the related model's registered resource `$title`, then its key. If neither a `titleAttribute()` nor a registered resource is available, options are labeled by primary key, so set `titleAttribute('name')` for readable labels. Options are capped at 100 by default; override with `limit(int)`. `searchable()` switches to an async picker that searches the related table as you type via an authenticated endpoint; on edit, only the current selection is embedded (the full list is not loaded). `modifyOptionsQuery(fn ($query) => ...)` scopes the option query for tenancy or visibility and applies to both embedded and searched options. |
 | `Number` | Numeric input. Modifiers: `min()`, `max()`, `step()`, `integer()`. |
 | `Date` | Date input. Values render as `Y-m-d`. |
 
@@ -118,6 +127,15 @@ Resources are discovered automatically by scanning `app/Saddle/` at boot — no 
 | `BooleanColumn` | Renders a check mark for truthy values and a dash for falsy ones. |
 
 **Relation columns and eager loading.** Dotted names like `TextColumn::make('rider.name')` read through a loaded relation. Declare `public static array $with = ['rider']` on the resource so the index query eager-loads the relation before rendering. Relation columns are not sortable or searchable yet.
+
+## Filters
+
+Filters are declared on the table via `->filters([...])`. On the index, the panel applies them from `filter[name]=value` query string parameters. Requested values are validated against the declaration, so unknown filter names and undeclared option values are silently ignored.
+
+| Filter | Description |
+|---|---|
+| `SelectFilter` | Exact-match dropdown. `options(['value' => 'Label'])` defines both the dropdown choices and the allowlist of accepted values. |
+| `BooleanFilter` | Yes/No dropdown over a boolean column. |
 
 ## Configuration
 
@@ -158,6 +176,7 @@ The `workbench/` directory contains a minimal host application used by the test 
 - [x] Form builder
 - [x] Table builder
 - [x] Relations (BelongsTo)
+- [x] Table filters
 - [ ] Roles and access (policy-driven)
 - [ ] Plugins
 - [ ] Multi-tenancy
