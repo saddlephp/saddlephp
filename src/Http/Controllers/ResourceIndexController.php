@@ -30,6 +30,19 @@ class ResourceIndexController extends Controller
             });
         }
 
+        $requested = $request->query('filter', []);
+        $requested = is_array($requested) ? $requested : [];
+        $activeFilters = [];
+
+        foreach ($table->getFilters() as $filter) {
+            $value = $requested[$filter->name()] ?? null;
+
+            if (is_string($value) && $value !== '' && $filter->accepts($value)) {
+                $filter->apply($query, $value);
+                $activeFilters[$filter->name()] = $value;
+            }
+        }
+
         $requestedSort = (string) $request->query('sort', '');
 
         if (in_array($requestedSort, $table->sortableColumns(), true)) {
@@ -65,11 +78,13 @@ class ResourceIndexController extends Controller
                 'canCreate' => $resource::allows('create'),
             ],
             'columns' => $table->toInertia(),
+            'filters' => $table->filtersToInertia(),
             'rows' => $rows,
             'query' => [
                 'search' => $search,
                 'sort' => $sort,
                 'direction' => $direction,
+                'filter' => $activeFilters,
             ],
         ]);
     }

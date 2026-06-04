@@ -10,9 +10,14 @@ class BooleanFilter extends Filter
 {
     protected string $type = 'boolean';
 
+    public function accepts(string $value): bool
+    {
+        return $value === '1' || $value === '0';
+    }
+
     public function apply(Builder $query, string $value): void
     {
-        if ($value === '1' || $value === '0') {
+        if ($this->accepts($value)) {
             $query->where($this->name, $value === '1');
         }
     }

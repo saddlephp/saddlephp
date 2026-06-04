@@ -21,9 +21,14 @@ class SelectFilter extends Filter
         return $this;
     }
 
+    public function accepts(string $value): bool
+    {
+        return array_key_exists($value, $this->options);
+    }
+
     public function apply(Builder $query, string $value): void
     {
-        if (array_key_exists($value, $this->options)) {
+        if ($this->accepts($value)) {
             $query->where($this->name, $value);
         }
     }

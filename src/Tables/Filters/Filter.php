@@ -33,6 +33,9 @@ abstract class Filter
         return $this->name;
     }
 
+    /** Whether apply() would constrain the query for this value. */
+    abstract public function accepts(string $value): bool;
+
     /**
      * Constrain the query for a validated, non-empty request value. Values the
      * filter does not recognise must be a no-op.
