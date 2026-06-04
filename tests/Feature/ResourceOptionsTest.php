@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Gate;
+use SaddlePHP\Saddle;
+use SaddlePHP\Tests\Fixtures\GatedHorseResource;
 use SaddlePHP\Tests\Fixtures\LockedDownHorsePolicy;
 use Workbench\App\Models\Horse;
 use Workbench\App\Models\Rider;
@@ -62,4 +64,11 @@ it('serves options to users who can update but not create', function () {
     $this->getJson('/admin/resources/horses/options/rider_id')
         ->assertOk()
         ->assertJsonCount(1, 'options');
+});
+
+it('returns 404 for fields hidden from the requester', function () {
+    app(Saddle::class)->register([GatedHorseResource::class]);
+    $this->actingAsUser();
+
+    $this->getJson('/admin/resources/gated-horses/options/rider_id')->assertNotFound();
 });

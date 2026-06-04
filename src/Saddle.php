@@ -10,7 +10,7 @@ use SaddlePHP\Support\ResourceDiscovery;
 
 class Saddle
 {
-    public const VERSION = '0.3.0';
+    public const VERSION = '0.4.0';
 
     /** @var array<int, class-string<resource>> */
     protected array $registered = [];
@@ -66,6 +66,7 @@ class Saddle
     public function nav(Request $request): array
     {
         return $this->resources()
+            ->filter(fn (string $resource) => $resource::allows('viewAny'))
             ->groupBy(fn (string $resource) => $resource::$group ?? '')
             ->map(fn (Collection $resources, string $group) => [
                 'group' => $group === '' ? null : $group,

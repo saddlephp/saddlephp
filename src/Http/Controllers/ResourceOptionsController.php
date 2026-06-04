@@ -20,7 +20,7 @@ class ResourceOptionsController extends Controller
             403,
         );
 
-        $match = collect($resource::makeForm()->fields())
+        $match = collect($resource::makeForm()->visibleFields())
             ->first(fn ($formField) => $formField instanceof BelongsTo && $formField->name() === $field);
 
         abort_if($match === null, 404);
