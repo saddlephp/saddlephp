@@ -12,7 +12,7 @@
 Vue**. Round up your Eloquent models into polished resource panels, with form and table builders, roles and access,
 plugins, and multi-tenancy.
 
-> **Status: v0.5 lands plugins.** Packages can now ship resources, assets, and custom fields in any frontend framework. The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
+> **Status: v0.6 lands multi-tenancy, completing the launch roadmap.** The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
 
 ## Installation
 
@@ -221,6 +221,52 @@ Define elements at the top level of your script; the browser upgrades any matchi
 
 The contract is framework-agnostic. Anything that compiles to a standard custom element works: Vue's `defineCustomElement`, Lit, React or Svelte wrappers. Plugin authors are not tied to the panel's internals.
 
+## Multi-tenancy
+
+Saddle supports opt-in, URL-scoped multi-tenancy. Enable it by pointing `tenancy.model` at any Eloquent class:
+
+```php
+// config/saddle.php
+'tenancy' => [
+    'model' => App\Models\Ranch::class, // null disables (default)
+    'relationship' => 'users',          // relation that lists the tenant's members
+],
+```
+
+When tenancy is active, the panel mounts under `/admin/{tenant}` instead of `/admin`. The `{tenant}` segment resolves by route-key lookup on the configured model. Unknown tenant keys return **404**; authenticated users who are not a member of the resolved tenant are rejected with **403**.
+
+### Scoping resources
+
+Declare the record's BelongsTo relationship to the tenant on each resource you want scoped:
+
+```php
+class HorseResource extends Resource
+{
+    public static ?string $tenant = 'ranch'; // Eloquent relation name on Horse
+}
+```
+
+Resources without `$tenant` (shared lookup tables, global configuration) remain unscoped by design.
+
+### Automatic scope guarantees
+
+Every data path checks the bound tenant server-side:
+
+- **Index, search, and filters** run through the scoped base query (`whereBelongsTo` on the declared relation).
+- **Record lookups** for edit, update, and destroy resolve via the same scoped query, so cross-tenant IDs return 404 before any policy runs.
+- **Stores** stamp the current tenant server-side after filling the form. Any tenant foreign key submitted by the client is overwritten.
+- **Relation option lists** apply the same scope when the related model's registered resource is also tenant-scoped.
+
+### Tenant switcher
+
+When the authenticated user belongs to more than one tenant, the panel sidebar shows a select that lists all their memberships. Switching navigates to the same panel path under the selected tenant.
+
+### Caveats
+
+- **Do not expose the `$tenant` relation as a form field on a scoped resource.** The store controller stamps the relationship server-side, but an editable BelongsTo field pointing at the tenant relation on an update form would let a submitted value re-point the record to a different tenant.
+- **A saved relation label still renders on the edit form even when the related row falls outside the current scope.** `BelongsTo` resolves the current selection with an unscoped query so the label never disappears after a scope change. Only the option list for new selections is filtered.
+- **Changing the tenancy config requires `php artisan route:clear`**, because the `{tenant}` prefix is decided at boot. Long-running application servers (FPM workers kept alive across requests) must ensure that request state is reset between requests; the bound tenant lives on the Saddle singleton, which is resolved fresh per request under the default container lifetime.
+
 ## Configuration
 
 `saddle:install` publishes `config/saddle.php`. Available keys:
@@ -263,7 +309,7 @@ The `workbench/` directory contains a minimal host application used by the test 
 - [x] Table filters
 - [x] Roles and access (policy-driven)
 - [x] Plugins
-- [ ] Multi-tenancy
+- [x] Multi-tenancy
 
 ## Stack
 

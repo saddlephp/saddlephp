@@ -7,6 +7,7 @@
         { "slug": "filters", "label": "Filters", "anchor": "filters" },
         { "slug": "authorization", "label": "Authorization", "anchor": "authorization" },
         { "slug": "plugins", "label": "Plugins", "anchor": "plugins" },
+        { "slug": "tenancy", "label": "Multi-tenancy", "anchor": "tenancy" },
         { "slug": "configuration", "label": "Configuration", "anchor": "configuration" }
     ]
 }
