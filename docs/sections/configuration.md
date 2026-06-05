@@ -13,6 +13,8 @@ Saddle ships with a single config file published by `saddle:install`. All keys h
 | `per_page` | `25` | Default number of rows shown on index tables. |
 | `brand.name` | `'Saddle'` | Panel name shown in the sidebar and browser tab. |
 | `brand.accent` | `'#d9501f'` | Accent colour used for buttons and active states. |
+| `uploads.disk` | `'public'` | Default filesystem disk used by `FileUpload` fields when no per-field `disk()` is set. |
+| `uploads.directory` | `'saddle'` | Default upload directory within the disk when no per-field `directory()` is set. |
 
 ### Artisan commands
 
