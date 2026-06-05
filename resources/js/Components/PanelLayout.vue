@@ -6,6 +6,13 @@ const page = usePage();
 const saddle = computed(() => page.props.saddle);
 const base = computed(() => `/${saddle.value.path}`);
 
+// Show a banner when the published panel assets lag behind the installed package.
+const assetsStale = computed(() => {
+    if (typeof __SADDLE_VERSION__ === 'undefined') return false;
+    const serverVer = page.props.saddle?.version;
+    return serverVer && serverVer !== __SADDLE_VERSION__;
+});
+
 function switchTenant(event) {
     const base = saddle.value.path.split('/').slice(0, -1).join('/');
     window.location.href = '/' + base + '/' + event.target.value;
@@ -48,6 +55,12 @@ function switchTenant(event) {
         </aside>
 
         <main class="min-w-0 flex-1 p-8">
+            <div
+                v-if="assetsStale"
+                class="mb-5 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm text-amber-800"
+            >
+                Panel assets are out of date. Run <code class="font-mono font-medium">php artisan saddle:upgrade</code>.
+            </div>
             <div v-if="saddle.flash.success" class="mb-5 rounded-lg border border-line bg-bg px-4 py-3 text-sm">
                 {{ saddle.flash.success }}
             </div>
