@@ -70,7 +70,7 @@ Date::make('foaled_on'),
 
 ### DateTime
 
-A date-and-time input (`datetime-local`). On save the value is passed directly to the model; use a `datetime` cast on the attribute so Eloquent stores it correctly. When resolving for the edit form, a `DateTimeInterface` value is formatted to `Y-m-dTH:i` automatically.
+A date-and-time input (`datetime-local`). On save the value is passed directly to the model; use a `datetime` cast on the attribute so Eloquent stores it correctly. When resolving for the edit form, a `DateTimeInterface` value is formatted to `Y-m-d\TH:i` automatically.
 
 ```php
 DateTime::make('last_vet_visit'),
