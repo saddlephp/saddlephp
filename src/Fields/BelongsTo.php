@@ -133,7 +133,21 @@ class BelongsTo extends Field
             return [];
         }
 
-        return [Rule::exists((new $this->relatedModel)->getTable(), $this->relatedKeyName)];
+        $rule = Rule::exists((new $this->relatedModel)->getTable(), $this->relatedKeyName);
+
+        // Mirror the options query: when tenancy is active and the related
+        // resource is tenant-scoped, the existence check must be confined to the
+        // current tenant. Otherwise a tenant-A write could reference a tenant-B
+        // row whose key happens to exist. Stays unscoped when tenancy is off or
+        // the related resource is global (lookup-table) by design.
+        $constraint = $this->tenantConstraint();
+
+        if ($constraint !== null) {
+            [$foreignKey, $tenantKey] = $constraint;
+            $rule->where($foreignKey, $tenantKey);
+        }
+
+        return [$rule];
     }
 
     protected function meta(): array
@@ -205,6 +219,44 @@ class BelongsTo extends Field
         if ($resource !== null && $resource::$tenant !== null) {
             $query->whereBelongsTo($tenant, $resource::$tenant);
         }
+    }
+
+    /**
+     * Derive the [foreignKey, tenantKey] pair that confines the related model to
+     * the bound tenant, or null when scoping does not apply (tenancy off, no
+     * bound tenant, related model unbound, or the related resource is global).
+     *
+     * The foreign key is read straight off the related model's tenant BelongsTo
+     * relation, exactly as whereBelongsTo() would resolve it for the options
+     * query — keeping the existence check and the options list in lockstep.
+     *
+     * @return array{0: string, 1: mixed}|null
+     */
+    protected function tenantConstraint(): ?array
+    {
+        if ($this->relatedModel === null) {
+            return null;
+        }
+
+        $tenant = app(Saddle::class)->tenant();
+
+        if ($tenant === null) {
+            return null;
+        }
+
+        $resource = $this->relatedResource();
+
+        if ($resource === null || $resource::$tenant === null) {
+            return null;
+        }
+
+        $relation = (new $this->relatedModel)->{$resource::$tenant}();
+
+        if (! $relation instanceof BelongsToRelation) {
+            return null;
+        }
+
+        return [$relation->getForeignKeyName(), $tenant->getKey()];
     }
 
     /** @return array<int, array{value: mixed, label: string}> */
