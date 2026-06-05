@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Gate;
 use SaddlePHP\Saddle;
 use SaddlePHP\Tests\Fixtures\ActionHorseResource;
+use SaddlePHP\Tests\Fixtures\DenyViewAnyPolicy;
 use SaddlePHP\Tests\Fixtures\LockedDownHorsePolicy;
 use Workbench\App\Models\Horse;
 
@@ -120,4 +121,15 @@ it('throws a LogicException for a declared action with no handler', function () 
 
     expect(fn () => $this->post('/admin/resources/action-horses/actions/hollow', ['record' => $horse->id]))
         ->toThrow(LogicException::class);
+});
+
+it('denies the endpoint outright when viewAny fails', function () {
+    Gate::policy(Horse::class, DenyViewAnyPolicy::class);
+    $this->actingAsUser();
+    $horse = Horse::factory()->create(['name' => 'Cisco']);
+
+    $this->post('/admin/resources/action-horses/actions/rename', ['record' => $horse->id])
+        ->assertForbidden();
+
+    expect($horse->fresh()->name)->toBe('Cisco');
 });
