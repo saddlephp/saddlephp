@@ -26,3 +26,9 @@ it('keeps the standard field behaviors', function () {
     expect($field->getRules())->toBe(['required', 'max:32'])
         ->and($horse->notes)->toBe('stoic');
 });
+
+it('embeds the record value on the edit payload', function () {
+    $horse = Horse::factory()->create(['notes' => 'stoic']);
+
+    expect(CustomField::make('notes')->tag('mood-picker')->toArray($horse)['value'])->toBe('stoic');
+});
