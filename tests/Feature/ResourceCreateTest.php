@@ -13,9 +13,15 @@ it('renders the create form payload', function () {
         ->assertInertia(fn (Assert $page) => $page
             ->component('Resources/Create')
             ->where('resource.uriKey', 'horses')
-            ->count('fields', 7)
-            ->where('fields.0.component', 'text-field')
-            ->where('fields.0.name', 'name')
+            ->where('fields', function ($fields) {
+                $fields = collect($fields)->all();
+                $leaves = flattenFields($fields);
+                $name = findField($fields, 'name');
+
+                return count($leaves) === 9
+                    && $name !== null
+                    && $name['component'] === 'text-field';
+            })
         );
 });
 

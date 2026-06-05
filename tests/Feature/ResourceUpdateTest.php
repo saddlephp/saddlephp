@@ -15,7 +15,7 @@ it('renders the edit form with resolved values', function () {
             ->component('Resources/Edit')
             ->where('record.id', $horse->id)
             ->where('record.title', 'Cisco')
-            ->where('fields.0.value', 'Cisco')
+            ->where('fields', fn ($fields) => findField(collect($fields)->all(), 'name')['value'] === 'Cisco')
         );
 });
 

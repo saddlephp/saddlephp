@@ -18,6 +18,8 @@ return new class extends Migration
             $table->foreignId('ranch_id')->nullable();
             $table->integer('age')->nullable();
             $table->date('foaled_on')->nullable();
+            $table->string('photo')->nullable();
+            $table->dateTime('last_vet_visit')->nullable();
             $table->timestamps();
         });
     }
