@@ -1,4 +1,4 @@
-SaddlePHP consumes standard Laravel policies. Register a policy for a model and the panel enforces it throughout: the index listing, create and edit forms, row actions, and the relation options endpoint. Your role system stays completely in your application code.
+Saddle consumes standard Laravel policies. Register a policy for a model and the panel enforces it throughout: the index listing, create and edit forms, row actions, and the relation options endpoint. Your role system stays completely in your application code.
 
 ### No-policy default
 

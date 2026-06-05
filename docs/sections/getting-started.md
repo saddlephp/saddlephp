@@ -1,4 +1,4 @@
-SaddlePHP is the open-source admin panel framework for Laravel, built on Inertia and Vue 3. Three commands are all you need to go from a fresh Laravel app to a working admin panel.
+Saddle is the open-source admin panel framework for Laravel, built on Inertia and Vue 3. Three commands are all you need to go from a fresh Laravel app to a working admin panel.
 
 ### Requirements
 

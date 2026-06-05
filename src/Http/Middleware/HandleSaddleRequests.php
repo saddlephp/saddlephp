@@ -24,7 +24,7 @@ class HandleSaddleRequests extends Middleware
 
         return array_merge(parent::share($request), [
             'saddle' => [
-                'name' => config('saddle.brand.name', 'SaddlePHP'),
+                'name' => config('saddle.brand.name', 'Saddle'),
                 'accent' => config('saddle.brand.accent', '#d9501f'),
                 'version' => Saddle::VERSION,
                 'path' => $saddle->path(),

@@ -1,4 +1,4 @@
-SaddlePHP ships with a single config file published by `saddle:install`. All keys have sensible defaults so you can ignore this file until you need to change something.
+Saddle ships with a single config file published by `saddle:install`. All keys have sensible defaults so you can ignore this file until you need to change something.
 
 ### Config keys
 
@@ -11,7 +11,7 @@ SaddlePHP ships with a single config file published by `saddle:install`. All key
 | `resources.path` | `app_path('Saddle')` | Filesystem path scanned for resource classes at boot. |
 | `resources.namespace` | `'App\\Saddle'` | PHP namespace corresponding to `resources.path`. |
 | `per_page` | `25` | Default number of rows shown on index tables. |
-| `brand.name` | `'SaddlePHP'` | Panel name shown in the sidebar and browser tab. |
+| `brand.name` | `'Saddle'` | Panel name shown in the sidebar and browser tab. |
 | `brand.accent` | `'#d9501f'` | Accent colour used for buttons and active states. |
 
 ### Artisan commands

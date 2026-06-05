@@ -15,7 +15,7 @@ it('renders the dashboard with shared panel props', function () {
         ->assertViewIs('saddle::app')
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard')
-            ->where('saddle.name', 'SaddlePHP')
+            ->where('saddle.name', 'Saddle')
             ->where('saddle.path', 'admin')
             ->where('saddle.nav.0.items.0.uriKey', 'horses')
             ->has('saddle.user.name')

@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://saddlephp.com"><img src=".github/og.png" alt="SaddlePHP, there's a new admin panel in town" width="820"></a>
+  <a href="https://saddlephp.com"><img src=".github/og.png" alt="Saddle, there's a new admin panel in town" width="820"></a>
 </p>
 
 <p align="center">
@@ -8,7 +8,7 @@
 
 ---
 
-**SaddlePHP** is the open-source admin panel framework for Laravel, built the modern way for **Inertia and
+**Saddle** is the open-source admin panel framework for Laravel, built the modern way for **Inertia and
 Vue**. Round up your Eloquent models into polished resource panels, with form and table builders, roles and access,
 plugins, and multi-tenancy.
 
@@ -140,7 +140,7 @@ Filters are declared on the table via `->filters([...])`. On the index, the pane
 
 ## Authorization
 
-SaddlePHP consumes standard Laravel policies. Register a policy for a model and the panel enforces it everywhere: index, forms, row actions, and relation pickers. With no policy registered, all abilities are allowed for every authenticated user. Roles stay in your application: any role package or homegrown layer that backs your policies works unchanged.
+Saddle consumes standard Laravel policies. Register a policy for a model and the panel enforces it everywhere: index, forms, row actions, and relation pickers. With no policy registered, all abilities are allowed for every authenticated user. Roles stay in your application: any role package or homegrown layer that backs your policies works unchanged.
 
 | Ability | Where it is checked |
 |---|---|
@@ -232,7 +232,7 @@ The contract is framework-agnostic. Anything that compiles to a standard custom 
 | `resources.path` | `app_path('Saddle')` | Filesystem path scanned for resource classes. |
 | `resources.namespace` | `'App\\Saddle'` | PHP namespace corresponding to `resources.path`. |
 | `per_page` | `25` | Default rows per page on index tables. |
-| `brand.name` | `'SaddlePHP'` | Panel name (sidebar + browser tab). |
+| `brand.name` | `'Saddle'` | Panel name (sidebar + browser tab). |
 | `brand.accent` | `'#d9501f'` | Accent colour (buttons, active states). |
 
 ## Commands

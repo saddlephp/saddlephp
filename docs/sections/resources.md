@@ -93,7 +93,7 @@ class HorseResource extends Resource
 
 ### Auto-discovery
 
-SaddlePHP scans `app/Saddle/` at boot and registers every class it finds that extends `SaddlePHP\Resource`. No manual registration is needed for application resources. The scan path and namespace are configurable via `config/saddle.php` if your project uses a non-standard layout.
+Saddle scans `app/Saddle/` at boot and registers every class it finds that extends `SaddlePHP\Resource`. No manual registration is needed for application resources. The scan path and namespace are configurable via `config/saddle.php` if your project uses a non-standard layout.
 
 ### URI key and label derivation
 

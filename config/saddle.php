@@ -15,7 +15,7 @@ return [
     'per_page' => 25,
 
     'brand' => [
-        'name' => 'SaddlePHP',
+        'name' => 'Saddle',
         'accent' => '#d9501f',
     ],
 ];

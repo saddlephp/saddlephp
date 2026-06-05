@@ -11,7 +11,7 @@ class InstallCommand extends Command
 {
     protected $signature = 'saddle:install {--force : Overwrite any previously published files}';
 
-    protected $description = 'Install SaddlePHP: publish config and panel assets';
+    protected $description = 'Install Saddle: publish config and panel assets';
 
     public function handle(): int
     {
@@ -26,7 +26,7 @@ class InstallCommand extends Command
 
         $this->offerComposerHook();
 
-        $this->components->info('SaddlePHP installed. Create your first resource:');
+        $this->components->info('Saddle installed. Create your first resource:');
         $this->line('  php artisan saddle:resource HorseResource --model=Horse');
 
         return self::SUCCESS;

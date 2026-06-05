@@ -22,7 +22,7 @@ function warnOnStaleAssets(serverVersion) {
 
     if (serverVersion !== __SADDLE_VERSION__) {
         console.warn(
-            `[SaddlePHP] Published panel assets are v${__SADDLE_VERSION__} but the installed package is v${serverVersion}. Run: php artisan saddle:upgrade`,
+            `[Saddle] Published panel assets are v${__SADDLE_VERSION__} but the installed package is v${serverVersion}. Run: php artisan saddle:upgrade`,
         );
     }
 }

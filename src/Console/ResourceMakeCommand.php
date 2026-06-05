@@ -12,7 +12,7 @@ class ResourceMakeCommand extends GeneratorCommand
 {
     protected $name = 'saddle:resource';
 
-    protected $description = 'Create a new SaddlePHP resource class';
+    protected $description = 'Create a new Saddle resource class';
 
     protected $type = 'Resource';
 
