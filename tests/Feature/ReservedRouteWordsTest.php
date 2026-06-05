@@ -19,6 +19,12 @@ it('never lets a record route capture the reserved options word', function () {
     $this->get('/admin/resources/horses/options/edit')->assertNotFound();
 });
 
+it('never lets a record route capture the reserved actions word', function () {
+    $this->actingAsUser();
+
+    $this->get('/admin/resources/horses/actions/edit')->assertNotFound();
+});
+
 it('constrains every {record} route so reserved words cannot match', function () {
     $recordRoutes = collect(Route::getRoutes()->getRoutes())
         ->filter(fn ($route) => in_array('record', $route->parameterNames(), true));
@@ -32,6 +38,7 @@ it('constrains every {record} route so reserved words cannot match', function ()
         expect($pattern)->not->toBeNull()
             ->and(preg_match('/'.$pattern.'/', 'create'))->toBe(0)
             ->and(preg_match('/'.$pattern.'/', 'options'))->toBe(0)
+            ->and(preg_match('/'.$pattern.'/', 'actions'))->toBe(0)
             ->and(preg_match('/'.$pattern.'/', '42'))->toBe(1)
             ->and(preg_match('/'.$pattern.'/', 'a-slug'))->toBe(1);
     });

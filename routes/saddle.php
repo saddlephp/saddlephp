@@ -12,10 +12,11 @@ use SaddlePHP\Http\Controllers\ResourceUpdateController;
 
 Route::get('/', DashboardController::class)->name('dashboard');
 
-// 'create' and 'options' are static path segments owned by the panel. The
-// constraint below ensures the {record} placeholder can never capture those
-// words, so static routes keep precedence even if their order ever changes.
-$recordKey = '^(?!create$|options$).+$';
+// 'create', 'options', and 'actions' are static path segments owned by the
+// panel. The constraint below ensures the {record} placeholder can never
+// capture those words, so static routes keep precedence even if their order
+// ever changes.
+$recordKey = '^(?!create$|options$|actions$).+$';
 
 Route::get('/resources/{resourceKey}', ResourceIndexController::class)->name('resources.index');
 Route::get('/resources/{resourceKey}/options/{field}', ResourceOptionsController::class)->name('resources.options');

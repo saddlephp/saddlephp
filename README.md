@@ -125,7 +125,7 @@ class HorseResource extends Resource
 
 Resources are discovered automatically by scanning `app/Saddle/` at boot, no manual registration needed.
 
-> **Reserved route keys.** The panel owns the static path segments `create` and `options` under each resource, so a record whose route key is literally `create` or `options` is not reachable by its edit/update/delete URLs. Use an integer key or a different slug for such records.
+> **Reserved route keys.** The panel owns the static path segments `create`, `options`, and `actions` under each resource, so a record whose route key is literally one of those words is not reachable by its edit/update/delete URLs. Use an integer key or a different slug for such records.
 
 ## Form layout
 
