@@ -15,8 +15,8 @@
     @if ($script = \SaddlePHP\Support\AssetManifest::script())
         <script type="module" src="{{ $script }}"></script>
     @endif
-    @foreach (app(\SaddlePHP\Saddle::class)->scripts() as $script)
-        <script src="{{ $script }}" defer></script>
+    @foreach (app(\SaddlePHP\Saddle::class)->scripts() as $pluginScript)
+        <script src="{{ $pluginScript }}" defer></script>
     @endforeach
     @inertiaHead
 </head>
