@@ -70,6 +70,31 @@ class Saddle
         return "Saddle up, cowboy. There's a new admin panel in town.";
     }
 
+    /**
+     * The brand accent color, validated before it is interpolated raw into the
+     * panel's inline <style> block. Only a bare hex value or a single CSS color
+     * function (rgb/hsl/oklch) with no structural characters is allowed; any
+     * other value (e.g. one trying to close the rule and inject CSS) falls back
+     * to the default.
+     */
+    public function accent(): string
+    {
+        $default = '#d9501f';
+        $accent = config('saddle.brand.accent', $default);
+
+        if (! is_string($accent)) {
+            return $default;
+        }
+
+        $accent = trim($accent);
+
+        if (preg_match('/^#[0-9a-fA-F]{3,8}$|^(rgb|hsl|oklch)\([^;{}<>]*\)$/', $accent) === 1) {
+            return $accent;
+        }
+
+        return $default;
+    }
+
     /** @param array<int, class-string<resource>> $resources */
     public function register(array $resources): static
     {

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title inertia>{{ config('saddle.brand.name', 'Saddle') }}</title>
     <link rel="icon" href="{{ asset('vendor/saddle/icon.png') }}" type="image/png">
-    <style>:root { --saddle-accent: {{ config('saddle.brand.accent', '#d9501f') }}; }</style>
+    <style>:root { --saddle-accent: {{ app(\SaddlePHP\Saddle::class)->accent() }}; }</style>
     @foreach (\SaddlePHP\Support\AssetManifest::styles() as $href)
         <link rel="stylesheet" href="{{ $href }}">
     @endforeach
