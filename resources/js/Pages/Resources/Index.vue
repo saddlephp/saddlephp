@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onUnmounted } from 'vue';
+import { ref, computed, watch, onUnmounted } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import PanelLayout from '../../Components/PanelLayout.vue';
 import ConfirmDialog from '../../Components/ConfirmDialog.vue';
@@ -10,6 +10,8 @@ const props = defineProps({
     rows: Object,
     query: Object,
     filters: Array,
+    actions: { type: Array, default: () => [] },
+    bulkActions: { type: Array, default: () => [] },
 });
 
 const { saddle } = usePage().props;
@@ -57,6 +59,76 @@ const badgeStyles = {
 function badgeClass(column, value) {
     return badgeStyles[column.colors?.[value]] ?? badgeStyles.muted;
 }
+
+const actionTextStyles = {
+    accent: 'text-accent',
+    ink: 'text-ink-2 hover:text-ink',
+    muted: 'text-ink-3',
+};
+
+function actionClass(action) {
+    return actionTextStyles[action.color] ?? actionTextStyles.ink;
+}
+
+// Selection of the current page rows for bulk actions, keyed by row id.
+const selected = ref([]);
+const allOnPageSelected = computed(
+    () => props.rows.data.length > 0 && selected.value.length === props.rows.data.length,
+);
+
+function toggleRow(id) {
+    const next = new Set(selected.value);
+    next.has(id) ? next.delete(id) : next.add(id);
+    selected.value = [...next];
+}
+
+function toggleAllOnPage() {
+    selected.value = allOnPageSelected.value ? [] : props.rows.data.map((row) => row.id);
+}
+
+function clearSelection() {
+    selected.value = [];
+}
+
+// Shared confirm flow for row and bulk actions. When `confirming` is set the
+// dialog is shown; its confirm event invokes the stored run callback.
+const confirming = ref(null);
+
+function runRowAction(action, row) {
+    const post = () => router.post(
+        `${base}/actions/${action.name}`,
+        { record: row.id },
+        { preserveScroll: true },
+    );
+
+    if (action.confirm) {
+        confirming.value = { title: action.confirm, run: post };
+        return;
+    }
+
+    post();
+}
+
+function runBulkAction(action) {
+    const post = () => router.post(
+        `${base}/actions/${action.name}`,
+        { records: selected.value },
+        { preserveScroll: true, onSuccess: clearSelection },
+    );
+
+    if (action.confirm) {
+        confirming.value = { title: action.confirm, run: post };
+        return;
+    }
+
+    post();
+}
+
+function confirmAction() {
+    const run = confirming.value?.run;
+    confirming.value = null;
+    run?.();
+}
 </script>
 
 <template>
@@ -97,10 +169,33 @@ function badgeClass(column, value) {
             </label>
         </div>
 
+        <div
+            v-if="bulkActions.length && selected.length"
+            class="mt-3 flex flex-wrap items-center gap-3 rounded-lg border border-line bg-surface px-4 py-2.5 text-sm"
+        >
+            <span class="text-ink-2">{{ selected.length }} selected</span>
+            <button
+                v-for="action in bulkActions"
+                :key="action.name"
+                type="button"
+                :class="['font-medium', actionClass(action)]"
+                @click="runBulkAction(action)"
+            >{{ action.label }}</button>
+            <button type="button" class="text-ink-3 hover:text-ink-2" @click="clearSelection">Clear</button>
+        </div>
+
         <div class="mt-4 overflow-hidden rounded-xl border border-line bg-bg">
             <table class="w-full text-left text-sm">
                 <thead class="border-b border-line bg-surface text-xs uppercase tracking-wide text-ink-3">
                     <tr>
+                        <th v-if="bulkActions.length" class="w-10 px-4 py-3">
+                            <input
+                                type="checkbox"
+                                aria-label="Select all"
+                                :checked="allOnPageSelected"
+                                @change="toggleAllOnPage"
+                            />
+                        </th>
                         <th v-for="column in columns" :key="column.name" class="px-4 py-3 font-medium">
                             <button
                                 v-if="column.sortable"
@@ -118,6 +213,14 @@ function badgeClass(column, value) {
                 </thead>
                 <tbody class="divide-y divide-line">
                     <tr v-for="row in rows.data" :key="row.id" class="transition hover:bg-surface">
+                        <td v-if="bulkActions.length" class="w-10 px-4 py-3">
+                            <input
+                                type="checkbox"
+                                :aria-label="`Select ${row.title}`"
+                                :checked="selected.includes(row.id)"
+                                @change="toggleRow(row.id)"
+                            />
+                        </td>
                         <td v-for="column in columns" :key="column.name" class="px-4 py-3">
                             <span
                                 v-if="column.type === 'badge' && row.cells[column.name] != null"
@@ -140,10 +243,17 @@ function badgeClass(column, value) {
                         <td class="px-4 py-3 text-right text-xs">
                             <Link v-if="row.can.update" :href="`${base}/${row.id}/edit`" class="text-ink-2 hover:text-ink">Edit</Link>
                             <button v-if="row.can.delete" type="button" class="ml-3 text-accent" @click="deleting = row">Delete</button>
+                            <button
+                                v-for="action in actions"
+                                :key="action.name"
+                                type="button"
+                                :class="['ml-3', actionClass(action)]"
+                                @click="runRowAction(action, row)"
+                            >{{ action.label }}</button>
                         </td>
                     </tr>
                     <tr v-if="!rows.data.length">
-                        <td :colspan="columns.length + 1" class="px-4 py-10 text-center text-ink-3">Nothing in the corral yet.</td>
+                        <td :colspan="columns.length + (bulkActions.length ? 2 : 1)" class="px-4 py-10 text-center text-ink-3">Nothing in the corral yet.</td>
                     </tr>
                 </tbody>
             </table>
@@ -165,5 +275,13 @@ function badgeClass(column, value) {
         </div>
 
         <ConfirmDialog v-if="deleting" :title="`Delete ${deleting.title}?`" @confirm="destroy" @cancel="deleting = null" />
+        <ConfirmDialog
+            v-if="confirming"
+            :title="confirming.title"
+            message="Confirm this action, partner."
+            confirm-label="Confirm"
+            @confirm="confirmAction"
+            @cancel="confirming = null"
+        />
     </PanelLayout>
 </template>

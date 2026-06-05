@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Workbench\App\Saddle;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use SaddlePHP\Actions\Action;
+use SaddlePHP\Actions\BulkAction;
 use SaddlePHP\Fields\BelongsTo;
 use SaddlePHP\Fields\Date;
 use SaddlePHP\Fields\DateTime;
@@ -66,6 +69,26 @@ class HorseResource extends Resource
                 ]),
             ]),
         ]);
+    }
+
+    public static function actions(): array
+    {
+        return [
+            Action::make('unsaddle')
+                ->handle(fn (Horse $horse) => $horse->update(['is_saddled' => false]))
+                ->requiresConfirmation('Unsaddle this horse?')
+                ->color('accent'),
+        ];
+    }
+
+    public static function bulkActions(): array
+    {
+        return [
+            BulkAction::make('saddle-up')
+                ->label('Saddle up')
+                ->handle(fn (Collection $horses) => $horses->each->update(['is_saddled' => true])),
+            BulkAction::delete(),
+        ];
     }
 
     public static function table(Table $table): Table
