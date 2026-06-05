@@ -79,6 +79,8 @@ class ResourceIndexController extends Controller
             ],
             'columns' => $table->toInertia(),
             'filters' => $table->filtersToInertia(),
+            'actions' => collect($resource::actions())->map->toArray()->values()->all(),
+            'bulkActions' => collect($resource::bulkActions())->map->toArray()->values()->all(),
             'rows' => $rows,
             'query' => [
                 'search' => $search,

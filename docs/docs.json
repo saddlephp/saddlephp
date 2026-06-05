@@ -4,6 +4,7 @@
         { "slug": "resources", "label": "Resources", "anchor": "resources" },
         { "slug": "fields", "label": "Fields", "anchor": "fields" },
         { "slug": "forms-layout", "label": "Form layout", "anchor": "forms-layout" },
+        { "slug": "actions", "label": "Actions", "anchor": "actions" },
         { "slug": "tables", "label": "Tables and columns", "anchor": "tables" },
         { "slug": "filters", "label": "Filters", "anchor": "filters" },
         { "slug": "authorization", "label": "Authorization", "anchor": "authorization" },

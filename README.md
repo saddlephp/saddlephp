@@ -12,7 +12,7 @@
 Vue**. Round up your Eloquent models into polished resource panels, with form and table builders, roles and access,
 plugins, and multi-tenancy.
 
-> **Status: v0.7 adds form layout containers, file uploads, and new field types.** The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
+> **Status: v0.8 adds row and bulk actions.** The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
 
 ## Installation
 
@@ -36,7 +36,10 @@ declare(strict_types=1);
 namespace App\Saddle;
 
 use App\Models\Horse;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use SaddlePHP\Actions\Action;
+use SaddlePHP\Actions\BulkAction;
 use SaddlePHP\Fields\BelongsTo;
 use SaddlePHP\Fields\Date;
 use SaddlePHP\Fields\DateTime;
@@ -99,6 +102,26 @@ class HorseResource extends Resource
         ]);
     }
 
+    public static function actions(): array
+    {
+        return [
+            Action::make('unsaddle')
+                ->handle(fn (Horse $horse) => $horse->update(['is_saddled' => false]))
+                ->requiresConfirmation('Unsaddle this horse?')
+                ->color('accent'),
+        ];
+    }
+
+    public static function bulkActions(): array
+    {
+        return [
+            BulkAction::make('saddle-up')
+                ->label('Saddle up')
+                ->handle(fn (Collection $horses) => $horses->each->update(['is_saddled' => true])),
+            BulkAction::delete(),
+        ];
+    }
+
     public static function table(Table $table): Table
     {
         return $table->columns([
@@ -125,7 +148,7 @@ class HorseResource extends Resource
 
 Resources are discovered automatically by scanning `app/Saddle/` at boot, no manual registration needed.
 
-> **Reserved route keys.** The panel owns the static path segments `create` and `options` under each resource, so a record whose route key is literally `create` or `options` is not reachable by its edit/update/delete URLs. Use an integer key or a different slug for such records.
+> **Reserved route keys.** The panel owns the static path segments `create`, `options`, and `actions` under each resource, so a record whose route key is literally one of those words is not reachable by its edit/update/delete URLs. Use an integer key or a different slug for such records.
 
 ## Form layout
 
@@ -200,6 +223,47 @@ Filters are declared on the table via `->filters([...])`. On the index, the pane
 |---|---|
 | `SelectFilter` | Exact-match dropdown. `options(['value' => 'Label'])` defines both the dropdown choices and the allowlist of accepted values. |
 | `BooleanFilter` | Yes/No dropdown over a boolean column. |
+
+## Actions
+
+Actions appear as buttons on each row of the index table. Bulk actions appear in a toolbar when one or more rows are selected.
+
+```php
+use SaddlePHP\Actions\Action;
+use SaddlePHP\Actions\BulkAction;
+
+public static function actions(): array
+{
+    return [
+        Action::make('unsaddle')
+            ->handle(fn (Horse $horse) => $horse->update(['is_saddled' => false]))
+            ->requiresConfirmation('Unsaddle this horse?')
+            ->color('accent'),
+    ];
+}
+
+public static function bulkActions(): array
+{
+    return [
+        BulkAction::make('saddle-up')
+            ->label('Saddle up')
+            ->handle(fn (Collection $horses) => $horses->each->update(['is_saddled' => true])),
+        BulkAction::delete(),
+    ];
+}
+```
+
+| Fluent | Description |
+|---|---|
+| `label(string)` | Display label shown on the button. When omitted, the name is converted to title case. |
+| `color(string)` | Color token for the button: `accent`, `ink`, or `muted`. Defaults to `ink`. |
+| `requiresConfirmation(?string)` | Show a confirmation dialog before running. Pass a custom message or omit to use the default prompt. |
+| `authorize(string)` | Name a policy ability checked per record before the handler runs. |
+| `successMessage(string)` | Flash message shown after a successful run. Defaults to `Done.`. |
+
+Actions post to a guarded endpoint. Records resolve through the same scoped base query used everywhere else, so tenancy, filters, and per-resource query scopes apply automatically. When `authorize('ability')` is declared, the policy is checked per record before the handler runs. Bulk runs execute inside a database transaction and are capped at 100 records per request; if any requested record is missing from the scoped fetch the entire operation aborts with 404 rather than silently applying to the subset that resolved. Declare `authorize()` on any destructive action.
+
+`BulkAction::delete()` is a pre-built preset: name `delete`, label `Delete`, color `accent`, confirmation `Delete the selected records?`, and `authorize('delete')` already wired.
 
 ## Authorization
 
@@ -382,6 +446,7 @@ The `workbench/` directory contains a minimal host application used by the test 
 - [x] Plugins
 - [x] Multi-tenancy
 - [x] Form layout and uploads
+- [x] Row and bulk actions
 
 ## Stack
 

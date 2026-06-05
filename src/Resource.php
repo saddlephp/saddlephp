@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
+use SaddlePHP\Actions\Action;
 use SaddlePHP\Forms\Form;
 use SaddlePHP\Tables\Table;
 
@@ -75,6 +76,18 @@ abstract class Resource
     public static function recordTitle(Model $record): string
     {
         return (string) data_get($record, static::$title ?? $record->getKeyName());
+    }
+
+    /** @return array<int, Action> */
+    public static function actions(): array
+    {
+        return [];
+    }
+
+    /** @return array<int, Action> */
+    public static function bulkActions(): array
+    {
+        return [];
     }
 
     public static function makeForm(): Form
