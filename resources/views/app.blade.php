@@ -9,9 +9,15 @@
     @foreach (\SaddlePHP\Support\AssetManifest::styles() as $href)
         <link rel="stylesheet" href="{{ $href }}">
     @endforeach
+    @foreach (app(\SaddlePHP\Saddle::class)->styles() as $style)
+        <link rel="stylesheet" href="{{ $style }}">
+    @endforeach
     @if ($script = \SaddlePHP\Support\AssetManifest::script())
         <script type="module" src="{{ $script }}"></script>
     @endif
+    @foreach (app(\SaddlePHP\Saddle::class)->scripts() as $script)
+        <script src="{{ $script }}" defer></script>
+    @endforeach
     @inertiaHead
 </head>
 <body>

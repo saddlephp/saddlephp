@@ -14,5 +14,9 @@ class WorkbenchServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->app->make(Saddle::class)->register([HorseResource::class, RiderResource::class]);
+
+        $this->app->make(Saddle::class)
+            ->script('/vendor/saddle-demo/rating-field.js')
+            ->style('/vendor/saddle-demo/rating-field.css');
     }
 }
