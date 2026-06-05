@@ -45,4 +45,10 @@ return [
     'authorization' => [
         'require_policy' => false,
     ],
+
+    // Default storage disk and directory for FileUpload fields (per-field overridable).
+    'uploads' => [
+        'disk' => 'public',
+        'directory' => 'saddle',
+    ],
 ];
