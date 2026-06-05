@@ -6,6 +6,7 @@ import ToggleField from './Fields/ToggleField.vue';
 import NumberField from './Fields/NumberField.vue';
 import DateField from './Fields/DateField.vue';
 import SearchSelectField from './Fields/SearchSelectField.vue';
+import CustomFieldShim from './Fields/CustomFieldShim.vue';
 
 defineProps({ fields: Array, form: Object });
 
@@ -17,6 +18,7 @@ const map = {
     'number-field': NumberField,
     'date-field': DateField,
     'search-select-field': SearchSelectField,
+    'custom-field': CustomFieldShim,
 };
 </script>
 
