@@ -173,12 +173,15 @@ class Saddle
             ->groupBy(fn (string $resource) => $resource::$group ?? '')
             ->map(fn (Collection $resources, string $group) => [
                 'group' => $group === '' ? null : $group,
-                'items' => $resources->map(fn (string $resource) => [
+                // One broken resource (a throwing label/uriKey/etc.) must not take
+                // down the whole sidebar: build each item defensively, report the
+                // failure, and drop only that item while the group stands.
+                'items' => $resources->map(fn (string $resource) => rescue(fn () => [
                     'label' => $resource::label(),
                     'uriKey' => $resource::uriKey(),
                     'icon' => $resource::$icon,
                     'active' => $request->is($this->path().'/resources/'.$resource::uriKey().'*'),
-                ])->values()->all(),
+                ], null, report: true))->filter()->values()->all(),
             ])
             ->values()->all();
     }
