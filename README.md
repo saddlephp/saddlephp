@@ -13,7 +13,7 @@
 Vue**. Round up your Eloquent models into polished resource panels, with form and table builders, roles and access,
 plugins, and multi-tenancy.
 
-> **Status: v0.4 lands policy-driven access.** Navigation and individual fields now respect your Laravel policies. The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
+> **Status: v0.5 lands plugins.** Packages can now ship resources, assets, and custom fields in any frontend framework. The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
 
 ## Installation
 
@@ -163,6 +163,58 @@ Textarea::make('notes')->rows(3)
 
 Hidden fields are stripped from the form payload (stored values are never serialized to the frontend), contribute no validation rules, are never written on save, and their relation options endpoint returns 404. The callback may run several times per request, so keep it cheap and return a real boolean. For example, use `Gate::allows('view-notes', $model)` rather than `Gate::inspect(...)`, whose `Response` object is always truthy and will never hide the field.
 
+## Plugins
+
+A plugin is a regular Composer package. Its service provider registers resources, scripts, and styles through the `Saddle` facade, and Laravel's package auto-discovery boots it automatically alongside your application.
+
+```php
+public function boot(): void
+{
+    Saddle::register([MoodBoardResource::class]);
+    Saddle::script('/vendor/mood-board/field.js');
+    Saddle::style('/vendor/mood-board/field.css');
+}
+```
+
+Publish compiled assets from the plugin's service provider to `public/vendor/{plugin}` using the standard `$this->publishes([...])` mechanism, then point `Saddle::script()` at the published path. Plugin scripts and stylesheets are loaded on every panel page after the core panel bundle.
+
+### Custom elements
+
+Plugins can ship their own field and column renderers as custom elements. On the PHP side:
+
+```php
+CustomField::make('mood')->tag('mood-picker')->rules('max:32'),
+CustomColumn::make('mood')->tag('mood-cell'),
+```
+
+The panel fulfils this contract: for fields, it sets the element's `value` and `field` DOM properties and listens for a `saddle:input` CustomEvent whose `detail` is the new value. For columns, it sets `value` and `column` DOM properties (read-only; no input event expected).
+
+A minimal vanilla custom element implementing the field contract:
+
+```js
+class MoodPicker extends HTMLElement {
+    static get observedAttributes() { return ['value']; }
+
+    connectedCallback() {
+        this._input = document.createElement('input');
+        this._input.addEventListener('input', () => {
+            this.dispatchEvent(new CustomEvent('saddle:input', {
+                bubbles: true,
+                detail: this._input.value.toUpperCase(),
+            }));
+        });
+        this.appendChild(this._input);
+    }
+
+    set value(v) { if (this._input) this._input.value = v ?? ''; }
+    get value() { return this._input?.value ?? ''; }
+}
+
+customElements.define('mood-picker', MoodPicker);
+```
+
+The contract is framework-agnostic. Anything that compiles to a standard custom element works: Vue's `defineCustomElement`, Lit, React or Svelte wrappers. Plugin authors are not tied to the panel's internals.
+
 ## Configuration
 
 `saddle:install` publishes `config/saddle.php`. Available keys:
@@ -204,7 +256,7 @@ The `workbench/` directory contains a minimal host application used by the test 
 - [x] Relations (BelongsTo)
 - [x] Table filters
 - [x] Roles and access (policy-driven)
-- [ ] Plugins
+- [x] Plugins
 - [ ] Multi-tenancy
 
 ## Stack
