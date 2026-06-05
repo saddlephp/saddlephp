@@ -11,7 +11,7 @@ use SaddlePHP\Support\ResourceDiscovery;
 
 class Saddle
 {
-    public const VERSION = '0.6.0';
+    public const VERSION = '0.6.1';
 
     /** @var array<int, class-string<resource>> */
     protected array $registered = [];
@@ -68,6 +68,31 @@ class Saddle
     public function greeting(): string
     {
         return "Saddle up, cowboy. There's a new admin panel in town.";
+    }
+
+    /**
+     * The brand accent color, validated before it is interpolated raw into the
+     * panel's inline <style> block. Only a bare hex value or a single CSS color
+     * function (rgb/hsl/oklch) with no structural characters is allowed; any
+     * other value (e.g. one trying to close the rule and inject CSS) falls back
+     * to the default.
+     */
+    public function accent(): string
+    {
+        $default = '#d9501f';
+        $accent = config('saddle.brand.accent', $default);
+
+        if (! is_string($accent)) {
+            return $default;
+        }
+
+        $accent = trim($accent);
+
+        if (preg_match('/^#[0-9a-fA-F]{3,8}$|^(rgb|hsl|oklch)\([^;{}<>]*\)$/', $accent) === 1) {
+            return $accent;
+        }
+
+        return $default;
     }
 
     /** @param array<int, class-string<resource>> $resources */
@@ -130,6 +155,16 @@ class Saddle
         return $this->tenant;
     }
 
+    /**
+     * Drop the bound tenant. On long-lived servers (Octane) the container
+     * singleton survives across requests, so the tenant must be reset between
+     * them or one request's tenant would leak into the next.
+     */
+    public function forgetTenant(): void
+    {
+        $this->tenant = null;
+    }
+
     /** @return array<int, array{group: string|null, items: array<int, array<string, mixed>>}> */
     public function nav(Request $request): array
     {
@@ -138,12 +173,15 @@ class Saddle
             ->groupBy(fn (string $resource) => $resource::$group ?? '')
             ->map(fn (Collection $resources, string $group) => [
                 'group' => $group === '' ? null : $group,
-                'items' => $resources->map(fn (string $resource) => [
+                // One broken resource (a throwing label/uriKey/etc.) must not take
+                // down the whole sidebar: build each item defensively, report the
+                // failure, and drop only that item while the group stands.
+                'items' => $resources->map(fn (string $resource) => rescue(fn () => [
                     'label' => $resource::label(),
                     'uriKey' => $resource::uriKey(),
                     'icon' => $resource::$icon,
                     'active' => $request->is($this->path().'/resources/'.$resource::uriKey().'*'),
-                ])->values()->all(),
+                ], null, report: true))->filter()->values()->all(),
             ])
             ->values()->all();
     }

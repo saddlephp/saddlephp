@@ -35,6 +35,8 @@ class InstallCommand extends Command
     protected function offerComposerHook(): void
     {
         if (! $this->input->isInteractive()) {
+            $this->line('  <fg=yellow>Note:</> In deploy scripts, run <fg=cyan>php artisan saddle:upgrade</> after composer updates to keep panel assets current.');
+
             return;
         }
 

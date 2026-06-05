@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace SaddlePHP;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Octane\Events\RequestReceived;
 use SaddlePHP\Console\InstallCommand;
 use SaddlePHP\Console\ResourceMakeCommand;
 use SaddlePHP\Console\UpgradeCommand;
@@ -28,6 +30,8 @@ class SaddleServiceProvider extends ServiceProvider
 
         $this->registerRoutes();
 
+        $this->resetTenantBetweenRequests();
+
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../config/saddle.php' => $this->app->configPath('saddle.php'),
@@ -42,6 +46,22 @@ class SaddleServiceProvider extends ServiceProvider
                 InstallCommand::class,
                 UpgradeCommand::class,
             ]);
+        }
+    }
+
+    /**
+     * On Octane the Saddle singleton outlives a single request, so the tenant
+     * bound during one request would otherwise carry into the next. Clear it
+     * when each fresh request is received. Guarded by class existence so the
+     * package never hard-depends on Octane.
+     */
+    protected function resetTenantBetweenRequests(): void
+    {
+        if (class_exists(RequestReceived::class)) {
+            Event::listen(
+                RequestReceived::class,
+                fn () => $this->app->make(Saddle::class)->forgetTenant(),
+            );
         }
     }
 

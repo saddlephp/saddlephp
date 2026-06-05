@@ -185,6 +185,60 @@ it('returns riders from all ranches when RiderResource is not tenant-scoped', fu
 });
 
 // ---------------------------------------------------------------------------
+// 7c. Cross-tenant FK on write: a ranch A member cannot POST a horse whose
+//     rider_id belongs to ranch B when RiderResource is tenant-scoped.
+//     Mirrors 7a — RiderResource::$tenant = 'ranch' with try/finally restore.
+// ---------------------------------------------------------------------------
+it('rejects a foreign ranch rider_id on store when RiderResource is tenant-scoped', function () {
+    $user = $this->actingAsUser();
+    $ranchA = makeRanchWithMember('Alpha Ranch', $user);
+    $ranchB = Ranch::factory()->create(['name' => 'Beta Ranch']);
+
+    $foreignRider = Rider::factory()->create(['name' => 'Bob', 'ranch_id' => $ranchB->id]);
+
+    RiderResource::$tenant = 'ranch';
+
+    try {
+        $this->post("/admin/{$ranchA->getRouteKey()}/resources/horses", [
+            'name' => 'Trespasser',
+            'rider_id' => $foreignRider->id,
+        ])->assertSessionHasErrors(['rider_id']);
+
+        $this->assertDatabaseMissing('horses', ['name' => 'Trespasser']);
+    } finally {
+        RiderResource::$tenant = null;
+    }
+});
+
+// ---------------------------------------------------------------------------
+// 7d. Control: a ranch A member CAN POST a horse with a ranch A rider_id even
+//     when RiderResource is tenant-scoped — the scoped exists rule passes.
+// ---------------------------------------------------------------------------
+it('accepts a same-ranch rider_id on store when RiderResource is tenant-scoped', function () {
+    $user = $this->actingAsUser();
+    $ranchA = makeRanchWithMember('Alpha Ranch', $user);
+
+    $localRider = Rider::factory()->create(['name' => 'Alice', 'ranch_id' => $ranchA->id]);
+
+    RiderResource::$tenant = 'ranch';
+
+    try {
+        $this->post("/admin/{$ranchA->getRouteKey()}/resources/horses", [
+            'name' => 'Homebound',
+            'rider_id' => $localRider->id,
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('horses', [
+            'name' => 'Homebound',
+            'rider_id' => $localRider->id,
+            'ranch_id' => $ranchA->id,
+        ]);
+    } finally {
+        RiderResource::$tenant = null;
+    }
+});
+
+// ---------------------------------------------------------------------------
 // 8. Tenant switching respects membership end to end
 // ---------------------------------------------------------------------------
 it('shows only the correct ranch horses when the same user switches tenant context', function () {

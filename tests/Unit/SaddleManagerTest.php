@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use SaddlePHP\Saddle;
+use Workbench\App\Models\Ranch;
 use Workbench\App\Saddle\HorseResource;
 
 it('reports its version', function () {
@@ -20,4 +21,15 @@ it('deduplicates registered resources', function () {
     $saddle->register([HorseResource::class]);
 
     expect($saddle->resources())->toHaveCount(1);
+});
+
+it('forgets the bound tenant so it cannot leak across long-lived requests', function () {
+    $ranch = Ranch::factory()->create(['name' => 'Dusty Creek Ranch']);
+    $saddle = new Saddle;
+
+    $saddle->useTenant($ranch);
+    expect($saddle->tenant())->not->toBeNull();
+
+    $saddle->forgetTenant();
+    expect($saddle->tenant())->toBeNull();
 });

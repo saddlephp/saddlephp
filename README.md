@@ -107,6 +107,8 @@ class HorseResource extends Resource
 
 Resources are discovered automatically by scanning `app/Saddle/` at boot, no manual registration needed.
 
+> **Reserved route keys.** The panel owns the static path segments `create` and `options` under each resource, so a record whose route key is literally `create` or `options` is not reachable by its edit/update/delete URLs. Use an integer key or a different slug for such records.
+
 ## Fields
 
 | Field | Description |
@@ -141,6 +143,10 @@ Filters are declared on the table via `->filters([...])`. On the index, the pane
 ## Authorization
 
 Saddle consumes standard Laravel policies. Register a policy for a model and the panel enforces it everywhere: index, forms, row actions, and relation pickers. With no policy registered, all abilities are allowed for every authenticated user. Roles stay in your application: any role package or homegrown layer that backs your policies works unchanged.
+
+### Lock the panel down
+
+Resources without a registered policy allow every authenticated user by default. Set `saddle.authorization.require_policy` to `true` to fail closed: resources without a policy become inaccessible rather than open. You can also add a gate middleware to `saddle.middleware` for a blanket check before any panel route runs. If your web guard is shared between end-users and administrators, one of these controls is essential.
 
 | Ability | Where it is checked |
 |---|---|
@@ -265,7 +271,7 @@ When the authenticated user belongs to more than one tenant, the panel sidebar s
 
 - **Do not expose the `$tenant` relation as a form field on a scoped resource.** The store controller stamps the relationship server-side, but an editable BelongsTo field pointing at the tenant relation on an update form would let a submitted value re-point the record to a different tenant.
 - **A saved relation label still renders on the edit form even when the related row falls outside the current scope.** `BelongsTo` resolves the current selection with an unscoped query so the label never disappears after a scope change. Only the option list for new selections is filtered.
-- **Changing the tenancy config requires `php artisan route:clear`**, because the `{tenant}` prefix is decided at boot. Long-running application servers (FPM workers kept alive across requests) must ensure that request state is reset between requests; the bound tenant lives on the Saddle singleton, which is resolved fresh per request under the default container lifetime.
+- **Changing the tenancy config requires `php artisan route:clear`**, because the `{tenant}` prefix is decided at boot. Long-running application servers (FPM workers kept alive across requests) must ensure that request state is reset between requests; the bound tenant lives on the Saddle singleton, which is resolved fresh per request under the default container lifetime. When Octane is installed, the panel resets the bound tenant automatically via the Octane request-lifecycle hooks.
 
 ## Configuration
 
@@ -288,6 +294,8 @@ When the authenticated user belongs to more than one tenant, the panel sidebar s
 | `saddle:install` | Publish config, publish panel assets, create `app/Saddle/`. Offers to add `saddle:upgrade` to `composer post-update-cmd` so assets stay fresh. |
 | `saddle:upgrade` | Re-publish panel assets. Run after every package update. |
 | `saddle:resource NameResource --model=Name` | Scaffold a new resource class. The `--model` option is optional; it is inferred from the resource name when omitted. |
+
+**Deploy note.** Add `php artisan saddle:upgrade` to your deploy script after `composer install` or `composer update`. The panel displays a warning banner in the UI when the published assets are out of sync with the installed package version.
 
 ## Local development
 

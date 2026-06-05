@@ -6,6 +6,7 @@ namespace SaddlePHP\Tables\Columns;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use LogicException;
 
 abstract class Column
 {
@@ -33,6 +34,10 @@ abstract class Column
 
     public function sortable(bool $sortable = true): static
     {
+        if ($sortable) {
+            $this->assertNotRelationColumn('sorted');
+        }
+
         $this->sortable = $sortable;
 
         return $this;
@@ -40,9 +45,29 @@ abstract class Column
 
     public function searchable(bool $searchable = true): static
     {
+        if ($searchable) {
+            $this->assertNotRelationColumn('searched');
+        }
+
         $this->searchable = $searchable;
 
         return $this;
+    }
+
+    /**
+     * Relation (dot-path) columns read through a loaded relation in PHP and
+     * have no real database column to target, so sorting or searching them
+     * would later compile to invalid SQL and 500 the index. Fail loudly at
+     * build time instead.
+     */
+    protected function assertNotRelationColumn(string $verb): void
+    {
+        if (str_contains($this->name, '.')) {
+            throw new LogicException(
+                "Column [{$this->name}] is a relation column and cannot be {$verb}. ".
+                'Relation (dot-path) columns are not sortable or searchable yet.'
+            );
+        }
     }
 
     public function name(): string

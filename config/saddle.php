@@ -31,4 +31,18 @@ return [
         'model' => null,
         'relationship' => 'users',
     ],
+
+    /*
+     * Authorization posture for resources that have no registered policy.
+     *
+     * By default Saddle is fail-open: a resource without a policy grants full
+     * CRUD to any authenticated panel user. This keeps simple panels
+     * frictionless. Set 'require_policy' to true to flip to fail-closed ,
+     * resources without a policy then deny every ability (403), so a forgotten
+     * policy can never silently expose data. Resources that DO register a
+     * policy are unaffected either way.
+     */
+    'authorization' => [
+        'require_policy' => false,
+    ],
 ];

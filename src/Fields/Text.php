@@ -19,11 +19,21 @@ class Text extends Field
 
     protected function typeRules(): array
     {
-        return match ($this->type) {
+        $base = match ($this->type) {
             'email' => ['email'],
             'number' => ['numeric'],
             default => ['string'],
         };
+
+        // Bound string-ish input by default so an unbounded value can't be
+        // submitted. Skipped for numeric inputs, where `max` would cap the
+        // VALUE rather than the length. Appended before custom rules, so a
+        // stricter author-supplied max still composes and wins.
+        if ($this->type !== 'number') {
+            $base[] = 'max:65535';
+        }
+
+        return $base;
     }
 
     protected function meta(): array

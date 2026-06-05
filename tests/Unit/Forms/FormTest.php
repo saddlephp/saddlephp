@@ -17,7 +17,7 @@ function horseForm(): Form
 
 it('aggregates rules keyed by field name', function () {
     expect(horseForm()->rules())->toBe([
-        'name' => ['required', 'string'],
+        'name' => ['required', 'string', 'max:65535'],
         'is_saddled' => ['nullable', 'boolean'],
     ]);
 });
