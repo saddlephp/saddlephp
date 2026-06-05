@@ -51,3 +51,9 @@ it('uses the default value when no record is given', function () {
 it('honors an explicit label', function () {
     expect(Text::make('is_saddled')->label('Saddled?')->toArray()['label'])->toBe('Saddled?');
 });
+
+it('does not cap numeric input values with the length default', function () {
+    expect(Text::make('age')->type('number')->getRules())
+        ->toBe(['nullable', 'numeric'])
+        ->not->toContain('max:65535');
+});
