@@ -21,11 +21,17 @@ it('serializes to a payload with derived label and defaults', function () {
 });
 
 it('builds validation rules from required, type and custom rules', function () {
+    // The default max:65535 is appended before custom rules so a stricter
+    // author-supplied max (120) still composes and wins for longer values.
     expect(Text::make('name')->required()->rules('max:120')->getRules())
-        ->toBe(['required', 'string', 'max:120']);
+        ->toBe(['required', 'string', 'max:65535', 'max:120']);
 
     expect(Text::make('email')->type('email')->getRules())
-        ->toBe(['nullable', 'email']);
+        ->toBe(['nullable', 'email', 'max:65535']);
+});
+
+it('bounds text length by default with max:65535', function () {
+    expect(Text::make('name')->getRules())->toContain('max:65535');
 });
 
 it('resolves a value from a record and fills one back', function () {

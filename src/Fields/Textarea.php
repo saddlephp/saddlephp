@@ -19,7 +19,10 @@ class Textarea extends Field
 
     protected function typeRules(): array
     {
-        return ['string'];
+        // Bound the input by default so an unbounded string can't be submitted.
+        // Appended before custom rules, so a stricter author-supplied max still
+        // composes and wins for longer values.
+        return ['string', 'max:65535'];
     }
 
     protected function meta(): array

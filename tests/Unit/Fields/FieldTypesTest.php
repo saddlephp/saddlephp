@@ -9,12 +9,12 @@ use SaddlePHP\Fields\Toggle;
 use SaddlePHP\Tests\Fixtures\Breed;
 use Workbench\App\Models\Horse;
 
-it('textarea exposes rows meta and string rule', function () {
+it('textarea exposes rows meta and string rule bounded by default', function () {
     $payload = Textarea::make('notes')->rows(6)->toArray();
 
     expect($payload['component'])->toBe('textarea-field')
         ->and($payload['rows'])->toBe(6)
-        ->and(Textarea::make('notes')->getRules())->toBe(['nullable', 'string']);
+        ->and(Textarea::make('notes')->getRules())->toBe(['nullable', 'string', 'max:65535']);
 });
 
 it('select normalizes assoc-array options', function () {
