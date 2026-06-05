@@ -222,3 +222,19 @@ it('serializes columnSpan on a leaf inside a grid', function () {
     expect($payload[0]['schema'][0]['span'])->toBe(2)
         ->and($payload[0]['schema'][1])->not->toHaveKey('span');
 });
+
+it('excludes hidden leaves inside a tab', function () {
+    $payload = Form::make()->schema([
+        Tabs::make([
+            Tab::make('Care')->schema([
+                Text::make('name'),
+                Text::make('secret')->canSee(fn () => false),
+            ]),
+        ]),
+    ])->toInertia();
+
+    $schema = $payload[0]['tabs'][0]['schema'];
+
+    expect($schema)->toHaveCount(1)
+        ->and($schema[0]['name'])->toBe('name');
+});
