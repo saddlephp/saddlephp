@@ -12,7 +12,7 @@
 Vue**. Round up your Eloquent models into polished resource panels, with form and table builders, roles and access,
 plugins, and multi-tenancy.
 
-> **Status: v0.6 lands multi-tenancy, completing the launch roadmap.** The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
+> **Status: v0.7 adds form layout containers, file uploads, and new field types.** The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
 
 ## Installation
 
@@ -39,12 +39,18 @@ use App\Models\Horse;
 use Illuminate\Http\Request;
 use SaddlePHP\Fields\BelongsTo;
 use SaddlePHP\Fields\Date;
+use SaddlePHP\Fields\DateTime;
+use SaddlePHP\Fields\FileUpload;
+use SaddlePHP\Fields\Markdown;
 use SaddlePHP\Fields\Number;
 use SaddlePHP\Fields\Select;
 use SaddlePHP\Fields\Text;
-use SaddlePHP\Fields\Textarea;
 use SaddlePHP\Fields\Toggle;
 use SaddlePHP\Forms\Form;
+use SaddlePHP\Forms\Layout\Grid;
+use SaddlePHP\Forms\Layout\Section;
+use SaddlePHP\Forms\Layout\Tab;
+use SaddlePHP\Forms\Layout\Tabs;
 use SaddlePHP\Resource;
 use SaddlePHP\Tables\Columns\BadgeColumn;
 use SaddlePHP\Tables\Columns\BooleanColumn;
@@ -66,18 +72,30 @@ class HorseResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Text::make('name')->required()->rules('max:120'),
-            Select::make('breed')->options([
-                'quarter' => 'Quarter Horse',
-                'mustang' => 'Mustang',
-                'appaloosa' => 'Appaloosa',
+            Section::make('Identity')->description('Who this horse is on the ranch.')->schema([
+                Grid::make(2)->schema([
+                    Text::make('name')->required()->rules('max:120'),
+                    Select::make('breed')->options([
+                        'quarter' => 'Quarter Horse',
+                        'mustang' => 'Mustang',
+                        'appaloosa' => 'Appaloosa',
+                    ]),
+                ]),
+                FileUpload::make('photo')->image()->directory('horses')->maxSize(4096),
             ]),
-            Textarea::make('notes')->rows(3)
-                ->canSee(fn (Request $request) => (bool) $request->user()?->is_admin),
-            Toggle::make('is_saddled'),
-            BelongsTo::make('rider')->searchable(),
-            Number::make('age')->integer()->min(0)->max(50),
-            Date::make('foaled_on'),
+            Tabs::make([
+                Tab::make('Care')->schema([
+                    Markdown::make('notes')
+                        ->canSee(fn (Request $request) => (bool) $request->user()?->is_admin),
+                    DateTime::make('last_vet_visit'),
+                    Number::make('age')->integer()->min(0)->max(50),
+                    Date::make('foaled_on'),
+                ]),
+                Tab::make('Assignment')->schema([
+                    BelongsTo::make('rider')->searchable(),
+                    Toggle::make('is_saddled'),
+                ]),
+            ]),
         ]);
     }
 
@@ -109,6 +127,46 @@ Resources are discovered automatically by scanning `app/Saddle/` at boot, no man
 
 > **Reserved route keys.** The panel owns the static path segments `create` and `options` under each resource, so a record whose route key is literally `create` or `options` is not reachable by its edit/update/delete URLs. Use an integer key or a different slug for such records.
 
+## Form layout
+
+Fields can be grouped into layout containers. Containers nest freely inside one another.
+
+```php
+use SaddlePHP\Forms\Layout\Grid;
+use SaddlePHP\Forms\Layout\Section;
+use SaddlePHP\Forms\Layout\Tab;
+use SaddlePHP\Forms\Layout\Tabs;
+
+$form->schema([
+    Section::make('Identity')->description('Who this horse is on the ranch.')->schema([
+        Grid::make(2)->schema([
+            Text::make('name')->required(),
+            Select::make('breed')->options([...]),
+        ]),
+        FileUpload::make('photo')->image()->directory('horses')->maxSize(4096),
+    ]),
+    Tabs::make([
+        Tab::make('Care')->schema([
+            Markdown::make('notes'),
+            DateTime::make('last_vet_visit'),
+        ]),
+        Tab::make('Assignment')->schema([
+            BelongsTo::make('rider')->searchable(),
+            Toggle::make('is_saddled'),
+        ]),
+    ]),
+]);
+```
+
+| Container | Description |
+|---|---|
+| `Section` | A labeled card group. `description(string)` adds a subtitle. Accepts `schema([...])` of fields and nested containers. |
+| `Grid` | Arranges its children in a CSS grid. `Grid::make(2)` creates a two-column grid. Fields inside a Grid use `columnSpan(int)` to span multiple columns. |
+| `Tabs` | Wraps one or more `Tab` containers in a tabbed interface. |
+| `Tab` | A single pane inside a `Tabs` group. `Tab::make('Label')->schema([...])`. When any field inside a tab fails validation, the tab shows an error indicator so users can locate the problem without switching to every pane. |
+
+**Flat schemas still work.** Passing a plain list of fields to `$form->schema([...])` with no containers is fully supported and produces the same layout as before. Validation and authorization treat fields identically regardless of whether they live inside a container or at the top level.
+
 ## Fields
 
 | Field | Description |
@@ -120,6 +178,9 @@ Resources are discovered automatically by scanning `app/Saddle/` at boot, no man
 | `BelongsTo` | Relation select. The argument is the Eloquent relation method name on the model (`BelongsTo::make('rider')` reads `$model->rider()` and submits the foreign key). Option labels resolve from `titleAttribute('name')`, falling back to the related model's registered resource `$title`, then its key. If neither a `titleAttribute()` nor a registered resource is available, options are labeled by primary key, so set `titleAttribute('name')` for readable labels. Options are capped at 100 by default; override with `limit(int)`. `searchable()` switches to an async picker that searches the related table as you type via an authenticated endpoint; on edit, only the current selection is embedded (the full list is not loaded). `modifyOptionsQuery(fn ($query) => ...)` scopes the option list for tenancy or visibility; it applies to listed and searched options, while a record's saved selection keeps rendering its label even when it falls outside the scope. |
 | `Number` | Numeric input. Modifiers: `min()`, `max()`, `step()`, `integer()`. |
 | `Date` | Date input. Values render as `Y-m-d`. |
+| `DateTime` | Date-and-time input (`datetime-local`). Values are stored and read back via your model's datetime cast; a `DateTimeInterface` value is formatted to `Y-m-d\TH:i` for the browser. |
+| `Markdown` | Textarea with a formatting toolbar. Stored as a plain string and bounded to 65 535 characters (equivalent to a MySQL `TEXT` column). |
+| `FileUpload` | Multipart file upload. Modifiers: `disk(string)`, `directory(string)`, `image()` (restricts to image types), `acceptedTypes(array)` (MIME extensions, e.g. `['pdf', 'docx']`), `maxSize(int $kilobytes)`. The stored value is the file path returned by `Storage::put`. On the edit form: leaving the input untouched keeps the existing file, clearing it stores `null`, and picking a new file replaces the path. Replaced or cleared files are not deleted from disk automatically. |
 
 ## Columns
 
@@ -286,6 +347,8 @@ When the authenticated user belongs to more than one tenant, the panel sidebar s
 | `per_page` | `25` | Default rows per page on index tables. |
 | `brand.name` | `'Saddle'` | Panel name (sidebar + browser tab). |
 | `brand.accent` | `'#d9501f'` | Accent colour (buttons, active states). |
+| `uploads.disk` | `'public'` | Default filesystem disk used by `FileUpload` fields when no per-field `disk()` is set. |
+| `uploads.directory` | `'saddle'` | Default upload directory within the disk when no per-field `directory()` is set. |
 
 ## Commands
 
@@ -318,6 +381,7 @@ The `workbench/` directory contains a minimal host application used by the test 
 - [x] Roles and access (policy-driven)
 - [x] Plugins
 - [x] Multi-tenancy
+- [x] Form layout and uploads
 
 ## Stack
 

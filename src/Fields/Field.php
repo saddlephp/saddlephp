@@ -28,6 +28,9 @@ abstract class Field
 
     protected ?string $helper = null;
 
+    /** Column span inside a Grid. Null keeps the flat payload byte-identical to v0.6. */
+    protected ?int $span = null;
+
     final public function __construct(protected string $name) {}
 
     public static function make(string $name): static
@@ -73,6 +76,14 @@ abstract class Field
     public function helper(string $helper): static
     {
         $this->helper = $helper;
+
+        return $this;
+    }
+
+    /** Set how many Grid columns this field spans. */
+    public function columnSpan(int $span): static
+    {
+        $this->span = $span;
 
         return $this;
     }
@@ -152,7 +163,7 @@ abstract class Field
             'placeholder' => $this->placeholder,
             'helper' => $this->helper,
             'value' => $record ? $this->resolve($record) : $this->default,
-        ], $this->meta());
+        ], $this->meta(), $this->span === null ? [] : ['span' => $this->span]);
     }
 
     /** @return array<string, mixed> */

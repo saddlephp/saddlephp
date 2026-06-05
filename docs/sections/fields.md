@@ -68,6 +68,43 @@ A date input. Values are resolved as `Y-m-d` strings (any `DateTimeInterface` at
 Date::make('foaled_on'),
 ```
 
+### DateTime
+
+A date-and-time input (`datetime-local`). On save the value is passed directly to the model; use a `datetime` cast on the attribute so Eloquent stores it correctly. When resolving for the edit form, a `DateTimeInterface` value is formatted to `Y-m-d\TH:i` automatically.
+
+```php
+DateTime::make('last_vet_visit'),
+```
+
+### Markdown
+
+A textarea with a formatting toolbar. The stored value is a plain string bounded to 65 535 characters (matches a MySQL `TEXT` column).
+
+```php
+Markdown::make('notes'),
+```
+
+All modifiers inherited from `Textarea` (`rows()`) and the common base (`required()`, `rules()`, `placeholder()`, `helper()`, `canSee()`, `label()`) apply as usual.
+
+### FileUpload
+
+A multipart file upload. The stored value is the file path returned by `Storage::put`.
+
+```php
+FileUpload::make('photo')->image()->directory('horses')->maxSize(4096),
+FileUpload::make('attachment')->acceptedTypes(['pdf', 'docx'])->maxSize(10240),
+```
+
+| Modifier | Effect |
+|---|---|
+| `disk(string)` | Storage disk to write to. Defaults to `saddle.uploads.disk` from config. |
+| `directory(string)` | Sub-directory within the disk. Defaults to `saddle.uploads.directory` from config. |
+| `image()` | Restricts the upload to image files (adds the `image` validation rule and sets the browser `accept` attribute to `image/*`). |
+| `acceptedTypes(array)` | List of accepted MIME extensions, e.g. `['pdf', 'docx']`. Adds a `mimes:` validation rule and sets the browser `accept` attribute accordingly. |
+| `maxSize(int $kilobytes)` | Maximum file size in kilobytes (maps to Laravel's `max` file rule). |
+
+**Edit-form behavior.** When a file is already stored, leaving the upload input untouched keeps the existing file. Clearing the input stores `null`. Picking a new file replaces the stored path. Replaced or cleared files are not deleted from disk automatically.
+
 ### BelongsTo
 
 A relation select for `BelongsTo` relationships. The argument is the Eloquent relation method name on the model.

@@ -14,13 +14,14 @@ class Horse extends Model
     /** @use HasFactory<HorseFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'breed', 'notes', 'is_saddled', 'rider_id', 'ranch_id', 'age', 'foaled_on'];
+    protected $fillable = ['name', 'breed', 'notes', 'is_saddled', 'rider_id', 'ranch_id', 'age', 'foaled_on', 'photo', 'last_vet_visit'];
 
     protected function casts(): array
     {
         return [
             'is_saddled' => 'boolean',
             'foaled_on' => 'date',
+            'last_vet_visit' => 'datetime',
         ];
     }
 

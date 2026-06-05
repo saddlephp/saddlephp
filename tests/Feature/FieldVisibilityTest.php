@@ -11,8 +11,8 @@ it('shows the full form to admins', function () {
     $this->get('/admin/resources/horses/create')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->count('fields', 7)
-            ->where('fields.2.name', 'notes')
+            ->where('fields', fn ($fields) => count(flattenFields(collect($fields)->all())) === 9
+                && findField(collect($fields)->all(), 'notes') !== null)
         );
 });
 
@@ -22,8 +22,8 @@ it('hides gated fields from non-admins', function () {
     $this->get('/admin/resources/horses/create')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->count('fields', 6)
-            ->where('fields', fn ($fields) => ! collect($fields)->pluck('name')->contains('notes'))
+            ->where('fields', fn ($fields) => count(flattenFields(collect($fields)->all())) === 8
+                && findField(collect($fields)->all(), 'notes') === null)
         );
 });
 
@@ -62,6 +62,6 @@ it('hides gated field values on the edit form from non-admins', function () {
         ->assertOk()
         ->assertDontSee('secret')
         ->assertInertia(fn (Assert $page) => $page
-            ->where('fields', fn ($fields) => ! collect($fields)->pluck('name')->contains('notes'))
+            ->where('fields', fn ($fields) => findField(collect($fields)->all(), 'notes') === null)
         );
 });

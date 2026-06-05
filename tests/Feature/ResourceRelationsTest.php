@@ -13,11 +13,16 @@ it('serves an async relation picker on the create form', function () {
     $this->get('/admin/resources/horses/create')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->where('fields.4.component', 'search-select-field')
-            ->where('fields.4.name', 'rider_id')
-            ->where('fields.4.label', 'Rider')
-            ->where('fields.4.async', true)
-            ->count('fields.4.options', 0)
+            ->where('fields', function ($fields) {
+                $rider = findField(collect($fields)->all(), 'rider_id');
+
+                return $rider !== null
+                    && $rider['component'] === 'search-select-field'
+                    && $rider['name'] === 'rider_id'
+                    && $rider['label'] === 'Rider'
+                    && $rider['async'] === true
+                    && $rider['options'] === [];
+            })
         );
 });
 
@@ -81,9 +86,14 @@ it('embeds the current selection on the edit form', function () {
     $this->get("/admin/resources/horses/{$horse->id}/edit")
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->count('fields.4.options', 1)
-            ->where('fields.4.options.0.value', $tex->id)
-            ->where('fields.4.options.0.label', 'Tex')
-            ->where('fields.4.value', $tex->id)
+            ->where('fields', function ($fields) use ($tex) {
+                $rider = findField(collect($fields)->all(), 'rider_id');
+
+                return $rider !== null
+                    && count($rider['options']) === 1
+                    && $rider['options'][0]['value'] === $tex->id
+                    && $rider['options'][0]['label'] === 'Tex'
+                    && $rider['value'] === $tex->id;
+            })
         );
 });

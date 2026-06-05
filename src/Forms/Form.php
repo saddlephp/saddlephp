@@ -6,11 +6,12 @@ namespace SaddlePHP\Forms;
 
 use Illuminate\Database\Eloquent\Model;
 use SaddlePHP\Fields\Field;
+use SaddlePHP\Forms\Layout\Layout;
 
 class Form
 {
-    /** @var array<int, Field> */
-    protected array $fields = [];
+    /** @var array<int, Field|Layout> Raw schema: leaf fields and/or layout containers. */
+    protected array $schema = [];
 
     protected ?Model $model = null;
 
@@ -21,20 +22,51 @@ class Form
         return new self;
     }
 
-    /** @param array<int, Field> $fields */
+    /** @param array<int, Field|Layout> $fields */
     public function schema(array $fields): static
     {
-        $this->fields = $fields;
+        $this->schema = $fields;
 
         return $this;
     }
 
-    /** @return array<int, Field> */
+    /**
+     * The leaf fields of the schema, depth-first in declaration order. Layout
+     * containers are walked through; only fields are returned. This is the
+     * public contract every consumer (rules, fill, validation) relies on.
+     *
+     * @return array<int, Field>
+     */
     public function fields(): array
     {
         $this->prepare();
 
-        return $this->fields;
+        return $this->leaves($this->schema);
+    }
+
+    /**
+     * Flatten the schema tree to its leaf fields, depth-first.
+     *
+     * @param  array<int, Field|Layout>  $nodes
+     * @return array<int, Field>
+     */
+    protected function leaves(array $nodes): array
+    {
+        $leaves = [];
+
+        foreach ($nodes as $node) {
+            if ($node instanceof Layout) {
+                foreach ($this->leaves($node->children()) as $leaf) {
+                    $leaves[] = $leaf;
+                }
+
+                continue;
+            }
+
+            $leaves[] = $node;
+        }
+
+        return $leaves;
     }
 
     /**
@@ -75,7 +107,7 @@ class Form
             return;
         }
 
-        foreach ($this->fields as $field) {
+        foreach ($this->leaves($this->schema) as $field) {
             $field->bound($this->model);
         }
 
@@ -100,11 +132,48 @@ class Form
         }
     }
 
-    /** @return array<int, array<string, mixed>> */
+    /**
+     * Serialize the schema to a tree for the frontend. Leaf fields serialize
+     * exactly as v0.6; layout containers serialize as `{layout, ..., schema}`
+     * nodes with recursively-serialized children. Hidden (canSee-false) leaves
+     * are excluded everywhere, so a flat schema produces the identical v0.6
+     * payload. Containers are never bound or validated themselves.
+     *
+     * @return array<int, array<string, mixed>>
+     */
     public function toInertia(?Model $record = null): array
     {
-        return collect($this->visibleFields())
-            ->map(fn (Field $field) => $field->toArray($record))
-            ->values()->all();
+        $this->prepare();
+
+        return $this->serializeNodes($this->schema, $record);
+    }
+
+    /**
+     * @param  array<int, Field|Layout>  $nodes
+     * @return array<int, array<string, mixed>>
+     */
+    protected function serializeNodes(array $nodes, ?Model $record): array
+    {
+        $request = app('request');
+        $serialized = [];
+
+        foreach ($nodes as $node) {
+            if ($node instanceof Layout) {
+                $serialized[] = $node->toInertia(
+                    $record,
+                    fn (array $children) => $this->serializeNodes($children, $record),
+                );
+
+                continue;
+            }
+
+            if (! $node->visibleTo($request)) {
+                continue;
+            }
+
+            $serialized[] = $node->toArray($record);
+        }
+
+        return array_values($serialized);
     }
 }
