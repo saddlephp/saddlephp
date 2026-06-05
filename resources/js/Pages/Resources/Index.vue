@@ -44,6 +44,10 @@ function destroy() {
     router.delete(`${base}/${deleting.value.id}`, { onFinish: () => (deleting.value = null) });
 }
 
+function paginatorLabel(raw) {
+    return raw.replace(/&laquo;\s*/g, '‹ ').replace(/\s*&raquo;/g, ' ›');
+}
+
 const badgeStyles = {
     accent: 'bg-accent/10 text-accent',
     ink: 'bg-ink text-white',
@@ -155,8 +159,7 @@ function badgeClass(column, value) {
                         :href="link.url ?? '#'"
                         class="rounded border px-2 py-1"
                         :class="link.active ? 'border-ink bg-ink text-white' : 'border-line bg-bg'"
-                        v-html="link.label"
-                    />
+                    >{{ paginatorLabel(link.label) }}</Link>
                 </div>
             </div>
         </div>
