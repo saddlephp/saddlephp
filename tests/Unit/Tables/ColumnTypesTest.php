@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use SaddlePHP\Tables\Columns\BadgeColumn;
 use SaddlePHP\Tables\Columns\BooleanColumn;
+use SaddlePHP\Tables\Columns\TextColumn;
 use Workbench\App\Models\Horse;
 
 it('badge serializes its type and color map', function () {
@@ -32,4 +33,26 @@ it('boolean serializes its type and resolves to a real bool', function () {
 
     $horse->age = 0;
     expect(BooleanColumn::make('age')->resolve($horse))->toBeFalse();
+});
+
+it('refuses to make a relation column sortable', function () {
+    TextColumn::make('rider.name')->sortable();
+})->throws(LogicException::class, 'rider.name');
+
+it('refuses to make a relation column searchable', function () {
+    TextColumn::make('rider.name')->searchable();
+})->throws(LogicException::class, 'rider.name');
+
+it('allows plain columns to be sortable and searchable', function () {
+    $column = TextColumn::make('name')->sortable()->searchable();
+
+    expect($column->isSortable())->toBeTrue()
+        ->and($column->isSearchable())->toBeTrue();
+});
+
+it('never throws when a relation column disables sorting or searching', function () {
+    $column = TextColumn::make('rider.name')->sortable(false)->searchable(false);
+
+    expect($column->isSortable())->toBeFalse()
+        ->and($column->isSearchable())->toBeFalse();
 });
