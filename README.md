@@ -106,7 +106,7 @@ class HorseResource extends Resource
 }
 ```
 
-Resources are discovered automatically by scanning `app/Saddle/` at boot — no manual registration needed.
+Resources are discovered automatically by scanning `app/Saddle/` at boot, no manual registration needed.
 
 ## Fields
 
@@ -193,10 +193,11 @@ A minimal vanilla custom element implementing the field contract:
 
 ```js
 class MoodPicker extends HTMLElement {
-    static get observedAttributes() { return ['value']; }
-
     connectedCallback() {
+        // The panel may set the value property before the element is
+        // connected, so seed the input from whatever arrived early.
         this._input = document.createElement('input');
+        this._input.value = this._value ?? '';
         this._input.addEventListener('input', () => {
             this.dispatchEvent(new CustomEvent('saddle:input', {
                 bubbles: true,
@@ -206,12 +207,18 @@ class MoodPicker extends HTMLElement {
         this.appendChild(this._input);
     }
 
-    set value(v) { if (this._input) this._input.value = v ?? ''; }
-    get value() { return this._input?.value ?? ''; }
+    set value(v) {
+        this._value = v ?? '';
+        if (this._input) this._input.value = this._value;
+    }
+
+    get value() { return this._input ? this._input.value : (this._value ?? ''); }
 }
 
 customElements.define('mood-picker', MoodPicker);
 ```
+
+Define elements at the top level of your script; the browser upgrades any matching elements the panel has already rendered as soon as `customElements.define` runs, so load order never matters.
 
 The contract is framework-agnostic. Anything that compiles to a standard custom element works: Vue's `defineCustomElement`, Lit, React or Svelte wrappers. Plugin authors are not tied to the panel's internals.
 
