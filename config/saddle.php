@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 return [
-    'path' => 'admin',
+    'path' => 'admin', // Change this to make your site more secure! if you want :)
 
     'middleware' => ['web', 'auth'],
 
