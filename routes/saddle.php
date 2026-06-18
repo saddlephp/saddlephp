@@ -11,8 +11,11 @@ use SaddlePHP\Http\Controllers\ResourceOptionsController;
 use SaddlePHP\Http\Controllers\ResourceStoreController;
 use SaddlePHP\Http\Controllers\ResourceUpdateController;
 use SaddlePHP\Http\Controllers\ResourceViewController;
+use SaddlePHP\Http\Controllers\RelationDestroyController;
+use SaddlePHP\Http\Controllers\RelationEditController;
 use SaddlePHP\Http\Controllers\RelationIndexController;
 use SaddlePHP\Http\Controllers\RelationStoreController;
+use SaddlePHP\Http\Controllers\RelationUpdateController;
 
 Route::get('/', DashboardController::class)->name('dashboard');
 
@@ -36,3 +39,6 @@ Route::delete('/resources/{resourceKey}/{record}', ResourceDestroyController::cl
 // Relation managers: nested under a parent record, scoped through its HasMany.
 Route::get('/resources/{resourceKey}/{record}/relations/{relation}', RelationIndexController::class)->name('resources.relations.index')->where('record', $recordKey);
 Route::post('/resources/{resourceKey}/{record}/relations/{relation}', RelationStoreController::class)->name('resources.relations.store')->where('record', $recordKey);
+Route::get('/resources/{resourceKey}/{record}/relations/{relation}/{related}/edit', RelationEditController::class)->name('resources.relations.edit')->where('record', $recordKey);
+Route::put('/resources/{resourceKey}/{record}/relations/{relation}/{related}', RelationUpdateController::class)->name('resources.relations.update')->where('record', $recordKey);
+Route::delete('/resources/{resourceKey}/{record}/relations/{relation}/{related}', RelationDestroyController::class)->name('resources.relations.destroy')->where('record', $recordKey);

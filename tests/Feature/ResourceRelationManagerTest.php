@@ -76,6 +76,74 @@ it('forbids creating when the related policy denies create', function () {
     expect($ranch->horses()->count())->toBe(0);
 });
 
+it('returns a bound form schema for editing a related record', function () {
+    $this->actingAsUser();
+    $ranch = Ranch::factory()->create();
+    $horse = $ranch->horses()->create(['name' => 'Cisco']);
+
+    $response = $this->getJson("/admin/resources/ranches/{$ranch->id}/relations/horses/{$horse->id}/edit")
+        ->assertOk()
+        ->assertJsonPath('record.id', $horse->id);
+
+    expect(findField($response->json('fields'), 'name')['value'])->toBe('Cisco');
+});
+
+it('404s editing a record that belongs to another parent', function () {
+    $this->actingAsUser();
+    $ranchA = Ranch::factory()->create();
+    $ranchB = Ranch::factory()->create();
+    $horseB = $ranchB->horses()->create(['name' => 'Dakota']);
+
+    $this->getJson("/admin/resources/ranches/{$ranchA->id}/relations/horses/{$horseB->id}/edit")
+        ->assertNotFound();
+});
+
+it('updates a related record', function () {
+    $this->actingAsUser();
+    $ranch = Ranch::factory()->create();
+    $horse = $ranch->horses()->create(['name' => 'Cisco']);
+
+    $this->put("/admin/resources/ranches/{$ranch->id}/relations/horses/{$horse->id}", ['name' => 'Dakota'])
+        ->assertRedirect();
+
+    expect($horse->refresh()->name)->toBe('Dakota');
+});
+
+it('404s updating another parent\'s related record', function () {
+    $this->actingAsUser();
+    $ranchA = Ranch::factory()->create();
+    $ranchB = Ranch::factory()->create();
+    $horseB = $ranchB->horses()->create(['name' => 'Dakota']);
+
+    $this->put("/admin/resources/ranches/{$ranchA->id}/relations/horses/{$horseB->id}", ['name' => 'X'])
+        ->assertNotFound();
+
+    expect($horseB->refresh()->name)->toBe('Dakota');
+});
+
+it('deletes a related record', function () {
+    $this->actingAsUser();
+    $ranch = Ranch::factory()->create();
+    $horse = $ranch->horses()->create(['name' => 'Cisco']);
+
+    $this->delete("/admin/resources/ranches/{$ranch->id}/relations/horses/{$horse->id}")
+        ->assertRedirect();
+
+    expect($ranch->horses()->count())->toBe(0);
+});
+
+it('404s deleting another parent\'s related record', function () {
+    $this->actingAsUser();
+    $ranchA = Ranch::factory()->create();
+    $ranchB = Ranch::factory()->create();
+    $horseB = $ranchB->horses()->create(['name' => 'Dakota']);
+
+    $this->delete("/admin/resources/ranches/{$ranchA->id}/relations/horses/{$horseB->id}")
+        ->assertNotFound();
+
+    expect($horseB->fresh())->not->toBeNull();
+});
+
 class DenyHorseCreatePolicy
 {
     public function viewAny(User $user): bool
