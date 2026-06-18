@@ -90,6 +90,12 @@ abstract class Resource
         return [];
     }
 
+    /** @return array<int, class-string<RelationManager>> */
+    public static function relations(): array
+    {
+        return [];
+    }
+
     public static function makeForm(): Form
     {
         return static::form(Form::make()->model(static::newModel()));
