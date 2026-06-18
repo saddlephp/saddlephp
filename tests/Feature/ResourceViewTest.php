@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Gate;
 use Inertia\Testing\AssertableInertia as Assert;
+use SaddlePHP\Saddle;
 use Workbench\App\Models\Horse;
+use Workbench\App\Models\Ranch;
 use Workbench\App\Models\User;
+use Workbench\App\Saddle\RanchResource;
 
 it('renders the view page with display values', function () {
     $this->actingAsUser();
@@ -37,9 +40,9 @@ it('403s when the view ability is denied by policy', function () {
 });
 
 it('includes registered relation managers on the view page', function () {
-    app(\SaddlePHP\Saddle::class)->register([\Workbench\App\Saddle\RanchResource::class]);
+    app(Saddle::class)->register([RanchResource::class]);
     $this->actingAsUser();
-    $ranch = \Workbench\App\Models\Ranch::factory()->create();
+    $ranch = Ranch::factory()->create();
     $ranch->horses()->create(['name' => 'Cisco']);
 
     $this->get("/admin/resources/ranches/{$ranch->id}")

@@ -2,6 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use SaddlePHP\Http\Controllers\DashboardController;
+use SaddlePHP\Http\Controllers\RelationDestroyController;
+use SaddlePHP\Http\Controllers\RelationEditController;
+use SaddlePHP\Http\Controllers\RelationIndexController;
+use SaddlePHP\Http\Controllers\RelationStoreController;
+use SaddlePHP\Http\Controllers\RelationUpdateController;
 use SaddlePHP\Http\Controllers\ResourceActionController;
 use SaddlePHP\Http\Controllers\ResourceCreateController;
 use SaddlePHP\Http\Controllers\ResourceDestroyController;
@@ -11,11 +16,6 @@ use SaddlePHP\Http\Controllers\ResourceOptionsController;
 use SaddlePHP\Http\Controllers\ResourceStoreController;
 use SaddlePHP\Http\Controllers\ResourceUpdateController;
 use SaddlePHP\Http\Controllers\ResourceViewController;
-use SaddlePHP\Http\Controllers\RelationDestroyController;
-use SaddlePHP\Http\Controllers\RelationEditController;
-use SaddlePHP\Http\Controllers\RelationIndexController;
-use SaddlePHP\Http\Controllers\RelationStoreController;
-use SaddlePHP\Http\Controllers\RelationUpdateController;
 
 Route::get('/', DashboardController::class)->name('dashboard');
 
