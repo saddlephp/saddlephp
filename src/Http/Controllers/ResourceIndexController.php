@@ -67,6 +67,7 @@ class ResourceIndexController extends Controller
             ->through(fn (Model $record) => [
                 'id' => $record->getKey(),
                 'title' => $resource::recordTitle($record),
+                'trashed' => $resource::usesSoftDeletes() && $record->trashed(),
                 'cells' => collect($table->getColumns())
                     ->mapWithKeys(fn ($column) => [$column->name() => $column->resolve($record)])
                     ->all(),
@@ -74,6 +75,8 @@ class ResourceIndexController extends Controller
                     'view' => $resource::allows('view', $record),
                     'update' => $resource::allows('update', $record),
                     'delete' => $resource::allows('delete', $record),
+                    'restore' => $resource::usesSoftDeletes() && $resource::allows('restore', $record),
+                    'forceDelete' => $resource::usesSoftDeletes() && $resource::allows('forceDelete', $record),
                 ],
             ]);
 

@@ -48,3 +48,23 @@ it('offers no trashed filter for a non-soft-deletable resource', function () {
             ->where('filters', fn ($filters) => ! collect($filters)->contains(fn ($f) => $f['name'] === 'trashed'))
         );
 });
+
+it('exposes trashed state and restore/force abilities on rows', function () {
+    $this->actingAsUser();
+    Horse::factory()->create(['name' => 'Archived'])->delete();
+
+    $this->get('/admin/resources/horses?filter[trashed]=only')
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('rows.data.0.trashed', true)
+            ->where('rows.data.0.can.restore', true)
+            ->where('rows.data.0.can.forceDelete', true)
+        );
+});
+
+it('reports active rows as not trashed', function () {
+    $this->actingAsUser();
+    Horse::factory()->create(['name' => 'Active']);
+
+    $this->get('/admin/resources/horses')
+        ->assertInertia(fn (Assert $page) => $page->where('rows.data.0.trashed', false));
+});

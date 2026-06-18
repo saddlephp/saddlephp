@@ -46,6 +46,17 @@ function destroy() {
     router.delete(`${base}/${deleting.value.id}`, { onFinish: () => (deleting.value = null) });
 }
 
+const forceDeleting = ref(null);
+function restore(row) {
+    router.put(`${base}/${row.id}/restore`, {}, { preserveScroll: true });
+}
+function forceDelete() {
+    router.delete(`${base}/${forceDeleting.value.id}/force`, {
+        preserveScroll: true,
+        onFinish: () => (forceDeleting.value = null),
+    });
+}
+
 function paginatorLabel(raw) {
     return raw.replace(/&laquo;\s*/g, '‹ ').replace(/\s*&raquo;/g, ' ›');
 }
@@ -241,16 +252,22 @@ function confirmAction() {
                             <template v-else>{{ row.cells[column.name] }}</template>
                         </td>
                         <td class="px-4 py-3 text-right text-xs">
-                            <Link v-if="row.can.view" :href="`${base}/${row.id}`" class="text-ink-2 hover:text-ink">View</Link>
-                            <Link v-if="row.can.update" :href="`${base}/${row.id}/edit`" class="ml-3 text-ink-2 hover:text-ink">Edit</Link>
-                            <button v-if="row.can.delete" type="button" class="ml-3 text-accent" @click="deleting = row">Delete</button>
-                            <button
-                                v-for="action in actions"
-                                :key="action.name"
-                                type="button"
-                                :class="['ml-3', actionClass(action)]"
-                                @click="runRowAction(action, row)"
-                            >{{ action.label }}</button>
+                            <template v-if="!row.trashed">
+                                <Link v-if="row.can.view" :href="`${base}/${row.id}`" class="text-ink-2 hover:text-ink">View</Link>
+                                <Link v-if="row.can.update" :href="`${base}/${row.id}/edit`" class="ml-3 text-ink-2 hover:text-ink">Edit</Link>
+                                <button v-if="row.can.delete" type="button" class="ml-3 text-accent" @click="deleting = row">Delete</button>
+                                <button
+                                    v-for="action in actions"
+                                    :key="action.name"
+                                    type="button"
+                                    :class="['ml-3', actionClass(action)]"
+                                    @click="runRowAction(action, row)"
+                                >{{ action.label }}</button>
+                            </template>
+                            <template v-else>
+                                <button v-if="row.can.restore" type="button" class="text-ink-2 hover:text-ink" @click="restore(row)">Restore</button>
+                                <button v-if="row.can.forceDelete" type="button" class="ml-3 text-accent" @click="forceDeleting = row">Delete permanently</button>
+                            </template>
                         </td>
                     </tr>
                     <tr v-if="!rows.data.length">
@@ -276,6 +293,14 @@ function confirmAction() {
         </div>
 
         <ConfirmDialog v-if="deleting" :title="`Delete ${deleting.title}?`" @confirm="destroy" @cancel="deleting = null" />
+        <ConfirmDialog
+            v-if="forceDeleting"
+            :title="`Permanently delete ${forceDeleting.title}?`"
+            message="This cannot be undone."
+            confirm-label="Delete permanently"
+            @confirm="forceDelete"
+            @cancel="forceDeleting = null"
+        />
         <ConfirmDialog
             v-if="confirming"
             :title="confirming.title"
