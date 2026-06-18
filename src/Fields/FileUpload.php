@@ -6,6 +6,7 @@ namespace SaddlePHP\Fields;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class FileUpload extends Field
 {
@@ -107,6 +108,22 @@ class FileUpload extends Field
         // Defensive: the `file` rule keeps a non-file string out of validated(),
         // so this never fires from the normal flow. fill() is public API, so a
         // stray string is ignored rather than written as a bogus path.
+    }
+
+    protected function displayType(): string
+    {
+        return 'file';
+    }
+
+    protected function displayValue(?Model $record): mixed
+    {
+        if ($record === null) {
+            return null;
+        }
+
+        $path = $this->resolve($record);
+
+        return $path === null ? null : Storage::disk($this->resolveDisk())->url($path);
     }
 
     protected function meta(): array

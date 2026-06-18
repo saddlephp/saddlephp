@@ -21,4 +21,19 @@ class Date extends Field
 
         return $value instanceof \DateTimeInterface ? $value->format('Y-m-d') : $value;
     }
+
+    protected function displayValue(?Model $record): mixed
+    {
+        if ($record === null) {
+            return null;
+        }
+
+        $value = $record->{$this->name};
+
+        if ($value === null) {
+            return null;
+        }
+
+        return $value instanceof \DateTimeInterface ? $value->format('M j, Y') : (string) $value;
+    }
 }

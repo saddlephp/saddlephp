@@ -31,4 +31,14 @@ class Toggle extends Field
     {
         $record->{$this->name} = (bool) $value;
     }
+
+    protected function displayType(): string
+    {
+        return 'boolean';
+    }
+
+    protected function displayValue(?Model $record): mixed
+    {
+        return $record === null ? null : (bool) $this->resolve($record);
+    }
 }
