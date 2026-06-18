@@ -5,6 +5,14 @@ declare(strict_types=1);
 use Inertia\Testing\AssertableInertia as Assert;
 use Workbench\App\Models\Horse;
 
+it('exposes the view permission on each row', function () {
+    $this->actingAsUser();
+    Horse::factory()->create();
+
+    $this->get('/admin/resources/horses')
+        ->assertInertia(fn (Assert $page) => $page->where('rows.data.0.can.view', true));
+});
+
 it('lists records with columns, cells and abilities', function () {
     $this->actingAsUser();
     Horse::factory()->create(['name' => 'Cisco', 'breed' => 'quarter']);
