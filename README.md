@@ -12,7 +12,7 @@
 Vue**. Round up your Eloquent models into polished resource panels, with form and table builders, roles and access,
 plugins, and multi-tenancy.
 
-> **Status: v0.9 adds a record view page and HasMany relation managers.** The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
+> **Status: v0.9 adds a record view page and HasMany relation managers.**.
 
 ## Installation
 
