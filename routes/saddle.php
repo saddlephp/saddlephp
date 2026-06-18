@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use SaddlePHP\Http\Controllers\DashboardController;
+use SaddlePHP\Http\Controllers\GlobalSearchController;
 use SaddlePHP\Http\Controllers\RelationDestroyController;
 use SaddlePHP\Http\Controllers\RelationEditController;
 use SaddlePHP\Http\Controllers\RelationIndexController;
@@ -25,6 +26,9 @@ Route::get('/', DashboardController::class)->name('dashboard');
 // ever changes. [^/]+ keeps {record} to a single segment so the slash-less
 // view route (GET .../{record}) cannot swallow deeper paths like .../{record}/edit.
 $recordKey = '^(?!create$|options$|actions$)[^/]+$';
+
+// Global search — literal segment, registered before the {resourceKey} wildcard.
+Route::get('/resources/search', GlobalSearchController::class)->name('resources.search');
 
 // standard routes for resources
 Route::get('/resources/{resourceKey}', ResourceIndexController::class)->name('resources.index');

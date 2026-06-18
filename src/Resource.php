@@ -36,6 +36,9 @@ abstract class Resource
      */
     public static ?string $tenant = null;
 
+    /** Whether this resource is included in global search (when it has searchable columns). */
+    public static bool $globalSearch = true;
+
     abstract public static function form(Form $form): Form;
 
     abstract public static function table(Table $table): Table;
