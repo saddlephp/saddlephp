@@ -6,6 +6,7 @@ namespace SaddlePHP;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -97,6 +98,12 @@ abstract class Resource
     public static function relations(): array
     {
         return [];
+    }
+
+    /** Whether the resource's model uses Laravel's SoftDeletes trait. */
+    public static function usesSoftDeletes(): bool
+    {
+        return in_array(SoftDeletes::class, class_uses_recursive(static::$model), true);
     }
 
     public static function makeForm(): Form

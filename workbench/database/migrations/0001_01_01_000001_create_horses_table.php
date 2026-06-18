@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('photo')->nullable();
             $table->dateTime('last_vet_visit')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

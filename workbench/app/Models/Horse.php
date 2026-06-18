@@ -7,12 +7,14 @@ namespace Workbench\App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Workbench\Database\Factories\HorseFactory;
 
 class Horse extends Model
 {
     /** @use HasFactory<HorseFactory> */
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = ['name', 'breed', 'notes', 'is_saddled', 'rider_id', 'ranch_id', 'age', 'foaled_on', 'photo', 'last_vet_visit'];
 
