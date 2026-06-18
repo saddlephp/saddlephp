@@ -29,17 +29,19 @@ it('constrains every {record} route so reserved words cannot match', function ()
     $recordRoutes = collect(Route::getRoutes()->getRoutes())
         ->filter(fn ($route) => in_array('record', $route->parameterNames(), true));
 
-    // edit, update, destroy — every route that carries {record}.
-    expect($recordRoutes)->toHaveCount(3);
+    // view, edit, update, destroy — every route that carries {record}.
+    expect($recordRoutes)->toHaveCount(4);
 
     $recordRoutes->each(function ($route): void {
         $pattern = $route->wheres['record'] ?? null;
 
+        // Use ~ delimiters: the constraint contains a literal / (in [^/]+), which
+        // would prematurely close a /.../ delimiter.
         expect($pattern)->not->toBeNull()
-            ->and(preg_match('/'.$pattern.'/', 'create'))->toBe(0)
-            ->and(preg_match('/'.$pattern.'/', 'options'))->toBe(0)
-            ->and(preg_match('/'.$pattern.'/', 'actions'))->toBe(0)
-            ->and(preg_match('/'.$pattern.'/', '42'))->toBe(1)
-            ->and(preg_match('/'.$pattern.'/', 'a-slug'))->toBe(1);
+            ->and(preg_match('~'.$pattern.'~', 'create'))->toBe(0)
+            ->and(preg_match('~'.$pattern.'~', 'options'))->toBe(0)
+            ->and(preg_match('~'.$pattern.'~', 'actions'))->toBe(0)
+            ->and(preg_match('~'.$pattern.'~', '42'))->toBe(1)
+            ->and(preg_match('~'.$pattern.'~', 'a-slug'))->toBe(1);
     });
 });

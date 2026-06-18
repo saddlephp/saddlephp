@@ -10,20 +10,23 @@ use SaddlePHP\Http\Controllers\ResourceIndexController;
 use SaddlePHP\Http\Controllers\ResourceOptionsController;
 use SaddlePHP\Http\Controllers\ResourceStoreController;
 use SaddlePHP\Http\Controllers\ResourceUpdateController;
+use SaddlePHP\Http\Controllers\ResourceViewController;
 
 Route::get('/', DashboardController::class)->name('dashboard');
 
 // 'create', 'options', and 'actions' are static path segments owned by the
 // panel. The constraint below ensures the {record} placeholder can never
 // capture those words, so static routes keep precedence even if their order
-// ever changes.
-$recordKey = '^(?!create$|options$|actions$).+$';
+// ever changes. [^/]+ keeps {record} to a single segment so the slash-less
+// view route (GET .../{record}) cannot swallow deeper paths like .../{record}/edit.
+$recordKey = '^(?!create$|options$|actions$)[^/]+$';
 
 Route::get('/resources/{resourceKey}', ResourceIndexController::class)->name('resources.index');
 Route::get('/resources/{resourceKey}/options/{field}', ResourceOptionsController::class)->name('resources.options');
 Route::post('/resources/{resourceKey}/actions/{action}', ResourceActionController::class)->name('resources.actions.run');
 Route::get('/resources/{resourceKey}/create', ResourceCreateController::class)->name('resources.create');
 Route::post('/resources/{resourceKey}', ResourceStoreController::class)->name('resources.store');
+Route::get('/resources/{resourceKey}/{record}', ResourceViewController::class)->name('resources.view')->where('record', $recordKey);
 Route::get('/resources/{resourceKey}/{record}/edit', ResourceEditController::class)->name('resources.edit')->where('record', $recordKey);
 Route::put('/resources/{resourceKey}/{record}', ResourceUpdateController::class)->name('resources.update')->where('record', $recordKey);
 Route::delete('/resources/{resourceKey}/{record}', ResourceDestroyController::class)->name('resources.destroy')->where('record', $recordKey);
