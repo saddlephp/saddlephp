@@ -70,13 +70,17 @@ it('ignores a malformed filter parameter', function () {
 it('serializes filter definitions for the panel', function () {
     $this->actingAsUser();
 
+    // Horse is soft-deletable, so the panel injects a trashed (Status) filter
+    // after the two declared filters (breed select + is_saddled boolean).
     $this->get('/admin/resources/horses')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->count('filters', 2)
+            ->count('filters', 3)
             ->where('filters.0.type', 'select')
             ->where('filters.0.name', 'breed')
             ->count('filters.0.options', 3)
             ->where('filters.1.type', 'boolean')
+            ->where('filters.2.name', 'trashed')
+            ->where('filters.2.type', 'select')
         );
 });

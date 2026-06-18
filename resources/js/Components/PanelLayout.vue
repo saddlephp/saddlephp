@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
+import GlobalSearch from './GlobalSearch.vue';
 
 const page = usePage();
 const saddle = computed(() => page.props.saddle);
@@ -26,6 +27,7 @@ function switchTenant(event) {
                 <img :src="'/vendor/saddle/icon.png'" alt="" class="h-7 w-7 shrink-0 rounded-lg" />
                 <span class="font-semibold tracking-tight">{{ saddle.name }}</span>
             </Link>
+            <GlobalSearch />
             <div v-if="saddle.tenants?.length > 1" class="border-b border-line px-3 py-2">
                 <select
                     :value="saddle.tenant.key"

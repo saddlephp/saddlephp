@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use SaddlePHP\Tables\Filters\TrashedFilter;
 
 class ResourceIndexController extends Controller
 {
@@ -17,6 +18,11 @@ class ResourceIndexController extends Controller
         abort_unless($resource::allows('viewAny'), 403);
 
         $table = $resource::makeTable();
+
+        if ($resource::usesSoftDeletes()) {
+            $table->filters(array_merge($table->getFilters(), [TrashedFilter::make('trashed')->label('Status')]));
+        }
+
         $query = $resource::query($request);
 
         $search = trim((string) $request->query('search', ''));
@@ -61,6 +67,7 @@ class ResourceIndexController extends Controller
             ->through(fn (Model $record) => [
                 'id' => $record->getKey(),
                 'title' => $resource::recordTitle($record),
+                'trashed' => $resource::usesSoftDeletes() && $record->trashed(),
                 'cells' => collect($table->getColumns())
                     ->mapWithKeys(fn ($column) => [$column->name() => $column->resolve($record)])
                     ->all(),
@@ -68,6 +75,8 @@ class ResourceIndexController extends Controller
                     'view' => $resource::allows('view', $record),
                     'update' => $resource::allows('update', $record),
                     'delete' => $resource::allows('delete', $record),
+                    'restore' => $resource::usesSoftDeletes() && $resource::allows('restore', $record),
+                    'forceDelete' => $resource::usesSoftDeletes() && $resource::allows('forceDelete', $record),
                 ],
             ]);
 

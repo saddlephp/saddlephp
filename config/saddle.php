@@ -14,6 +14,11 @@ return [
 
     'per_page' => 25,
 
+    // Maximum results returned per resource by global search.
+    'global_search' => [
+        'per_resource' => 5,
+    ],
+
     'brand' => [
         'name' => 'Saddle',
         'accent' => '#d9501f',
