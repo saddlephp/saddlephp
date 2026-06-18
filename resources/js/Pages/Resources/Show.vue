@@ -2,6 +2,7 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import PanelLayout from '../../Components/PanelLayout.vue';
 import DisplayRenderer from '../../Components/DisplayRenderer.vue';
+import RelationManagers from '../../Components/RelationManagers.vue';
 
 const props = defineProps({ resource: Object, record: Object, fields: Array, relations: Array });
 
@@ -27,6 +28,6 @@ const base = `/${saddle.path}/resources/${props.resource.uriKey}`;
             <DisplayRenderer :nodes="fields" />
         </div>
 
-        <!-- Relation managers wired in a later task -->
+        <RelationManagers :relations="relations" :base="`${base}/${record.id}`" />
     </PanelLayout>
 </template>
