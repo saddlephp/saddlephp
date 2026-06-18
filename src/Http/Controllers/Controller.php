@@ -25,6 +25,21 @@ abstract class Controller
     }
 
     /**
+     * Resolve a record including trashed rows, for restore/force-delete. Guards
+     * resources whose model is not soft-deletable with a 404. Tenant scope still
+     * applies (withTrashed does not drop the tenant constraint), so a foreign
+     * tenant's trashed record never resolves.
+     *
+     * @param  class-string<resource>  $resource
+     */
+    protected function resolveTrashedRecord(Request $request, string $resource, string|int $recordId): Model
+    {
+        abort_unless($resource::usesSoftDeletes(), 404);
+
+        return $resource::query($request)->withTrashed()->findOrFail($recordId);
+    }
+
+    /**
      * @param  class-string<resource>  $resource
      * @return class-string<RelationManager>
      */
