@@ -13,6 +13,8 @@ When no policy is registered for a model, all abilities are allowed for every au
 | `create` | Create form; store action; relation manager New button and store; relation options endpoint |
 | `update` | Edit form; update action; per-row Edit link; relation manager row edit; relation options endpoint (checked against a fresh model instance when no specific record is in scope) |
 | `delete` | Destroy action; per-row Delete button; relation manager row delete |
+| `restore` | Restore control on trashed rows; restore endpoint (soft-deletable resources) |
+| `forceDelete` | Delete-permanently control on trashed rows; force-delete endpoint (soft-deletable resources) |
 
 Relation managers check these abilities against the **related** model's policy. See the relations section for details.
 
