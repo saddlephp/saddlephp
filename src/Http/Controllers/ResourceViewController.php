@@ -31,7 +31,9 @@ class ResourceViewController extends Controller
                 ],
             ],
             'fields' => $resource::makeForm()->toDisplay($model),
-            'relations' => [], // populated in a later task
+            'relations' => collect($resource::relations())
+                ->map(fn (string $manager) => $this->relationPayload($manager, $model))
+                ->values()->all(),
         ]);
     }
 }
