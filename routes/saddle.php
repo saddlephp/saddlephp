@@ -12,6 +12,7 @@ use SaddlePHP\Http\Controllers\ResourceStoreController;
 use SaddlePHP\Http\Controllers\ResourceUpdateController;
 use SaddlePHP\Http\Controllers\ResourceViewController;
 use SaddlePHP\Http\Controllers\RelationIndexController;
+use SaddlePHP\Http\Controllers\RelationStoreController;
 
 Route::get('/', DashboardController::class)->name('dashboard');
 
@@ -34,3 +35,4 @@ Route::delete('/resources/{resourceKey}/{record}', ResourceDestroyController::cl
 
 // Relation managers: nested under a parent record, scoped through its HasMany.
 Route::get('/resources/{resourceKey}/{record}/relations/{relation}', RelationIndexController::class)->name('resources.relations.index')->where('record', $recordKey);
+Route::post('/resources/{resourceKey}/{record}/relations/{relation}', RelationStoreController::class)->name('resources.relations.store')->where('record', $recordKey);
