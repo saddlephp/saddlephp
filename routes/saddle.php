@@ -11,6 +11,7 @@ use SaddlePHP\Http\Controllers\ResourceOptionsController;
 use SaddlePHP\Http\Controllers\ResourceStoreController;
 use SaddlePHP\Http\Controllers\ResourceUpdateController;
 use SaddlePHP\Http\Controllers\ResourceViewController;
+use SaddlePHP\Http\Controllers\RelationIndexController;
 
 Route::get('/', DashboardController::class)->name('dashboard');
 
@@ -30,3 +31,6 @@ Route::get('/resources/{resourceKey}/{record}', ResourceViewController::class)->
 Route::get('/resources/{resourceKey}/{record}/edit', ResourceEditController::class)->name('resources.edit')->where('record', $recordKey);
 Route::put('/resources/{resourceKey}/{record}', ResourceUpdateController::class)->name('resources.update')->where('record', $recordKey);
 Route::delete('/resources/{resourceKey}/{record}', ResourceDestroyController::class)->name('resources.destroy')->where('record', $recordKey);
+
+// Relation managers: nested under a parent record, scoped through its HasMany.
+Route::get('/resources/{resourceKey}/{record}/relations/{relation}', RelationIndexController::class)->name('resources.relations.index')->where('record', $recordKey);
