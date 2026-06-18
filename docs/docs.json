@@ -7,6 +7,7 @@
         { "slug": "actions", "label": "Actions", "anchor": "actions" },
         { "slug": "tables", "label": "Tables and columns", "anchor": "tables" },
         { "slug": "filters", "label": "Filters", "anchor": "filters" },
+        { "slug": "relations", "label": "Relation managers", "anchor": "relations" },
         { "slug": "authorization", "label": "Authorization", "anchor": "authorization" },
         { "slug": "plugins", "label": "Plugins", "anchor": "plugins" },
         { "slug": "tenancy", "label": "Multi-tenancy", "anchor": "tenancy" },
