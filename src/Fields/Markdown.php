@@ -12,4 +12,9 @@ class Markdown extends Field
     {
         return ['string', 'max:65535'];
     }
+
+    protected function displayType(): string
+    {
+        return 'markdown';
+    }
 }

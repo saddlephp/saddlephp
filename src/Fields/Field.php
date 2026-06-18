@@ -173,6 +173,45 @@ abstract class Field
     }
 
     /**
+     * Serialize this field for the read-only view page: a label plus a
+     * pre-formatted, render-safe display value and a type hint the frontend uses
+     * to pick a type-aware leaf. The 'display-entry' component is a leaf marker
+     * (so the shared form-tree walkers find it) — it is never an input. Subclasses
+     * override displayType()/displayValue() to format relations, booleans, dates,
+     * files, etc.
+     *
+     * @return array<string, mixed>
+     */
+    public function toDisplay(?Model $record = null): array
+    {
+        return array_merge([
+            'component' => 'display-entry',
+            'name' => $this->name,
+            'label' => $this->label ?? Str::headline($this->name),
+            'type' => $this->displayType(),
+            'display' => $this->displayValue($record),
+        ], $this->span === null ? [] : ['span' => $this->span]);
+    }
+
+    /** The display leaf type the frontend renders. Subclasses may override. */
+    protected function displayType(): string
+    {
+        return 'text';
+    }
+
+    /** The formatted, render-safe value shown on the view page. */
+    protected function displayValue(?Model $record): mixed
+    {
+        if ($record === null) {
+            return null;
+        }
+
+        $value = $this->resolve($record);
+
+        return $value === null ? null : (string) $value;
+    }
+
+    /**
      * Hook invoked with the owning resource's model prototype before the
      * form is consumed. Lets relation-aware fields derive their metadata.
      */

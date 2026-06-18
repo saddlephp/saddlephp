@@ -115,3 +115,9 @@ public static ?string $title = 'name';
 // The panel calls:
 $resource::recordTitle($record); // returns $record->name as a string
 ```
+
+### View page
+
+Every record has a read-only view page, reachable from the **View** link on each index row. It renders the same form fields the edit page uses, in display mode: select and relation fields show their label, toggles show a checkmark, dates are formatted, files become links. Field layout (sections, grids, tabs) is preserved. Fields hidden by `canSee` are omitted here too.
+
+The view page is gated by the `view` policy ability, and carries an **Edit** button when the user may update the record. It is also the host for relation managers (see the relations section).

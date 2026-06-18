@@ -65,6 +65,7 @@ class ResourceIndexController extends Controller
                     ->mapWithKeys(fn ($column) => [$column->name() => $column->resolve($record)])
                     ->all(),
                 'can' => [
+                    'view' => $resource::allows('view', $record),
                     'update' => $resource::allows('update', $record),
                     'delete' => $resource::allows('delete', $record),
                 ],

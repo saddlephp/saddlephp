@@ -9,12 +9,12 @@ use SaddlePHP\Forms\Form;
 use SaddlePHP\Resource;
 use SaddlePHP\Tables\Columns\TextColumn;
 use SaddlePHP\Tables\Table;
-use Workbench\App\Models\Rider;
+use Workbench\App\Models\Ranch;
 use Workbench\App\Saddle\RelationManagers\HorsesRelationManager;
 
-class RiderResource extends Resource
+class RanchResource extends Resource
 {
-    public static string $model = Rider::class;
+    public static string $model = Ranch::class;
 
     public static ?string $title = 'name';
 

@@ -241,7 +241,8 @@ function confirmAction() {
                             <template v-else>{{ row.cells[column.name] }}</template>
                         </td>
                         <td class="px-4 py-3 text-right text-xs">
-                            <Link v-if="row.can.update" :href="`${base}/${row.id}/edit`" class="text-ink-2 hover:text-ink">Edit</Link>
+                            <Link v-if="row.can.view" :href="`${base}/${row.id}`" class="text-ink-2 hover:text-ink">View</Link>
+                            <Link v-if="row.can.update" :href="`${base}/${row.id}/edit`" class="ml-3 text-ink-2 hover:text-ink">Edit</Link>
                             <button v-if="row.can.delete" type="button" class="ml-3 text-accent" @click="deleting = row">Delete</button>
                             <button
                                 v-for="action in actions"

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SaddlePHP\Fields;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 
 class Select extends Field
@@ -45,5 +46,20 @@ class Select extends Field
     protected function meta(): array
     {
         return ['options' => $this->options];
+    }
+
+    protected function displayValue(?Model $record): mixed
+    {
+        if ($record === null) {
+            return null;
+        }
+
+        $value = $this->resolve($record);
+
+        if ($value === null) {
+            return null;
+        }
+
+        return collect($this->options)->firstWhere('value', $value)['label'] ?? (string) $value;
     }
 }

@@ -10,6 +10,7 @@ use Illuminate\Support\ServiceProvider;
 use Laravel\Octane\Events\RequestReceived;
 use SaddlePHP\Console\InstallCommand;
 use SaddlePHP\Console\ResourceMakeCommand;
+use SaddlePHP\Console\ResourceRelationMakeCommand;
 use SaddlePHP\Console\UpgradeCommand;
 use SaddlePHP\Http\Middleware\HandleSaddleRequests;
 use SaddlePHP\Http\Middleware\ResolveSaddleTenant;
@@ -43,6 +44,7 @@ class SaddleServiceProvider extends ServiceProvider
 
             $this->commands([
                 ResourceMakeCommand::class,
+                ResourceRelationMakeCommand::class,
                 InstallCommand::class,
                 UpgradeCommand::class,
             ]);

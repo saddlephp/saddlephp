@@ -1,4 +1,4 @@
-Saddle consumes standard Laravel policies. Register a policy for a model and the panel enforces it throughout: the index listing, create and edit forms, row actions, and the relation options endpoint. Your role system stays completely in your application code.
+Saddle consumes standard Laravel policies. Register a policy for a model and the panel enforces it throughout: the index listing, the view page, create and edit forms, row actions, relation managers, and the relation options endpoint. Your role system stays completely in your application code.
 
 ### No-policy default
 
@@ -8,10 +8,13 @@ When no policy is registered for a model, all abilities are allowed for every au
 
 | Ability | Where it is checked |
 |---|---|
-| `viewAny` | Resource index page; sidebar visibility (resources whose `viewAny` returns false are hidden from the nav) |
-| `create` | Create form; store action; relation options endpoint |
-| `update` | Edit form; update action; per-row Edit link; relation options endpoint (checked against a fresh model instance when no specific record is in scope) |
-| `delete` | Destroy action; per-row Delete button |
+| `viewAny` | Resource index page; sidebar visibility (resources whose `viewAny` returns false are hidden from the nav); relation manager listing |
+| `view` | Record view page; per-row View link |
+| `create` | Create form; store action; relation manager New button and store; relation options endpoint |
+| `update` | Edit form; update action; per-row Edit link; relation manager row edit; relation options endpoint (checked against a fresh model instance when no specific record is in scope) |
+| `delete` | Destroy action; per-row Delete button; relation manager row delete |
+
+Relation managers check these abilities against the **related** model's policy. See the relations section for details.
 
 ### Using any role system
 

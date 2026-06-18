@@ -155,6 +155,17 @@ class BelongsTo extends Field
         return $this->searchable ? [] : ['options' => $this->options()];
     }
 
+    protected function displayValue(?Model $record): mixed
+    {
+        if ($record === null) {
+            return null;
+        }
+
+        // currentOption resolves the persisted FK to its title label, exactly as
+        // the searchable picker renders the bound value.
+        return $this->currentOption($record)[0]['label'] ?? null;
+    }
+
     /** @return array<int, array{value: mixed, label: string}> */
     public function searchOptions(string $search = ''): array
     {
