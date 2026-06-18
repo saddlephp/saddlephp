@@ -10,12 +10,18 @@ use SaddlePHP\Resource;
 use SaddlePHP\Tables\Columns\TextColumn;
 use SaddlePHP\Tables\Table;
 use Workbench\App\Models\Rider;
+use Workbench\App\Saddle\RelationManagers\HorsesRelationManager;
 
 class RiderResource extends Resource
 {
     public static string $model = Rider::class;
 
     public static ?string $title = 'name';
+
+    public static function relations(): array
+    {
+        return [HorsesRelationManager::class];
+    }
 
     public static function form(Form $form): Form
     {
