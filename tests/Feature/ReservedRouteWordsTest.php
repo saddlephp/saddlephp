@@ -29,8 +29,8 @@ it('constrains every {record} route so reserved words cannot match', function ()
     $recordRoutes = collect(Route::getRoutes()->getRoutes())
         ->filter(fn ($route) => in_array('record', $route->parameterNames(), true));
 
-    // Resource: view, edit, update, destroy, restore. Relations: index, store, edit, update, destroy.
-    expect($recordRoutes)->toHaveCount(10);
+    // Resource: view, edit, update, destroy, restore, force-delete. Relations: index, store, edit, update, destroy.
+    expect($recordRoutes)->toHaveCount(11);
 
     $recordRoutes->each(function ($route): void {
         $pattern = $route->wheres['record'] ?? null;
