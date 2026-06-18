@@ -176,4 +176,48 @@ class Form
 
         return array_values($serialized);
     }
+
+    /**
+     * Serialize the schema for the read-only view page. Mirrors toInertia() but
+     * emits display leaves (label + formatted value) instead of input leaves.
+     * Layout containers serialize identically — only the leaves differ — so the
+     * view page reuses the exact layout tree the edit form produced.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function toDisplay(?Model $record = null): array
+    {
+        $this->prepare();
+
+        return $this->serializeDisplayNodes($this->schema, $record);
+    }
+
+    /**
+     * @param  array<int, Field|Layout>  $nodes
+     * @return array<int, array<string, mixed>>
+     */
+    protected function serializeDisplayNodes(array $nodes, ?Model $record): array
+    {
+        $request = app('request');
+        $serialized = [];
+
+        foreach ($nodes as $node) {
+            if ($node instanceof Layout) {
+                $serialized[] = $node->toInertia(
+                    $record,
+                    fn (array $children) => $this->serializeDisplayNodes($children, $record),
+                );
+
+                continue;
+            }
+
+            if (! $node->visibleTo($request)) {
+                continue;
+            }
+
+            $serialized[] = $node->toDisplay($record);
+        }
+
+        return array_values($serialized);
+    }
 }
