@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Inertia\Testing\AssertableInertia as Assert;
 use Workbench\App\Models\Horse;
+use Workbench\App\Models\Rider;
 
 it('hides trashed records by default and offers the trashed filter', function () {
     $this->actingAsUser();
@@ -41,7 +42,7 @@ it('shows only trashed records with the only filter', function () {
 
 it('offers no trashed filter for a non-soft-deletable resource', function () {
     $this->actingAsUser();
-    \Workbench\App\Models\Rider::factory()->create();
+    Rider::factory()->create();
 
     $this->get('/admin/resources/riders')
         ->assertInertia(fn (Assert $page) => $page

@@ -14,6 +14,7 @@ class Horse extends Model
 {
     /** @use HasFactory<HorseFactory> */
     use HasFactory;
+
     use SoftDeletes;
 
     protected $fillable = ['name', 'breed', 'notes', 'is_saddled', 'rider_id', 'ranch_id', 'age', 'foaled_on', 'photo', 'last_vet_visit'];

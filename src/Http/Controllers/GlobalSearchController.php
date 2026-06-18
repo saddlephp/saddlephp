@@ -7,6 +7,7 @@ namespace SaddlePHP\Http\Controllers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use SaddlePHP\Resource;
 use SaddlePHP\Saddle;
 
 class GlobalSearchController extends Controller
