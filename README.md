@@ -435,30 +435,6 @@ vendor/bin/pest
 
 The `workbench/` directory contains a minimal host application used by the test suite and for manual poking. `vendor/bin/testbench serve` boots it with `HorseResource` registered; note that panel routes sit behind the `auth` middleware and the workbench ships only a stub `/login` route, so for interactive browsing either temporarily set `'middleware' => ['web']` in `config/saddle.php` or browse through the feature tests instead. There is no demo seeder yet.
 
-## Roadmap
-
-- [x] Resource panels (CRUD from an Eloquent model)
-- [x] Form builder
-- [x] Table builder
-- [x] Relations (BelongsTo)
-- [x] Table filters
-- [x] Roles and access (policy-driven)
-- [x] Plugins
-- [x] Multi-tenancy
-- [x] Form layout and uploads
-- [x] Row and bulk actions
-- [x] Record view / detail page
-- [x] HasMany relation managers
-- [x] Global search
-- [x] Soft deletes (trashed filter, restore, force-delete)
-- [x] Dashboard widgets (stats + chart)
-- [x] Database notifications
-- [x] Dark mode + theming hooks
-- [x] Localization (i18n)
-- [x] Host testing helpers
-- [x] CSV import / export
-- [x] Tenancy extras (access gate, registration)
-
 ## Stack
 
 Built for **Laravel 13+ / PHP 8.4+**, **Inertia 2**, **Vue 3**, **Tailwind CSS 4**.
