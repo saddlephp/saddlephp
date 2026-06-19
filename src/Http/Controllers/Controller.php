@@ -4,14 +4,80 @@ declare(strict_types=1);
 
 namespace SaddlePHP\Http\Controllers;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use SaddlePHP\RelationManager;
 use SaddlePHP\Resource;
 use SaddlePHP\Saddle;
+use SaddlePHP\Tables\Filters\TrashedFilter;
+use SaddlePHP\Tables\Table;
 
 abstract class Controller
 {
+    /**
+     * Build a resource's index table, injecting the trashed filter for
+     * soft-deletable resources.
+     *
+     * @param  class-string<resource>  $resource
+     */
+    protected function makeIndexTable(string $resource): Table
+    {
+        $table = $resource::makeTable();
+
+        if ($resource::usesSoftDeletes()) {
+            $table->filters(array_merge($table->getFilters(), [TrashedFilter::make('trashed')->label('Status')]));
+        }
+
+        return $table;
+    }
+
+    /**
+     * Apply the index's search, filters, and sort to a query, returning the
+     * resolved state for the payload. Shared by the index and CSV export.
+     *
+     * @return array{search: string, sort: string, direction: string, filter: array<string, string>}
+     */
+    protected function applyTableQuery(Builder $query, Table $table, Request $request): array
+    {
+        $search = trim((string) $request->query('search', ''));
+        $searchable = $table->searchableColumns();
+
+        if ($search !== '' && $searchable !== []) {
+            $query->where(function ($q) use ($search, $searchable) {
+                foreach ($searchable as $column) {
+                    $q->orWhere($column, 'like', "%{$search}%");
+                }
+            });
+        }
+
+        $requested = $request->query('filter', []);
+        $requested = is_array($requested) ? $requested : [];
+        $activeFilters = [];
+
+        foreach ($table->getFilters() as $filter) {
+            $value = $requested[$filter->name()] ?? null;
+
+            if (is_string($value) && $value !== '' && $filter->accepts($value)) {
+                $filter->apply($query, $value);
+                $activeFilters[$filter->name()] = $value;
+            }
+        }
+
+        $requestedSort = (string) $request->query('sort', '');
+
+        if (in_array($requestedSort, $table->sortableColumns(), true)) {
+            $sort = $requestedSort;
+            $direction = $request->query('direction') === 'desc' ? 'desc' : 'asc';
+        } else {
+            $sort = $query->getModel()->getKeyName();
+            $direction = 'desc';
+        }
+
+        $query->orderBy($sort, $direction);
+
+        return ['search' => $search, 'sort' => $sort, 'direction' => $direction, 'filter' => $activeFilters];
+    }
     /** @return class-string<resource> */
     protected function resolveResource(string $uriKey): string
     {
