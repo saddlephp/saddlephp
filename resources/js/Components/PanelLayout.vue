@@ -41,6 +41,11 @@ function switchTenant(event) {
                     <option v-for="t in saddle.tenants" :key="t.key" :value="t.key">{{ t.label }}</option>
                 </select>
             </div>
+            <a
+                v-if="saddle.canRegisterTenant"
+                :href="`/${saddle.path.split('/')[0]}/register`"
+                class="block border-b border-line px-3 py-2 text-center text-xs text-accent hover:underline"
+            >＋ New workspace</a>
             <nav class="flex-1 p-3">
                 <div v-for="(group, gi) in saddle.nav" :key="gi" class="mb-4">
                     <p v-if="group.group" class="px-2 pb-1 text-[0.65rem] font-medium uppercase tracking-wide text-ink-3">{{ group.group }}</p>
