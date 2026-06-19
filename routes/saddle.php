@@ -14,6 +14,7 @@ use SaddlePHP\Http\Controllers\ResourceActionController;
 use SaddlePHP\Http\Controllers\ResourceCreateController;
 use SaddlePHP\Http\Controllers\ResourceDestroyController;
 use SaddlePHP\Http\Controllers\ResourceEditController;
+use SaddlePHP\Http\Controllers\ResourceExportController;
 use SaddlePHP\Http\Controllers\ResourceForceDeleteController;
 use SaddlePHP\Http\Controllers\ResourceIndexController;
 use SaddlePHP\Http\Controllers\ResourceOptionsController;
@@ -33,7 +34,7 @@ Route::post('/notifications/{notification}/read', NotificationReadController::cl
 // capture those words, so static routes keep precedence even if their order
 // ever changes. [^/]+ keeps {record} to a single segment so the slash-less
 // view route (GET .../{record}) cannot swallow deeper paths like .../{record}/edit.
-$recordKey = '^(?!create$|options$|actions$)[^/]+$';
+$recordKey = '^(?!create$|options$|actions$|export$|import$)[^/]+$';
 
 // Global search — literal segment, registered before the {resourceKey} wildcard.
 Route::get('/resources/search', GlobalSearchController::class)->name('resources.search');
@@ -44,6 +45,7 @@ Route::get('/resources/{resourceKey}/options/{field}', ResourceOptionsController
 Route::post('/resources/{resourceKey}/actions/{action}', ResourceActionController::class)->name('resources.actions.run');
 Route::get('/resources/{resourceKey}/create', ResourceCreateController::class)->name('resources.create');
 Route::post('/resources/{resourceKey}', ResourceStoreController::class)->name('resources.store');
+Route::get('/resources/{resourceKey}/export', ResourceExportController::class)->name('resources.export');
 Route::get('/resources/{resourceKey}/{record}', ResourceViewController::class)->name('resources.view')->where('record', $recordKey);
 Route::get('/resources/{resourceKey}/{record}/edit', ResourceEditController::class)->name('resources.edit')->where('record', $recordKey);
 Route::put('/resources/{resourceKey}/{record}', ResourceUpdateController::class)->name('resources.update')->where('record', $recordKey);

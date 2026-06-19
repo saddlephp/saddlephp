@@ -45,6 +45,7 @@ class ResourceIndexController extends Controller
                 'label' => $resource::label(),
                 'singularLabel' => $resource::singularLabel(),
                 'canCreate' => $resource::allows('create'),
+                'canExport' => $resource::allows('viewAny'),
             ],
             'columns' => $table->toInertia(),
             'filters' => $table->filtersToInertia(),
