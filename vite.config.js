@@ -11,6 +11,12 @@ export default defineConfig({
     publicDir: 'resources/static',
     define: {
         __SADDLE_VERSION__: JSON.stringify(pkg.version),
+        __VUE_I18N_LEGACY_API__: JSON.stringify(false),
+        __VUE_I18N_FULL_INSTALL__: JSON.stringify(false),
+        // Interpret the message AST instead of compiling with new Function,
+        // which would trip unsafe-eval under a strict CSP.
+        __INTLIFY_JIT_COMPILATION__: JSON.stringify(true),
+        __INTLIFY_DROP_MESSAGE_COMPILER__: JSON.stringify(false),
     },
     build: {
         outDir: 'dist',
