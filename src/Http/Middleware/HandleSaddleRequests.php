@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SaddlePHP\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Notifiable;
 use Inertia\Middleware;
 use SaddlePHP\Saddle;
 use SaddlePHP\Support\AssetManifest;
@@ -37,6 +38,21 @@ class HandleSaddleRequests extends Middleware
                 'error' => $request->hasSession() ? $request->session()->get('error') : null,
             ],
         ];
+
+        $user = $request->user();
+
+        if ($user !== null && in_array(Notifiable::class, class_uses_recursive($user), true)) {
+            $shared['notifications'] = [
+                'unread' => $user->unreadNotifications()->count(),
+                'items' => $user->notifications()->latest()->limit(10)->get()->map(fn ($n) => [
+                    'id' => $n->id,
+                    'message' => (string) ($n->data['message'] ?? $n->type),
+                    'url' => $n->data['url'] ?? null,
+                    'read' => $n->read_at !== null,
+                    'at' => $n->created_at?->diffForHumans(),
+                ])->all(),
+            ];
+        }
 
         if ($saddle->tenant() !== null) {
             $shared['tenant'] = $this->tenant($saddle);

@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import GlobalSearch from './GlobalSearch.vue';
+import NotificationBell from './NotificationBell.vue';
 
 const page = usePage();
 const saddle = computed(() => page.props.saddle);
@@ -28,6 +29,7 @@ function switchTenant(event) {
                 <span class="font-semibold tracking-tight">{{ saddle.name }}</span>
             </Link>
             <GlobalSearch />
+            <NotificationBell />
             <div v-if="saddle.tenants?.length > 1" class="border-b border-line px-3 py-2">
                 <select
                     :value="saddle.tenant.key"

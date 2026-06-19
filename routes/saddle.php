@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use SaddlePHP\Http\Controllers\DashboardController;
 use SaddlePHP\Http\Controllers\GlobalSearchController;
+use SaddlePHP\Http\Controllers\NotificationReadAllController;
+use SaddlePHP\Http\Controllers\NotificationReadController;
 use SaddlePHP\Http\Controllers\RelationDestroyController;
 use SaddlePHP\Http\Controllers\RelationEditController;
 use SaddlePHP\Http\Controllers\RelationIndexController;
@@ -21,6 +23,10 @@ use SaddlePHP\Http\Controllers\ResourceUpdateController;
 use SaddlePHP\Http\Controllers\ResourceViewController;
 
 Route::get('/', DashboardController::class)->name('dashboard');
+
+// Notifications — read-all literal before the {notification} wildcard.
+Route::post('/notifications/read-all', NotificationReadAllController::class)->name('notifications.read-all');
+Route::post('/notifications/{notification}/read', NotificationReadController::class)->name('notifications.read');
 
 // 'create', 'options', and 'actions' are static path segments owned by the
 // panel. The constraint below ensures the {record} placeholder can never

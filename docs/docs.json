@@ -10,6 +10,8 @@
         { "slug": "relations", "label": "Relation managers", "anchor": "relations" },
         { "slug": "search", "label": "Global search", "anchor": "search" },
         { "slug": "soft-deletes", "label": "Soft deletes", "anchor": "soft-deletes" },
+        { "slug": "widgets", "label": "Dashboard widgets", "anchor": "widgets" },
+        { "slug": "notifications", "label": "Notifications", "anchor": "notifications" },
         { "slug": "authorization", "label": "Authorization", "anchor": "authorization" },
         { "slug": "plugins", "label": "Plugins", "anchor": "plugins" },
         { "slug": "tenancy", "label": "Multi-tenancy", "anchor": "tenancy" },

@@ -29,6 +29,8 @@ class SaddleServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'saddle');
 
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+
         $this->registerRoutes();
 
         $this->resetTenantBetweenRequests();
@@ -41,6 +43,10 @@ class SaddleServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../dist' => public_path('vendor/saddle'),
             ], 'saddle-assets');
+
+            $this->publishes([
+                __DIR__.'/../database/migrations' => $this->app->databasePath('migrations'),
+            ], 'saddle-migrations');
 
             $this->commands([
                 ResourceMakeCommand::class,

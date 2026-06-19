@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use SaddlePHP\Support\ResourceDiscovery;
+use SaddlePHP\Support\WidgetDiscovery;
+use SaddlePHP\Widgets\Widget;
 
 class Saddle
 {
-    public const VERSION = '0.10.0';
+    public const VERSION = '0.11.0';
 
     /** @var array<int, class-string<resource>> */
     protected array $registered = [];
@@ -122,6 +124,30 @@ class Saddle
     public function resourceFor(string $uriKey): ?string
     {
         return $this->resources()->first(fn (string $resource) => $resource::uriKey() === $uriKey);
+    }
+
+    /** @var array<int, class-string<Widget>> */
+    protected array $registeredWidgets = [];
+
+    /** @param array<int, class-string<Widget>> $widgets */
+    public function registerWidgets(array $widgets): static
+    {
+        $this->registeredWidgets = array_values(array_unique(array_merge($this->registeredWidgets, $widgets)));
+
+        return $this;
+    }
+
+    /** @return Collection<int, class-string<Widget>> */
+    public function widgets(): Collection
+    {
+        if ($this->registeredWidgets !== []) {
+            return collect($this->registeredWidgets);
+        }
+
+        return collect(WidgetDiscovery::in(
+            config('saddle.widgets.path', app_path('Saddle/Widgets')),
+            config('saddle.widgets.namespace', 'App\\Saddle\\Widgets'),
+        ));
     }
 
     public function path(): string
