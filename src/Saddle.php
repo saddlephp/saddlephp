@@ -207,6 +207,20 @@ class Saddle
         return $gate === null ? null : app($gate);
     }
 
+    /** Whether tenant self-registration is enabled. */
+    public function canRegisterTenant(): bool
+    {
+        return config('saddle.tenancy.registration') !== null;
+    }
+
+    /** The configured tenant registration handler, or null. */
+    public function tenantRegistration(): ?\SaddlePHP\Tenancy\RegistersTenants
+    {
+        $handler = config('saddle.tenancy.registration');
+
+        return $handler === null ? null : app($handler);
+    }
+
     /** Bind the tenant resolved for the current request. */
     public function useTenant(Model $tenant): static
     {
