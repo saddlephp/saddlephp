@@ -18,7 +18,10 @@ it('discovers non-abstract widgets ordered by sort', function () {
 });
 
 it('returns explicitly registered widgets over discovery', function () {
-    app(Saddle::class)->registerWidgets([HorsesByBreedWidget::class]);
+    // A fresh manager (empty registry) so the assertion is isolated from any
+    // widgets the workbench provider registers on the shared singleton.
+    $saddle = new Saddle;
+    $saddle->registerWidgets([HorsesByBreedWidget::class]);
 
-    expect(app(Saddle::class)->widgets()->all())->toBe([HorsesByBreedWidget::class]);
+    expect($saddle->widgets()->all())->toBe([HorsesByBreedWidget::class]);
 });
