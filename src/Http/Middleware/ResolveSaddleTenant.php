@@ -44,6 +44,12 @@ class ResolveSaddleTenant
 
         $saddle->useTenant($tenant);
 
+        $gate = $saddle->tenantGate();
+
+        if ($gate !== null && ($response = $gate($request, $tenant)) instanceof Response) {
+            return $response;
+        }
+
         $request->route()->forgetParameter('tenant');
 
         return $next($request);

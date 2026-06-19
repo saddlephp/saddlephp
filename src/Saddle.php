@@ -199,6 +199,14 @@ class Saddle
         return config('saddle.tenancy.model');
     }
 
+    /** The configured tenancy access gate (an invokable), or null. */
+    public function tenantGate(): ?callable
+    {
+        $gate = config('saddle.tenancy.gate');
+
+        return $gate === null ? null : app($gate);
+    }
+
     /** Bind the tenant resolved for the current request. */
     public function useTenant(Model $tenant): static
     {
