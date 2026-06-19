@@ -18,6 +18,8 @@
         { "slug": "authorization", "label": "Authorization", "anchor": "authorization" },
         { "slug": "plugins", "label": "Plugins", "anchor": "plugins" },
         { "slug": "tenancy", "label": "Multi-tenancy", "anchor": "tenancy" },
+        { "slug": "tenancy-extras", "label": "Tenancy extras", "anchor": "tenancy-extras" },
+        { "slug": "import-export", "label": "Import and export", "anchor": "import-export" },
         { "slug": "configuration", "label": "Configuration", "anchor": "configuration" }
     ]
 }
