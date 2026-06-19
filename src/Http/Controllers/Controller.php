@@ -78,6 +78,7 @@ abstract class Controller
 
         return ['search' => $search, 'sort' => $sort, 'direction' => $direction, 'filter' => $activeFilters];
     }
+
     /** @return class-string<resource> */
     protected function resolveResource(string $uriKey): string
     {

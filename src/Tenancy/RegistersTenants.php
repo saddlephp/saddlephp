@@ -6,10 +6,11 @@ namespace SaddlePHP\Tenancy;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use SaddlePHP\Fields\Field;
 
 interface RegistersTenants
 {
-    /** @return array<int, \SaddlePHP\Fields\Field> The form fields shown on the registration page. */
+    /** @return array<int, Field> The form fields shown on the registration page. */
     public function fields(): array;
 
     /**

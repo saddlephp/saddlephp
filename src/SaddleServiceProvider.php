@@ -12,6 +12,7 @@ use SaddlePHP\Console\InstallCommand;
 use SaddlePHP\Console\ResourceMakeCommand;
 use SaddlePHP\Console\ResourceRelationMakeCommand;
 use SaddlePHP\Console\UpgradeCommand;
+use SaddlePHP\Http\Controllers\TenantRegisterController;
 use SaddlePHP\Http\Middleware\HandleSaddleRequests;
 use SaddlePHP\Http\Middleware\ResolveSaddleTenant;
 
@@ -110,8 +111,8 @@ class SaddleServiceProvider extends ServiceProvider
                 ->middleware(array_merge((array) config('saddle.middleware', ['web', 'auth']), [HandleSaddleRequests::class]))
                 ->name('saddle.register.')
                 ->group(function () {
-                    Route::get('/register', [\SaddlePHP\Http\Controllers\TenantRegisterController::class, 'show'])->name('show');
-                    Route::post('/register', [\SaddlePHP\Http\Controllers\TenantRegisterController::class, 'store'])->name('store');
+                    Route::get('/register', [TenantRegisterController::class, 'show'])->name('show');
+                    Route::post('/register', [TenantRegisterController::class, 'store'])->name('store');
                 });
         }
 
