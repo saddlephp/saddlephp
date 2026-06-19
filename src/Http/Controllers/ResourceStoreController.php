@@ -32,6 +32,6 @@ class ResourceStoreController extends Controller
         $indexUrl = '/'.app(Saddle::class)->path().'/resources/'.$resource::uriKey();
 
         return redirect()->to($indexUrl)
-            ->with('success', $resource::singularLabel().' created.');
+            ->with('success', __('saddle::panel.flash.created', ['resource' => $resource::singularLabel()]));
     }
 }

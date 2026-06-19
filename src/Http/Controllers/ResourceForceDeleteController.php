@@ -20,6 +20,6 @@ class ResourceForceDeleteController extends Controller
 
         $indexUrl = '/'.app(Saddle::class)->path().'/resources/'.$resource::uriKey();
 
-        return redirect()->to($indexUrl)->with('success', $resource::singularLabel().' permanently deleted.');
+        return redirect()->to($indexUrl)->with('success', __('saddle::panel.flash.force_deleted', ['resource' => $resource::singularLabel()]));
     }
 }

@@ -20,6 +20,6 @@ class ResourceRestoreController extends Controller
 
         $indexUrl = '/'.app(Saddle::class)->path().'/resources/'.$resource::uriKey();
 
-        return redirect()->to($indexUrl)->with('success', $resource::singularLabel().' restored.');
+        return redirect()->to($indexUrl)->with('success', __('saddle::panel.flash.restored', ['resource' => $resource::singularLabel()]));
     }
 }
