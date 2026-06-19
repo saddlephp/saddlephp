@@ -28,6 +28,8 @@ class HandleSaddleRequests extends Middleware
             'accent' => config('saddle.brand.accent', '#d9501f'),
             'version' => Saddle::VERSION,
             'path' => $saddle->path(),
+            'locale' => app()->getLocale(),
+            'translations' => trans('saddle::panel'),
             'nav' => $saddle->nav($request),
             'user' => $request->user() ? [
                 'name' => (string) $request->user()->name,
