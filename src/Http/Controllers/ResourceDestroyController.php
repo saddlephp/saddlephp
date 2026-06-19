@@ -21,6 +21,6 @@ class ResourceDestroyController extends Controller
         $indexUrl = '/'.app(Saddle::class)->path().'/resources/'.$resource::uriKey();
 
         return redirect()->to($indexUrl)
-            ->with('success', $resource::singularLabel().' deleted.');
+            ->with('success', __('saddle::panel.flash.deleted', ['resource' => $resource::singularLabel()]));
     }
 }

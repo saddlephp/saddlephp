@@ -3,6 +3,9 @@ import { Link, usePage } from '@inertiajs/vue3';
 import PanelLayout from '../../Components/PanelLayout.vue';
 import DisplayRenderer from '../../Components/DisplayRenderer.vue';
 import RelationManagers from '../../Components/RelationManagers.vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({ resource: Object, record: Object, fields: Array, relations: Array });
 
@@ -19,8 +22,8 @@ const base = `/${saddle.path}/resources/${props.resource.uriKey}`;
                     v-if="record.can.update"
                     :href="`${base}/${record.id}/edit`"
                     class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white"
-                >Edit</Link>
-                <Link :href="base" class="rounded-lg border border-line-2 px-4 py-2 text-sm">Back</Link>
+                >{{ t('actions.edit') }}</Link>
+                <Link :href="base" class="rounded-lg border border-line-2 px-4 py-2 text-sm">{{ t('actions.back') }}</Link>
             </div>
         </div>
 

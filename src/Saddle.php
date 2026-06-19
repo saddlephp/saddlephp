@@ -13,7 +13,7 @@ use SaddlePHP\Widgets\Widget;
 
 class Saddle
 {
-    public const VERSION = '0.11.0';
+    public const VERSION = '0.12.0';
 
     /** @var array<int, class-string<resource>> */
     protected array $registered = [];
@@ -95,6 +95,38 @@ class Saddle
         }
 
         return $default;
+    }
+
+    /**
+     * Host theme overrides: a validated map of token => CSS colour, injected into
+     * the panel's :root block. Only allowlisted tokens and safe colour values pass.
+     *
+     * @return array<string, string>
+     */
+    public function theme(): array
+    {
+        $allowed = ['bg', 'surface', 'surface-2', 'ink', 'ink-2', 'ink-3', 'line', 'line-2', 'accent'];
+        $theme = config('saddle.brand.theme', []);
+
+        if (! is_array($theme)) {
+            return [];
+        }
+
+        $valid = [];
+
+        foreach ($theme as $token => $value) {
+            if (! in_array($token, $allowed, true) || ! is_string($value)) {
+                continue;
+            }
+
+            $value = trim($value);
+
+            if (preg_match('/^#[0-9a-fA-F]{3,8}$|^(rgb|hsl|oklch)\([^;{}<>]*\)$/', $value) === 1) {
+                $valid[$token] = $value;
+            }
+        }
+
+        return $valid;
     }
 
     /** @param array<int, class-string<resource>> $resources */

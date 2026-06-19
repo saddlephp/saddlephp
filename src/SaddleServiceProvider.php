@@ -31,6 +31,8 @@ class SaddleServiceProvider extends ServiceProvider
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'saddle');
+
         $this->registerRoutes();
 
         $this->resetTenantBetweenRequests();
@@ -47,6 +49,10 @@ class SaddleServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../database/migrations' => $this->app->databasePath('migrations'),
             ], 'saddle-migrations');
+
+            $this->publishes([
+                __DIR__.'/../lang' => $this->app->langPath('vendor/saddle'),
+            ], 'saddle-lang');
 
             $this->commands([
                 ResourceMakeCommand::class,

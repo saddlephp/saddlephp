@@ -13,6 +13,19 @@
     --color-accent: var(--saddle-accent, #d9501f);
 }
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+.dark {
+    --color-bg: #1a1816;
+    --color-surface: #211e1b;
+    --color-surface-2: #2a2622;
+    --color-ink: #f5f3f0;
+    --color-ink-2: #c4bdb4;
+    --color-ink-3: #8c867e;
+    --color-line: #322d28;
+    --color-line-2: #423b34;
+}
+
 body {
     background: var(--color-surface);
     color: var(--color-ink);

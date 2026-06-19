@@ -25,6 +25,6 @@ class ResourceUpdateController extends Controller
         $indexUrl = '/'.app(Saddle::class)->path().'/resources/'.$resource::uriKey();
 
         return redirect()->to($indexUrl)
-            ->with('success', $resource::singularLabel().' updated.');
+            ->with('success', __('saddle::panel.flash.updated', ['resource' => $resource::singularLabel()]));
     }
 }
