@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import GlobalSearch from './GlobalSearch.vue';
 import NotificationBell from './NotificationBell.vue';
+import ThemeToggle from './ThemeToggle.vue';
 
 const page = usePage();
 const saddle = computed(() => page.props.saddle);
@@ -53,6 +54,7 @@ function switchTenant(event) {
                 </div>
             </nav>
             <div v-if="saddle.user" class="border-t border-line px-5 py-3">
+                <ThemeToggle class="mb-3" />
                 <p class="text-xs font-medium">{{ saddle.user.name }}</p>
                 <p class="text-[0.65rem] text-ink-3">{{ saddle.user.email }}</p>
             </div>
