@@ -19,6 +19,12 @@ return [
         'per_resource' => 5,
     ],
 
+    // Where auto-discovered dashboard widgets live.
+    'widgets' => [
+        'path' => app_path('Saddle/Widgets'),
+        'namespace' => 'App\\Saddle\\Widgets',
+    ],
+
     'brand' => [
         'name' => 'Saddle',
         'accent' => '#d9501f',
