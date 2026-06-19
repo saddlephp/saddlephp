@@ -59,6 +59,7 @@ class HandleSaddleRequests extends Middleware
         if ($saddle->tenant() !== null) {
             $shared['tenant'] = $this->tenant($saddle);
             $shared['tenants'] = $this->tenants($saddle, $request);
+            $shared['canRegisterTenant'] = $saddle->canRegisterTenant();
         }
 
         return array_merge(parent::share($request), ['saddle' => $shared]);
