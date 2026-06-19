@@ -9,11 +9,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use SaddlePHP\Support\ResourceDiscovery;
 use SaddlePHP\Support\WidgetDiscovery;
+use SaddlePHP\Tenancy\RegistersTenants;
 use SaddlePHP\Widgets\Widget;
 
 class Saddle
 {
-    public const VERSION = '0.12.0';
+    public const VERSION = '1.0.0';
 
     /** @var array<int, class-string<resource>> */
     protected array $registered = [];
@@ -214,7 +215,7 @@ class Saddle
     }
 
     /** The configured tenant registration handler, or null. */
-    public function tenantRegistration(): ?\SaddlePHP\Tenancy\RegistersTenants
+    public function tenantRegistration(): ?RegistersTenants
     {
         $handler = config('saddle.tenancy.registration');
 
