@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const { saddle } = usePage().props;
 const endpoint = `/${saddle.path}/resources/search`;
 
@@ -40,7 +42,7 @@ function go(url) {
         <input
             v-model="term"
             type="search"
-            placeholder="Search…"
+            :placeholder="t('index.search')"
             class="w-full rounded-lg border border-line-2 bg-bg px-3 py-1.5 text-sm"
             @input="onInput"
             @focus="term && (open = true)"

@@ -4,6 +4,9 @@ import { Link, useForm, usePage } from '@inertiajs/vue3';
 import PanelLayout from '../../Components/PanelLayout.vue';
 import FormRenderer from '../../Components/FormRenderer.vue';
 import { flattenFields, isFileField } from '../../support/flattenFields';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({ resource: Object, record: Object, fields: Array });
 
@@ -50,8 +53,8 @@ function save() {
                     type="submit"
                     :disabled="form.processing"
                     class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-                >Save changes</button>
-                <Link :href="base" class="rounded-lg border border-line-2 px-4 py-2 text-sm">Cancel</Link>
+                >{{ t('actions.save') }}</button>
+                <Link :href="base" class="rounded-lg border border-line-2 px-4 py-2 text-sm">{{ t('actions.cancel') }}</Link>
             </div>
         </form>
     </PanelLayout>

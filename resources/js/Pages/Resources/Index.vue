@@ -3,6 +3,9 @@ import { ref, computed, watch, onUnmounted } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import PanelLayout from '../../Components/PanelLayout.vue';
 import ConfirmDialog from '../../Components/ConfirmDialog.vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     resource: Object,
@@ -150,7 +153,7 @@ function confirmAction() {
                 v-if="resource.canCreate"
                 :href="`${base}/create`"
                 class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white"
-            >New {{ resource.singularLabel.toLowerCase() }}</Link>
+            >{{ t('actions.create', { resource: resource.singularLabel.toLowerCase() }) }}</Link>
         </div>
 
         <input
@@ -253,9 +256,9 @@ function confirmAction() {
                         </td>
                         <td class="px-4 py-3 text-right text-xs">
                             <template v-if="!row.trashed">
-                                <Link v-if="row.can.view" :href="`${base}/${row.id}`" class="text-ink-2 hover:text-ink">View</Link>
-                                <Link v-if="row.can.update" :href="`${base}/${row.id}/edit`" class="ml-3 text-ink-2 hover:text-ink">Edit</Link>
-                                <button v-if="row.can.delete" type="button" class="ml-3 text-accent" @click="deleting = row">Delete</button>
+                                <Link v-if="row.can.view" :href="`${base}/${row.id}`" class="text-ink-2 hover:text-ink">{{ t('rows.view') }}</Link>
+                                <Link v-if="row.can.update" :href="`${base}/${row.id}/edit`" class="ml-3 text-ink-2 hover:text-ink">{{ t('rows.edit') }}</Link>
+                                <button v-if="row.can.delete" type="button" class="ml-3 text-accent" @click="deleting = row">{{ t('rows.delete') }}</button>
                                 <button
                                     v-for="action in actions"
                                     :key="action.name"
@@ -265,13 +268,13 @@ function confirmAction() {
                                 >{{ action.label }}</button>
                             </template>
                             <template v-else>
-                                <button v-if="row.can.restore" type="button" class="text-ink-2 hover:text-ink" @click="restore(row)">Restore</button>
-                                <button v-if="row.can.forceDelete" type="button" class="ml-3 text-accent" @click="forceDeleting = row">Delete permanently</button>
+                                <button v-if="row.can.restore" type="button" class="text-ink-2 hover:text-ink" @click="restore(row)">{{ t('rows.restore') }}</button>
+                                <button v-if="row.can.forceDelete" type="button" class="ml-3 text-accent" @click="forceDeleting = row">{{ t('rows.force_delete') }}</button>
                             </template>
                         </td>
                     </tr>
                     <tr v-if="!rows.data.length">
-                        <td :colspan="columns.length + (bulkActions.length ? 2 : 1)" class="px-4 py-10 text-center text-ink-3">Nothing in the corral yet.</td>
+                        <td :colspan="columns.length + (bulkActions.length ? 2 : 1)" class="px-4 py-10 text-center text-ink-3">{{ t('index.empty') }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -292,10 +295,10 @@ function confirmAction() {
             </div>
         </div>
 
-        <ConfirmDialog v-if="deleting" :title="`Delete ${deleting.title}?`" @confirm="destroy" @cancel="deleting = null" />
+        <ConfirmDialog v-if="deleting" :title="t('confirm.delete', { title: deleting.title })" @confirm="destroy" @cancel="deleting = null" />
         <ConfirmDialog
             v-if="forceDeleting"
-            :title="`Permanently delete ${forceDeleting.title}?`"
+            :title="t('confirm.force_delete', { title: forceDeleting.title })"
             message="This cannot be undone."
             confirm-label="Delete permanently"
             @confirm="forceDelete"

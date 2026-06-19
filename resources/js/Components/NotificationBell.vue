@@ -1,7 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const page = usePage();
 const saddle = computed(() => page.props.saddle);
 const base = computed(() => `/${saddle.value.path}`);
@@ -35,17 +37,17 @@ function markAll() {
                     <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
                     <path d="M13.7 21a2 2 0 0 1-3.4 0" />
                 </svg>
-                Notifications
+                {{ t('notifications.title') }}
             </span>
             <span v-if="notifications.unread" class="rounded-full bg-accent px-1.5 py-0.5 text-[0.65rem] font-medium text-white">{{ notifications.unread }}</span>
         </button>
 
         <div v-if="open" class="absolute left-3 right-3 z-20 mt-1 max-h-96 overflow-y-auto rounded-lg border border-line bg-bg shadow-lg">
             <div class="flex items-center justify-between border-b border-line px-3 py-2">
-                <span class="text-xs font-medium text-ink-3">Notifications</span>
-                <button v-if="notifications.unread" type="button" class="text-xs text-accent" @click="markAll">Mark all read</button>
+                <span class="text-xs font-medium text-ink-3">{{ t('notifications.title') }}</span>
+                <button v-if="notifications.unread" type="button" class="text-xs text-accent" @click="markAll">{{ t('notifications.mark_all') }}</button>
             </div>
-            <p v-if="!notifications.items.length" class="px-3 py-4 text-center text-sm text-ink-3">All quiet.</p>
+            <p v-if="!notifications.items.length" class="px-3 py-4 text-center text-sm text-ink-3">{{ t('notifications.empty') }}</p>
             <button
                 v-for="item in notifications.items"
                 :key="item.id"
