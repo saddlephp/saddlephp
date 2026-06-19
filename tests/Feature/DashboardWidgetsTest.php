@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use SaddlePHP\Saddle;
+use SaddlePHP\Widgets\StatWidget;
 use Workbench\App\Models\Horse;
 use Workbench\App\Saddle\Widgets\HorseCountWidget;
 use Workbench\App\Saddle\Widgets\HorsesByBreedWidget;
@@ -40,7 +41,7 @@ it('omits a widget the user cannot see and survives a throwing widget', function
         );
 });
 
-class HiddenWidget extends \SaddlePHP\Widgets\StatWidget
+class HiddenWidget extends StatWidget
 {
     public static function canSee(Request $request): bool
     {
@@ -58,7 +59,7 @@ class HiddenWidget extends \SaddlePHP\Widgets\StatWidget
     }
 }
 
-class BoomWidget extends \SaddlePHP\Widgets\StatWidget
+class BoomWidget extends StatWidget
 {
     public function label(): string
     {
@@ -67,6 +68,6 @@ class BoomWidget extends \SaddlePHP\Widgets\StatWidget
 
     public function value(Request $request): string|int
     {
-        throw new \RuntimeException('boom');
+        throw new RuntimeException('boom');
     }
 }

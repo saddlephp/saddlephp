@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Inertia\Testing\AssertableInertia;
 use SaddlePHP\Saddle;
 use Workbench\App\Models\Horse;
 use Workbench\App\Models\Ranch;
@@ -26,7 +27,7 @@ it('scopes a tenant-aware widget to the bound tenant', function () {
 
     $this->get("/admin/{$ranchA->getRouteKey()}")
         ->assertOk()
-        ->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
+        ->assertInertia(fn (AssertableInertia $page) => $page
             ->where('widgets', function ($widgets) {
                 $stat = collect($widgets)->firstWhere('label', 'Tenant horses');
 
