@@ -8,6 +8,8 @@ return [
         'create' => 'New {resource}',
         'back' => 'Back',
         'edit' => 'Edit',
+        'export' => 'Export',
+        'import' => 'Import',
     ],
     'rows' => [
         'view' => 'View',
