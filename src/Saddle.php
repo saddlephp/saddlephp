@@ -9,10 +9,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use SaddlePHP\Support\ResourceDiscovery;
 use SaddlePHP\Support\WidgetDiscovery;
+use SaddlePHP\Widgets\Widget;
 
 class Saddle
 {
-    public const VERSION = '0.10.0';
+    public const VERSION = '0.11.0';
 
     /** @var array<int, class-string<resource>> */
     protected array $registered = [];
@@ -125,10 +126,10 @@ class Saddle
         return $this->resources()->first(fn (string $resource) => $resource::uriKey() === $uriKey);
     }
 
-    /** @var array<int, class-string<\SaddlePHP\Widgets\Widget>> */
+    /** @var array<int, class-string<Widget>> */
     protected array $registeredWidgets = [];
 
-    /** @param array<int, class-string<\SaddlePHP\Widgets\Widget>> $widgets */
+    /** @param array<int, class-string<Widget>> $widgets */
     public function registerWidgets(array $widgets): static
     {
         $this->registeredWidgets = array_values(array_unique(array_merge($this->registeredWidgets, $widgets)));
@@ -136,7 +137,7 @@ class Saddle
         return $this;
     }
 
-    /** @return Collection<int, class-string<\SaddlePHP\Widgets\Widget>> */
+    /** @return Collection<int, class-string<Widget>> */
     public function widgets(): Collection
     {
         if ($this->registeredWidgets !== []) {
