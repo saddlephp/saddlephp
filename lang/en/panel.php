@@ -8,6 +8,8 @@ return [
         'create' => 'New {resource}',
         'back' => 'Back',
         'edit' => 'Edit',
+        'export' => 'Export',
+        'import' => 'Import',
     ],
     'rows' => [
         'view' => 'View',
@@ -38,5 +40,6 @@ return [
         'deleted' => ':resource deleted.',
         'restored' => ':resource restored.',
         'force_deleted' => ':resource permanently deleted.',
+        'imported' => 'Imported :created records (:skipped skipped).',
     ],
 ];

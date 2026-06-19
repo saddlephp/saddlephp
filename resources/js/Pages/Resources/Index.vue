@@ -20,6 +20,14 @@ const props = defineProps({
 const { saddle } = usePage().props;
 const base = `/${saddle.path}/resources/${props.resource.uriKey}`;
 
+const exportQuery = computed(() => {
+    const p = new URLSearchParams();
+    if (props.query.search) p.set('search', props.query.search);
+    for (const [k, v] of Object.entries(props.query.filter || {})) p.set(`filter[${k}]`, v);
+    const s = p.toString();
+    return s ? `?${s}` : '';
+});
+
 const search = ref(props.query.search);
 let timer;
 watch(search, (value) => {
@@ -149,11 +157,23 @@ function confirmAction() {
     <PanelLayout>
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h1 class="text-2xl font-semibold tracking-tight">{{ resource.label }}</h1>
-            <Link
-                v-if="resource.canCreate"
-                :href="`${base}/create`"
-                class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white"
-            >{{ t('actions.create', { resource: resource.singularLabel.toLowerCase() }) }}</Link>
+            <div class="flex flex-wrap gap-2">
+                <Link
+                    v-if="resource.canImport"
+                    :href="`${base}/import`"
+                    class="rounded-lg border border-line-2 px-4 py-2 text-sm"
+                >{{ t('actions.import') }}</Link>
+                <a
+                    v-if="resource.canExport"
+                    :href="`${base}/export${exportQuery}`"
+                    class="rounded-lg border border-line-2 px-4 py-2 text-sm"
+                >{{ t('actions.export') }}</a>
+                <Link
+                    v-if="resource.canCreate"
+                    :href="`${base}/create`"
+                    class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white"
+                >{{ t('actions.create', { resource: resource.singularLabel.toLowerCase() }) }}</Link>
+            </div>
         </div>
 
         <input

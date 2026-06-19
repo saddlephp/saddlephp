@@ -41,6 +41,14 @@ return [
     'tenancy' => [
         'model' => null,
         'relationship' => 'users',
+
+        // Optional invokable run after a tenant resolves; return a Response
+        // (e.g. a redirect to billing) to deny access. null = no gate.
+        'gate' => null,
+
+        // Optional RegistersTenants implementation enabling /{path}/register.
+        // null = tenant registration disabled.
+        'registration' => null,
     ],
 
     /*

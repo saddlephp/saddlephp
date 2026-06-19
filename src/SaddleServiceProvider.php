@@ -12,6 +12,7 @@ use SaddlePHP\Console\InstallCommand;
 use SaddlePHP\Console\ResourceMakeCommand;
 use SaddlePHP\Console\ResourceRelationMakeCommand;
 use SaddlePHP\Console\UpgradeCommand;
+use SaddlePHP\Http\Controllers\TenantRegisterController;
 use SaddlePHP\Http\Middleware\HandleSaddleRequests;
 use SaddlePHP\Http\Middleware\ResolveSaddleTenant;
 
@@ -99,6 +100,21 @@ class SaddleServiceProvider extends ServiceProvider
         }
 
         $middleware[] = HandleSaddleRequests::class;
+
+        // Tenant registration mounts at /{path}/register — WITHOUT the {tenant}
+        // segment (the user has no tenant yet) and without ResolveSaddleTenant.
+        // Registered BEFORE the main group so the literal `register` wins over
+        // the tenant dashboard route (/{path}/{tenant}). The route exists
+        // whenever tenancy is on; the controller 404s when no handler is set.
+        if ($tenancyOn) {
+            Route::prefix(config('saddle.path', 'admin'))
+                ->middleware(array_merge((array) config('saddle.middleware', ['web', 'auth']), [HandleSaddleRequests::class]))
+                ->name('saddle.register.')
+                ->group(function () {
+                    Route::get('/register', [TenantRegisterController::class, 'show'])->name('show');
+                    Route::post('/register', [TenantRegisterController::class, 'store'])->name('store');
+                });
+        }
 
         Route::prefix($prefix)
             ->middleware($middleware)

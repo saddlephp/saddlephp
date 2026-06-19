@@ -9,11 +9,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use SaddlePHP\Support\ResourceDiscovery;
 use SaddlePHP\Support\WidgetDiscovery;
+use SaddlePHP\Tenancy\RegistersTenants;
 use SaddlePHP\Widgets\Widget;
 
 class Saddle
 {
-    public const VERSION = '0.12.0';
+    public const VERSION = '1.0.0';
 
     /** @var array<int, class-string<resource>> */
     protected array $registered = [];
@@ -197,6 +198,28 @@ class Saddle
     public function tenancyModel(): ?string
     {
         return config('saddle.tenancy.model');
+    }
+
+    /** The configured tenancy access gate (an invokable), or null. */
+    public function tenantGate(): ?callable
+    {
+        $gate = config('saddle.tenancy.gate');
+
+        return $gate === null ? null : app($gate);
+    }
+
+    /** Whether tenant self-registration is enabled. */
+    public function canRegisterTenant(): bool
+    {
+        return config('saddle.tenancy.registration') !== null;
+    }
+
+    /** The configured tenant registration handler, or null. */
+    public function tenantRegistration(): ?RegistersTenants
+    {
+        $handler = config('saddle.tenancy.registration');
+
+        return $handler === null ? null : app($handler);
     }
 
     /** Bind the tenant resolved for the current request. */

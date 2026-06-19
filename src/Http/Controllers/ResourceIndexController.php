@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use SaddlePHP\Tables\Filters\TrashedFilter;
 
 class ResourceIndexController extends Controller
 {
@@ -17,49 +16,9 @@ class ResourceIndexController extends Controller
         $resource = $this->resolveResource($resourceKey);
         abort_unless($resource::allows('viewAny'), 403);
 
-        $table = $resource::makeTable();
-
-        if ($resource::usesSoftDeletes()) {
-            $table->filters(array_merge($table->getFilters(), [TrashedFilter::make('trashed')->label('Status')]));
-        }
-
+        $table = $this->makeIndexTable($resource);
         $query = $resource::query($request);
-
-        $search = trim((string) $request->query('search', ''));
-        $searchable = $table->searchableColumns();
-
-        if ($search !== '' && $searchable !== []) {
-            $query->where(function ($q) use ($search, $searchable) {
-                foreach ($searchable as $column) {
-                    $q->orWhere($column, 'like', "%{$search}%");
-                }
-            });
-        }
-
-        $requested = $request->query('filter', []);
-        $requested = is_array($requested) ? $requested : [];
-        $activeFilters = [];
-
-        foreach ($table->getFilters() as $filter) {
-            $value = $requested[$filter->name()] ?? null;
-
-            if (is_string($value) && $value !== '' && $filter->accepts($value)) {
-                $filter->apply($query, $value);
-                $activeFilters[$filter->name()] = $value;
-            }
-        }
-
-        $requestedSort = (string) $request->query('sort', '');
-
-        if (in_array($requestedSort, $table->sortableColumns(), true)) {
-            $sort = $requestedSort;
-            $direction = $request->query('direction') === 'desc' ? 'desc' : 'asc';
-        } else {
-            $sort = $resource::newModel()->getKeyName();
-            $direction = 'desc';
-        }
-
-        $query->orderBy($sort, $direction);
+        $state = $this->applyTableQuery($query, $table, $request);
 
         $rows = $query
             ->paginate((int) config('saddle.per_page', 25))
@@ -86,18 +45,15 @@ class ResourceIndexController extends Controller
                 'label' => $resource::label(),
                 'singularLabel' => $resource::singularLabel(),
                 'canCreate' => $resource::allows('create'),
+                'canExport' => $resource::allows('viewAny'),
+                'canImport' => $resource::allows('create'),
             ],
             'columns' => $table->toInertia(),
             'filters' => $table->filtersToInertia(),
             'actions' => collect($resource::actions())->map->toArray()->values()->all(),
             'bulkActions' => collect($resource::bulkActions())->map->toArray()->values()->all(),
             'rows' => $rows,
-            'query' => [
-                'search' => $search,
-                'sort' => $sort,
-                'direction' => $direction,
-                'filter' => $activeFilters,
-            ],
+            'query' => $state,
         ]);
     }
 }
