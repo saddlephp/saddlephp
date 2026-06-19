@@ -40,5 +40,6 @@ return [
         'deleted' => ':resource deleted.',
         'restored' => ':resource restored.',
         'force_deleted' => ':resource permanently deleted.',
+        'imported' => 'Imported :created records (:skipped skipped).',
     ],
 ];

@@ -16,6 +16,7 @@ use SaddlePHP\Http\Controllers\ResourceDestroyController;
 use SaddlePHP\Http\Controllers\ResourceEditController;
 use SaddlePHP\Http\Controllers\ResourceExportController;
 use SaddlePHP\Http\Controllers\ResourceForceDeleteController;
+use SaddlePHP\Http\Controllers\ResourceImportController;
 use SaddlePHP\Http\Controllers\ResourceIndexController;
 use SaddlePHP\Http\Controllers\ResourceOptionsController;
 use SaddlePHP\Http\Controllers\ResourceRestoreController;
@@ -46,6 +47,8 @@ Route::post('/resources/{resourceKey}/actions/{action}', ResourceActionControlle
 Route::get('/resources/{resourceKey}/create', ResourceCreateController::class)->name('resources.create');
 Route::post('/resources/{resourceKey}', ResourceStoreController::class)->name('resources.store');
 Route::get('/resources/{resourceKey}/export', ResourceExportController::class)->name('resources.export');
+Route::get('/resources/{resourceKey}/import', [ResourceImportController::class, 'show'])->name('resources.import');
+Route::post('/resources/{resourceKey}/import', [ResourceImportController::class, 'store'])->name('resources.import.store');
 Route::get('/resources/{resourceKey}/{record}', ResourceViewController::class)->name('resources.view')->where('record', $recordKey);
 Route::get('/resources/{resourceKey}/{record}/edit', ResourceEditController::class)->name('resources.edit')->where('record', $recordKey);
 Route::put('/resources/{resourceKey}/{record}', ResourceUpdateController::class)->name('resources.update')->where('record', $recordKey);
