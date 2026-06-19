@@ -12,7 +12,7 @@
 Vue**. Round up your Eloquent models into polished resource panels, with form and table builders, roles and access,
 plugins, and multi-tenancy.
 
-> **Status: v0.11 adds dashboard widgets and database notifications.** The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
+> **Status: v0.12 adds dark mode, theming, localization, and testing helpers.** The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
 
 ## Installation
 
@@ -453,6 +453,9 @@ The `workbench/` directory contains a minimal host application used by the test 
 - [x] Soft deletes (trashed filter, restore, force-delete)
 - [x] Dashboard widgets (stats + chart)
 - [x] Database notifications
+- [x] Dark mode + theming hooks
+- [x] Localization (i18n)
+- [x] Host testing helpers
 
 ## Stack
 
