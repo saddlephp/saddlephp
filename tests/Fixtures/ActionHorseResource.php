@@ -20,6 +20,9 @@ class ActionHorseResource extends Resource
 
     public static ?string $title = 'name';
 
+    // Own storage so the tenancy suite's runtime $tenant toggling stays local.
+    public static ?string $tenant = null;
+
     public static function form(Form $form): Form
     {
         return $form->schema([

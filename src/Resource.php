@@ -6,11 +6,13 @@ namespace SaddlePHP;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToRelation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
+use LogicException;
 use SaddlePHP\Actions\Action;
 use SaddlePHP\Forms\Form;
 use SaddlePHP\Tables\Table;
@@ -71,10 +73,29 @@ abstract class Resource
         $tenant = app(Saddle::class)->tenant();
 
         if (static::$tenant !== null && $tenant !== null) {
+            static::assertTenantRelation();
             $query->whereBelongsTo($tenant, static::$tenant);
         }
 
         return $query;
+    }
+
+    /**
+     * Fail loud and clear when $tenant names a relation the model does not have.
+     * Without this guard a misconfigured (or, historically, a leaked) $tenant
+     * surfaces as a cryptic RelationNotFoundException deep inside whereBelongsTo.
+     * Mirrors the BelongsTo field's bound() validation.
+     */
+    protected static function assertTenantRelation(): void
+    {
+        $model = static::newModel();
+
+        if (! method_exists($model, static::$tenant) || ! $model->{static::$tenant}() instanceof BelongsToRelation) {
+            throw new LogicException(sprintf(
+                'Resource [%s]: $tenant names [%s] but %s has no such BelongsTo relation.',
+                static::class, static::$tenant, static::$model,
+            ));
+        }
     }
 
     public static function recordTitle(Model $record): string
