@@ -14,7 +14,7 @@ use SaddlePHP\Widgets\Widget;
 
 class Saddle
 {
-    public const VERSION = '1.0.0';
+    public const VERSION = '1.0.1';
 
     /** @var array<int, class-string<resource>> */
     protected array $registered = [];
