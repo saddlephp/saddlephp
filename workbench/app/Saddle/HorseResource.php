@@ -37,6 +37,10 @@ class HorseResource extends Resource
 
     public static ?string $title = 'name';
 
+    // Own storage: the tenancy suite toggles $tenant at runtime, so each resource
+    // declares it rather than sharing the abstract base's inherited slot.
+    public static ?string $tenant = null;
+
     public static ?string $icon = 'collection';
 
     public static array $with = ['rider'];
