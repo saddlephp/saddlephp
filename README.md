@@ -1,4 +1,21 @@
 <p align="center">
+  <a href="docs/translations/README.ar.md">العربية</a> •
+  <a href="docs/translations/README.de.md">Deutsch</a> •
+  <b>English</b> •
+  <a href="docs/translations/README.es.md">Español</a> •
+  <a href="docs/translations/README.fr.md">Français</a> •
+  <a href="docs/translations/README.it.md">Italiano</a> •
+  <a href="docs/translations/README.ja.md">日本語</a> •
+  <a href="docs/translations/README.ko.md">한국어</a> •
+  <a href="docs/translations/README.nl.md">Nederlands</a> •
+  <a href="docs/translations/README.pl.md">Polski</a> •
+  <a href="docs/translations/README.pt-BR.md">Português (BR)</a> •
+  <a href="docs/translations/README.ru.md">Русский</a> •
+  <a href="docs/translations/README.tr.md">Türkçe</a> •
+  <a href="docs/translations/README.zh-CN.md">简体中文</a>
+</p>
+
+<p align="center">
   <a href="https://saddlephp.com"><img src=".github/og.png" alt="Saddle, there's a new admin panel in town" width="820"></a>
 </p>
 
