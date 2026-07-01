@@ -6,6 +6,7 @@ namespace SaddlePHP\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -39,44 +40,59 @@ class ResourceImportController extends Controller
         $fieldNames = collect($form->fields())->map->name()->all();
         $lowerNames = array_map('strtolower', $fieldNames);
 
+        $maxRows = (int) config('saddle.import.max_rows', 5000);
+
         $handle = fopen($request->file('file')->getRealPath(), 'r');
-        $header = array_map(fn ($h) => strtolower(trim((string) $h)), fgetcsv($handle) ?: []);
-        $tenant = app(Saddle::class)->tenant();
+        abort_if($handle === false, 422, 'The import file could not be read.');
 
-        $created = 0;
-        $skipped = 0;
+        try {
+            $header = array_map(fn ($h) => strtolower(trim((string) $h)), fgetcsv($handle) ?: []);
+            $tenant = app(Saddle::class)->tenant();
 
-        while (($row = fgetcsv($handle)) !== false) {
-            $assoc = [];
+            // Import atomically: a hard error or an over-cap file rolls back the
+            // whole batch instead of leaving a partial import behind.
+            [$created, $skipped] = DB::transaction(function () use ($handle, $header, $lowerNames, $fieldNames, $rules, $resource, $tenant, $maxRows, $form) {
+                $created = 0;
+                $skipped = 0;
+                $rows = 0;
 
-            foreach ($header as $i => $key) {
-                $position = array_search($key, $lowerNames, true);
+                while (($row = fgetcsv($handle)) !== false) {
+                    abort_if(++$rows > $maxRows, 422, "Import files are limited to {$maxRows} rows.");
 
-                if ($position !== false) {
-                    $assoc[$fieldNames[$position]] = $row[$i] ?? null;
+                    $assoc = [];
+
+                    foreach ($header as $i => $key) {
+                        $position = array_search($key, $lowerNames, true);
+
+                        if ($position !== false) {
+                            $assoc[$fieldNames[$position]] = $row[$i] ?? null;
+                        }
+                    }
+
+                    $validator = Validator::make($assoc, $rules);
+
+                    if ($validator->fails()) {
+                        $skipped++;
+
+                        continue;
+                    }
+
+                    $record = $resource::newModel();
+                    $form->fill($record, $validator->validated());
+
+                    if ($resource::$tenant !== null && $tenant !== null) {
+                        $record->{$resource::$tenant}()->associate($tenant);
+                    }
+
+                    $record->save();
+                    $created++;
                 }
-            }
 
-            $validator = Validator::make($assoc, $rules);
-
-            if ($validator->fails()) {
-                $skipped++;
-
-                continue;
-            }
-
-            $record = $resource::newModel();
-            $form->fill($record, $validator->validated());
-
-            if ($resource::$tenant !== null && $tenant !== null) {
-                $record->{$resource::$tenant}()->associate($tenant);
-            }
-
-            $record->save();
-            $created++;
+                return [$created, $skipped];
+            });
+        } finally {
+            fclose($handle);
         }
-
-        fclose($handle);
 
         $indexUrl = '/'.app(Saddle::class)->path().'/resources/'.$resource::uriKey();
 

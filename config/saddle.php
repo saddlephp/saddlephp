@@ -70,4 +70,13 @@ return [
         'disk' => 'public',
         'directory' => 'saddle',
     ],
+
+    /*
+     * CSV import runs synchronously in the web request, so cap the number of
+     * rows a single upload may contain. A file over the cap is rejected whole
+     * (the import is transactional) rather than processed partially.
+     */
+    'import' => [
+        'max_rows' => 5000,
+    ],
 ];

@@ -20,6 +20,19 @@ it('imports valid rows and skips invalid ones', function () {
     expect(Horse::pluck('name')->all())->toEqualCanonicalizing(['Cisco', 'Scout']);
 });
 
+it('rejects a file over the row cap and imports nothing', function () {
+    config(['saddle.import.max_rows' => 2]);
+    $this->actingAsUser();
+
+    $csv = "name,breed\nCisco,quarter\nScout,mustang\nDakota,appaloosa\n"; // 3 rows, cap 2
+    $file = UploadedFile::fake()->createWithContent('horses.csv', $csv);
+
+    $this->post('/admin/resources/horses/import', ['file' => $file])->assertStatus(422);
+
+    // Transactional: the over-cap file rolls back, leaving no partial import.
+    expect(Horse::count())->toBe(0);
+});
+
 it('gates import behind create', function () {
     $this->actingAsUser(['is_admin' => false]);
     Gate::policy(Horse::class, DenyImportCreatePolicy::class);
