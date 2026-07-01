@@ -14,6 +14,7 @@ use Illuminate\Validation\Rule;
 use LogicException;
 use SaddlePHP\Resource;
 use SaddlePHP\Saddle;
+use SaddlePHP\Support\Search;
 
 class BelongsTo extends Field
 {
@@ -178,7 +179,7 @@ class BelongsTo extends Field
 
         if ($search !== '') {
             $title !== null
-                ? $query->where($title, 'like', "%{$search}%")
+                ? $query->where($title, 'like', '%'.Search::escapeLike($search).'%')
                 : $query->whereKey($search);
         }
 

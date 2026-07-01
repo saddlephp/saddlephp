@@ -22,6 +22,17 @@ it('exports the filtered records as CSV', function () {
         ->and($csv)->not->toContain('Scout'); // filtered out
 });
 
+it('neutralizes formula-injection values in exported cells', function () {
+    $this->actingAsUser();
+    Horse::factory()->create(['name' => '=1+2', 'breed' => 'quarter']);
+
+    $csv = $this->get('/admin/resources/horses/export')->streamedContent();
+
+    // The dangerous cell is prefixed with a quote so spreadsheets treat it as
+    // text; without the fix the cell would be a bare "=1+2".
+    expect($csv)->toContain("'=1+2");
+});
+
 it('gates export behind viewAny', function () {
     $this->actingAsUser(['is_admin' => false]);
     Gate::policy(Horse::class, DenyExportViewAnyPolicy::class);

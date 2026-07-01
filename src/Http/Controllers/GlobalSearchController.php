@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use SaddlePHP\Resource;
 use SaddlePHP\Saddle;
+use SaddlePHP\Support\Search;
 
 class GlobalSearchController extends Controller
 {
@@ -60,7 +61,7 @@ class GlobalSearchController extends Controller
         $records = $resource::query($request)
             ->where(function ($query) use ($searchable, $term) {
                 foreach ($searchable as $column) {
-                    $query->orWhere($column, 'like', "%{$term}%");
+                    $query->orWhere($column, 'like', '%'.Search::escapeLike($term).'%');
                 }
             })
             ->limit($limit)

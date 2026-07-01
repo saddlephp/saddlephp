@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use SaddlePHP\RelationManager;
 use SaddlePHP\Resource;
 use SaddlePHP\Saddle;
+use SaddlePHP\Support\Search;
 use SaddlePHP\Tables\Filters\TrashedFilter;
 use SaddlePHP\Tables\Table;
 
@@ -46,7 +47,7 @@ abstract class Controller
         if ($search !== '' && $searchable !== []) {
             $query->where(function ($q) use ($search, $searchable) {
                 foreach ($searchable as $column) {
-                    $q->orWhere($column, 'like', "%{$search}%");
+                    $q->orWhere($column, 'like', '%'.Search::escapeLike($search).'%');
                 }
             });
         }

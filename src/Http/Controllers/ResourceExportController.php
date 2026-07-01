@@ -6,6 +6,7 @@ namespace SaddlePHP\Http\Controllers;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use SaddlePHP\Support\Csv;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ResourceExportController extends Controller
@@ -27,7 +28,7 @@ class ResourceExportController extends Controller
             fputcsv($out, $headers);
 
             $query->cursor()->each(function (Model $record) use ($out, $columns) {
-                fputcsv($out, array_map(fn ($column) => $column->resolve($record), $columns));
+                fputcsv($out, array_map(fn ($column) => Csv::neutralize($column->resolve($record)), $columns));
             });
 
             fclose($out);
