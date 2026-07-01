@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace SaddlePHP\Testing;
 
 use PHPUnit\Framework\Assert;
-use SaddlePHP\Resource;
 use SaddlePHP\Saddle;
 
 trait InteractsWithSaddle
 {
     /**
-     * @param  class-string<resource>  $resource
+     * @param  class-string<\SaddlePHP\Resource>  $resource
      * @return array<int, array<string, mixed>>
      */
     protected function saddleForm(string $resource): array
@@ -20,7 +19,7 @@ trait InteractsWithSaddle
     }
 
     /**
-     * @param  class-string<resource>  $resource
+     * @param  class-string<\SaddlePHP\Resource>  $resource
      * @return array<int, array<string, mixed>>
      */
     protected function saddleTable(string $resource): array
@@ -36,7 +35,7 @@ trait InteractsWithSaddle
         );
     }
 
-    /** @param class-string<resource> $resource */
+    /** @param class-string<\SaddlePHP\Resource> $resource */
     protected function assertResourceHasField(string $resource, string $name): void
     {
         Assert::assertNotNull(
@@ -45,7 +44,7 @@ trait InteractsWithSaddle
         );
     }
 
-    /** @param class-string<resource> $resource */
+    /** @param class-string<\SaddlePHP\Resource> $resource */
     protected function assertResourceMissingField(string $resource, string $name): void
     {
         Assert::assertNull(
@@ -54,7 +53,7 @@ trait InteractsWithSaddle
         );
     }
 
-    /** @param class-string<resource> $resource */
+    /** @param class-string<\SaddlePHP\Resource> $resource */
     protected function assertResourceHasColumn(string $resource, string $name): void
     {
         $names = array_column($this->saddleTable($resource), 'name');

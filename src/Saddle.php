@@ -16,10 +16,10 @@ class Saddle
 {
     public const VERSION = '1.0.1';
 
-    /** @var array<int, class-string<resource>> */
+    /** @var array<int, class-string<\SaddlePHP\Resource>> */
     protected array $registered = [];
 
-    /** @var array<int, class-string<resource>>|null */
+    /** @var array<int, class-string<\SaddlePHP\Resource>>|null */
     protected ?array $discovered = null;
 
     /** @var array<int, string> */
@@ -130,7 +130,7 @@ class Saddle
         return $valid;
     }
 
-    /** @param array<int, class-string<resource>> $resources */
+    /** @param array<int, class-string<\SaddlePHP\Resource>> $resources */
     public function register(array $resources): static
     {
         $this->registered = array_values(array_unique(array_merge($this->registered, $resources)));
@@ -138,7 +138,7 @@ class Saddle
         return $this;
     }
 
-    /** @return Collection<int, class-string<resource>> */
+    /** @return Collection<int, class-string<\SaddlePHP\Resource>> */
     public function resources(): Collection
     {
         if ($this->registered !== []) {
@@ -153,7 +153,7 @@ class Saddle
         return collect($this->discovered);
     }
 
-    /** @return class-string<resource>|null */
+    /** @return class-string<\SaddlePHP\Resource>|null */
     public function resourceFor(string $uriKey): ?string
     {
         return $this->resources()->first(fn (string $resource) => $resource::uriKey() === $uriKey);

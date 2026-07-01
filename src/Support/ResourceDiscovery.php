@@ -9,7 +9,7 @@ use SaddlePHP\Resource;
 
 class ResourceDiscovery
 {
-    /** @return array<int, class-string<resource>> */
+    /** @return array<int, class-string<\SaddlePHP\Resource>> */
     public static function in(string $directory, string $namespace): array
     {
         if (! is_dir($directory)) {

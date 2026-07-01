@@ -20,6 +20,6 @@ Saddle ships with a single config file published by `saddle:install`. All keys h
 
 | Command | Description |
 |---|---|
-| `saddle:install` | Publishes the config file, publishes panel assets to `public/vendor/saddlephp/`, and creates `app/Saddle/`. Offers to add `saddle:upgrade` to `composer.json`'s `post-update-cmd`. |
+| `saddle:install` | Publishes the config file, publishes panel assets to `public/vendor/saddle/`, and creates `app/Saddle/`. Offers to add `saddle:upgrade` to `composer.json`'s `post-update-cmd`. |
 | `saddle:upgrade` | Re-publishes the panel assets. Run after every package update. If you accepted the `post-update-cmd` prompt, Composer runs this for you automatically. |
 | `saddle:resource NameResource --model=Name` | Scaffolds a new resource class in `app/Saddle/`. The `--model` option is optional; when omitted the model name is inferred from the resource class name. |

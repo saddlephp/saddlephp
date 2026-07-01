@@ -20,7 +20,7 @@ abstract class Controller
      * Build a resource's index table, injecting the trashed filter for
      * soft-deletable resources.
      *
-     * @param  class-string<resource>  $resource
+     * @param  class-string<\SaddlePHP\Resource>  $resource
      */
     protected function makeIndexTable(string $resource): Table
     {
@@ -80,13 +80,13 @@ abstract class Controller
         return ['search' => $search, 'sort' => $sort, 'direction' => $direction, 'filter' => $activeFilters];
     }
 
-    /** @return class-string<resource> */
+    /** @return class-string<\SaddlePHP\Resource> */
     protected function resolveResource(string $uriKey): string
     {
         return app(Saddle::class)->resourceFor($uriKey) ?? abort(404);
     }
 
-    /** @param class-string<resource> $resource */
+    /** @param class-string<\SaddlePHP\Resource> $resource */
     protected function resolveRecord(Request $request, string $resource, string|int $recordId): Model
     {
         return $resource::query($request)->findOrFail($recordId);
@@ -98,7 +98,7 @@ abstract class Controller
      * applies (withTrashed does not drop the tenant constraint), so a foreign
      * tenant's trashed record never resolves.
      *
-     * @param  class-string<resource>  $resource
+     * @param  class-string<\SaddlePHP\Resource>  $resource
      */
     protected function resolveTrashedRecord(Request $request, string $resource, string|int $recordId): Model
     {
@@ -108,7 +108,7 @@ abstract class Controller
     }
 
     /**
-     * @param  class-string<resource>  $resource
+     * @param  class-string<\SaddlePHP\Resource>  $resource
      * @return class-string<RelationManager>
      */
     protected function resolveRelationManager(string $resource, string $relationKey): string

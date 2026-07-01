@@ -10,7 +10,7 @@ class TextColumn extends Column
 {
     protected string $dateFormat = 'Y-m-d H:i';
 
-    public function date(string $format): static
+    public function date(string $format = 'Y-m-d H:i'): static
     {
         $this->dateFormat = $format;
 

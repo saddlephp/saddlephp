@@ -20,7 +20,7 @@ The service provider is auto-discovered by Laravel, so no manual wiring is neede
 Running `saddle:install` does three things:
 
 1. Publishes `config/saddle.php` with sensible defaults.
-2. Publishes the compiled panel assets to `public/vendor/saddlephp/`.
+2. Publishes the compiled panel assets to `public/vendor/saddle/`.
 3. Creates the `app/Saddle/` directory where your resource classes live.
 
 It also offers to add `saddle:upgrade` to `composer.json`'s `post-update-cmd` scripts so assets stay fresh after every package update. Accept the prompt to set this up automatically.
