@@ -21,6 +21,6 @@ class RelationDestroyController extends Controller
 
         $model->delete();
 
-        return back()->with('success', $manager::singularLabel().' deleted.');
+        return back()->with('success', __('saddle::panel.flash.deleted', ['resource' => $manager::singularLabel()]));
     }
 }

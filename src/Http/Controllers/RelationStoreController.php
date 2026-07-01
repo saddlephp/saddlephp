@@ -25,6 +25,6 @@ class RelationStoreController extends Controller
         $form->fill($related, $validated);
         $related->save();
 
-        return back()->with('success', $manager::singularLabel().' created.');
+        return back()->with('success', __('saddle::panel.flash.created', ['resource' => $manager::singularLabel()]));
     }
 }

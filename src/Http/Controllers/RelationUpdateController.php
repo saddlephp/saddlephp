@@ -24,6 +24,6 @@ class RelationUpdateController extends Controller
         $form->fill($model, $validated);
         $model->save();
 
-        return back()->with('success', $manager::singularLabel().' updated.');
+        return back()->with('success', __('saddle::panel.flash.updated', ['resource' => $manager::singularLabel()]));
     }
 }
