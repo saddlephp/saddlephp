@@ -62,6 +62,10 @@ class HandleSaddleRequests extends Middleware
             $shared['canRegisterTenant'] = $saddle->canRegisterTenant();
         }
 
+        // Plugin/host-contributed props are merged under the core keys, which
+        // always win so the documented shape cannot be clobbered.
+        $shared = array_merge($saddle->sharedProps($request), $shared);
+
         return array_merge(parent::share($request), ['saddle' => $shared]);
     }
 

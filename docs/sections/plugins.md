@@ -17,6 +17,33 @@ public function boot(): void
 - `Saddle::script(string)` queues a script URL to be loaded on every panel page after the core bundle.
 - `Saddle::style(string)` queues a stylesheet URL in the same way.
 
+### Extending the panel shell
+
+Three hooks let a plugin extend the panel itself. Call them from your service provider's `boot()`:
+
+```php
+use Illuminate\Http\Request;
+
+// Contribute extra data to the shared `saddle` Inertia prop (read it from your
+// plugin's own frontend). Core keys always win, so a plugin cannot clobber the
+// documented shape.
+Saddle::sharing(fn (Request $request) => [
+    'moodBoard' => ['recentColors' => MoodColor::recent()],
+]);
+
+// Transform the sidebar navigation: reorder or filter groups, or append custom
+// links. The callback receives the computed nav array and the request.
+Saddle::navUsing(fn (array $nav, Request $request) => [...$nav, [
+    'group' => 'Plugins',
+    'items' => [['label' => 'Mood Docs', 'uriKey' => 'mood-docs', 'icon' => null, 'active' => false]],
+]]);
+
+// Allow extra theme tokens so your styles or custom elements can read them as
+// CSS custom properties (injected as `--color-<token>` when set in
+// `saddle.brand.theme`). Token names must be lowercase CSS identifiers.
+Saddle::registerThemeTokens('mood-accent');
+```
+
 ### Publishing assets
 
 Compile your frontend assets (custom elements, styles) and publish them to `public/vendor/{plugin}/` using Laravel's standard `publishes` mechanism in your service provider:

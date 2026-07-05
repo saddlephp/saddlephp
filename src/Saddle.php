@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SaddlePHP;
 
+use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -28,8 +29,66 @@ class Saddle
     /** @var array<int, string> */
     protected array $styles = [];
 
+    /** @var array<int, Closure> Callbacks contributing extra shared Inertia props. */
+    protected array $sharing = [];
+
+    /** Transform the computed navigation before it is shared, or null for none. */
+    protected ?Closure $navUsing = null;
+
+    /** @var array<int, string> Extra theme tokens registered by plugins/hosts. */
+    protected array $extraThemeTokens = [];
+
     /** The tenant resolved for the current request, or null when tenancy is off. */
     protected ?Model $tenant = null;
+
+    /**
+     * Register a callback contributing extra keys to the shared `saddle` Inertia
+     * prop (e.g. a plugin exposing its own frontend data). Core keys always win.
+     */
+    public function sharing(Closure $callback): static
+    {
+        $this->sharing[] = $callback;
+
+        return $this;
+    }
+
+    /**
+     * The merged extra props from every registered sharing callback.
+     *
+     * @return array<string, mixed>
+     */
+    public function sharedProps(Request $request): array
+    {
+        return collect($this->sharing)
+            ->reduce(fn (array $carry, Closure $callback) => array_merge($carry, (array) $callback($request)), []);
+    }
+
+    /**
+     * Transform the computed navigation array (reorder, filter, or append custom
+     * links) before it is shared with the frontend.
+     */
+    public function navUsing(Closure $callback): static
+    {
+        $this->navUsing = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Allow additional theme tokens beyond the built-in set, so a plugin can
+     * expose its own CSS custom properties (injected as `--color-<token>`).
+     * Token names are constrained to a safe CSS-identifier pattern.
+     */
+    public function registerThemeTokens(string ...$tokens): static
+    {
+        foreach ($tokens as $token) {
+            if (preg_match('/^[a-z][a-z0-9-]*$/', $token) === 1 && ! in_array($token, $this->extraThemeTokens, true)) {
+                $this->extraThemeTokens[] = $token;
+            }
+        }
+
+        return $this;
+    }
 
     /** Queue a plugin script for the panel shell. Developer-supplied URLs only. */
     public function script(string $url): static
@@ -106,7 +165,10 @@ class Saddle
      */
     public function theme(): array
     {
-        $allowed = ['bg', 'surface', 'surface-2', 'ink', 'ink-2', 'ink-3', 'line', 'line-2', 'accent'];
+        $allowed = array_merge(
+            ['bg', 'surface', 'surface-2', 'ink', 'ink-2', 'ink-3', 'line', 'line-2', 'accent'],
+            $this->extraThemeTokens,
+        );
         $theme = config('saddle.brand.theme', []);
 
         if (! is_array($theme)) {
@@ -249,7 +311,7 @@ class Saddle
     /** @return array<int, array{group: string|null, items: array<int, array<string, mixed>>}> */
     public function nav(Request $request): array
     {
-        return $this->resources()
+        $nav = $this->resources()
             ->filter(fn (string $resource) => $resource::allows('viewAny'))
             ->groupBy(fn (string $resource) => $resource::$group ?? '')
             ->map(fn (Collection $resources, string $group) => [
@@ -265,5 +327,7 @@ class Saddle
                 ], null, report: true))->filter()->values()->all(),
             ])
             ->values()->all();
+
+        return $this->navUsing !== null ? array_values((array) ($this->navUsing)($nav, $request)) : $nav;
     }
 }
