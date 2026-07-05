@@ -21,7 +21,8 @@ class ResourceOptionsController extends Controller
         );
 
         $match = collect($resource::makeForm()->visibleFields())
-            ->first(fn ($formField) => $formField instanceof BelongsTo && $formField->name() === $field);
+            ->whereInstanceOf(BelongsTo::class)
+            ->first(fn (BelongsTo $formField) => $formField->name() === $field);
 
         abort_if($match === null, 404);
 

@@ -174,7 +174,7 @@ class Form
             $serialized[] = $node->toArray($record);
         }
 
-        return array_values($serialized);
+        return $serialized;
     }
 
     /**
@@ -218,6 +218,6 @@ class Form
             $serialized[] = $node->toDisplay($record);
         }
 
-        return array_values($serialized);
+        return $serialized;
     }
 }

@@ -16,6 +16,7 @@ jobs:
           coverage: none
       - run: composer install --prefer-dist --no-interaction
       - run: vendor/bin/pint --test
+      - run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
       - run: vendor/bin/pest
 
   assets:

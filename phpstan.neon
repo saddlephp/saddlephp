@@ -1,0 +1,24 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 5
+    paths:
+        - src
+    ignoreErrors:
+        # SoftDeletes is a per-model trait. This framework is generic over any
+        # Eloquent model, so the base Model/Builder type cannot carry the
+        # SoftDeletes API. Every one of these calls is guarded at runtime by
+        # Resource::usesSoftDeletes().
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\(Builder|Model)(<[^>]*>)?::(withTrashed|onlyTrashed|trashed|restore)\(\)#'
+        # The panel reads dynamic Eloquent attributes off the host application's
+        # user model and Laravel's DatabaseNotification, neither of which the
+        # framework owns or can annotate with @property.
+        -
+            identifier: property.notFound
+            path: src/Http/Middleware/HandleSaddleRequests.php
+        # Shipped for host test suites (InteractsWithSaddle); it is intentionally
+        # not consumed inside the package.
+        -
+            identifier: trait.unused
+            path: src/Testing/InteractsWithSaddle.php

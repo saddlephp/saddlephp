@@ -15,6 +15,7 @@
         "inertiajs/inertia-laravel": "^3.1"
     },
     "require-dev": {
+        "larastan/larastan": "^3.10",
         "laravel/pint": "^1.27",
         "orchestra/testbench": "^11.0",
         "pestphp/pest": "^4.0",
@@ -44,7 +45,8 @@
     },
     "scripts": {
         "test": "vendor/bin/pest",
-        "lint": "vendor/bin/pint"
+        "lint": "vendor/bin/pint",
+        "analyse": "vendor/bin/phpstan analyse"
     },
     "config": {
         "allow-plugins": {

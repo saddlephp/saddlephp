@@ -45,7 +45,7 @@ class ResourceMakeCommand extends GeneratorCommand
     protected function getOptions(): array
     {
         return [
-            ['model', null, InputOption::VALUE_OPTIONAL, 'The Eloquent model the resource manages'],
+            new InputOption('model', null, InputOption::VALUE_OPTIONAL, 'The Eloquent model the resource manages'),
         ];
     }
 }

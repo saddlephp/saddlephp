@@ -37,7 +37,7 @@ class ResourceRelationMakeCommand extends GeneratorCommand
     protected function getOptions(): array
     {
         return [
-            ['relationship', null, InputOption::VALUE_OPTIONAL, 'The parent HasMany relationship method this manager edits'],
+            new InputOption('relationship', null, InputOption::VALUE_OPTIONAL, 'The parent HasMany relationship method this manager edits'),
         ];
     }
 }
