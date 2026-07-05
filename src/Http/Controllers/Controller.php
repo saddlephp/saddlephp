@@ -7,6 +7,7 @@ namespace SaddlePHP\Http\Controllers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use SaddlePHP\RelationManager;
 use SaddlePHP\Resource;
 use SaddlePHP\Saddle;
@@ -41,6 +42,8 @@ abstract class Controller
      */
     protected function applyTableQuery(Builder $query, Table $table, Request $request): array
     {
+        $query->with($this->relationColumnRoots($table));
+
         $search = trim((string) $request->query('search', ''));
         $searchable = $table->searchableColumns();
 
@@ -78,6 +81,24 @@ abstract class Controller
         $query->orderBy($sort, $direction);
 
         return ['search' => $search, 'sort' => $sort, 'direction' => $direction, 'filter' => $activeFilters];
+    }
+
+    /**
+     * The relations behind a table's dot-path columns (e.g. "rider.name" yields
+     * "rider", "rider.ranch.name" yields "rider.ranch"). Eager-loading these
+     * before rendering avoids a lazy load per relation per row (N+1).
+     *
+     * @return array<int, string>
+     */
+    protected function relationColumnRoots(Table $table): array
+    {
+        return collect($table->getColumns())
+            ->map(fn ($column) => $column->name())
+            ->filter(fn (string $name) => str_contains($name, '.'))
+            ->map(fn (string $name) => Str::beforeLast($name, '.'))
+            ->unique()
+            ->values()
+            ->all();
     }
 
     /** @return class-string<\SaddlePHP\Resource> */
@@ -135,6 +156,7 @@ abstract class Controller
         $table = $manager::makeTable();
 
         $rows = $manager::relationFor($parent)
+            ->with($this->relationColumnRoots($table))
             ->paginate((int) config('saddle.per_page', 25))
             ->through(fn (Model $record) => [
                 'id' => $record->getKey(),

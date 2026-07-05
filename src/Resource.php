@@ -42,6 +42,15 @@ abstract class Resource
     /** Whether this resource is included in global search (when it has searchable columns). */
     public static bool $globalSearch = true;
 
+    /**
+     * Memo of "does model X use SoftDeletes", keyed by model class. Shared
+     * across resources on purpose: it is a model-level fact, not per-resource
+     * state, and keying by class keeps it correct regardless of sharing.
+     *
+     * @var array<class-string, bool>
+     */
+    private static array $softDeletesMemo = [];
+
     abstract public static function form(Form $form): Form;
 
     abstract public static function table(Table $table): Table;
@@ -124,7 +133,8 @@ abstract class Resource
     /** Whether the resource's model uses Laravel's SoftDeletes trait. */
     public static function usesSoftDeletes(): bool
     {
-        return in_array(SoftDeletes::class, class_uses_recursive(static::$model), true);
+        return self::$softDeletesMemo[static::$model]
+            ??= in_array(SoftDeletes::class, class_uses_recursive(static::$model), true);
     }
 
     public static function makeForm(): Form
