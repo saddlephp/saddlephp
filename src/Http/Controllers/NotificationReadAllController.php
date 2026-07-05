@@ -11,7 +11,9 @@ class NotificationReadAllController extends Controller
 {
     public function __invoke(Request $request): RedirectResponse
     {
-        $request->user()->unreadNotifications->markAsRead();
+        // One bulk UPDATE, rather than hydrating every unread notification and
+        // saving each in turn (which is O(unread) queries).
+        $request->user()->unreadNotifications()->update(['read_at' => now()]);
 
         return back();
     }

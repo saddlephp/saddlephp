@@ -144,6 +144,43 @@ it('404s deleting another parent\'s related record', function () {
     expect($horseB->fresh())->not->toBeNull();
 });
 
+it('forbids updating when the related policy denies update', function () {
+    Gate::policy(Horse::class, DenyHorseWritePolicy::class);
+    $this->actingAsUser();
+    $ranch = Ranch::factory()->create();
+    $horse = $ranch->horses()->create(['name' => 'Cisco']);
+
+    $this->put("/admin/resources/ranches/{$ranch->id}/relations/horses/{$horse->id}", ['name' => 'Dakota'])
+        ->assertForbidden();
+
+    expect($horse->refresh()->name)->toBe('Cisco');
+});
+
+it('forbids deleting when the related policy denies delete', function () {
+    Gate::policy(Horse::class, DenyHorseWritePolicy::class);
+    $this->actingAsUser();
+    $ranch = Ranch::factory()->create();
+    $horse = $ranch->horses()->create(['name' => 'Cisco']);
+
+    $this->delete("/admin/resources/ranches/{$ranch->id}/relations/horses/{$horse->id}")
+        ->assertForbidden();
+
+    expect($ranch->horses()->count())->toBe(1);
+});
+
+it('denies relation writes fail-closed when require_policy is on and the related model has no policy', function () {
+    config()->set('saddle.authorization.require_policy', true);
+    // Parent access is granted, so the 403 comes from the relation (Horse) gate.
+    Gate::policy(Ranch::class, AllowRanchPolicy::class);
+    $this->actingAsUser();
+    $ranch = Ranch::factory()->create();
+
+    $this->post("/admin/resources/ranches/{$ranch->id}/relations/horses", ['name' => 'Cisco'])
+        ->assertForbidden();
+
+    expect($ranch->horses()->count())->toBe(0);
+});
+
 class DenyHorseCreatePolicy
 {
     public function viewAny(User $user): bool
@@ -154,5 +191,46 @@ class DenyHorseCreatePolicy
     public function create(User $user): bool
     {
         return false;
+    }
+}
+
+class DenyHorseWritePolicy
+{
+    public function viewAny(User $user): bool
+    {
+        return true;
+    }
+
+    public function view(User $user, Horse $horse): bool
+    {
+        return true;
+    }
+
+    public function create(User $user): bool
+    {
+        return true;
+    }
+
+    public function update(User $user, Horse $horse): bool
+    {
+        return false;
+    }
+
+    public function delete(User $user, Horse $horse): bool
+    {
+        return false;
+    }
+}
+
+class AllowRanchPolicy
+{
+    public function viewAny(User $user): bool
+    {
+        return true;
+    }
+
+    public function view(User $user, Ranch $ranch): bool
+    {
+        return true;
     }
 }
