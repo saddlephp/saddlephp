@@ -284,11 +284,11 @@ Ações fazem POST para um endpoint protegido. Os registros são resolvidos pela
 
 ## Autorização
 
-Saddle consome políticas Laravel padrão. Registre uma política para um modelo e o painel a aplica em todos os lugares: índice, formulários, ações de linha e seletores de relacionamento. Sem uma política registrada, todas as habilidades são permitidas para todo usuário autenticado. Papéis ficam na sua aplicação: qualquer pacote de papéis ou camada caseira que sustente suas políticas funciona sem mudanças.
+Saddle consome políticas Laravel padrão. Registre uma política para um modelo e o painel a aplica em todos os lugares: índice, formulários, ações de linha e seletores de relacionamento. Saddle falha fechado por padrão: sem uma política registrada, toda habilidade é negada, então registre uma política para o modelo de cada recurso para conceder acesso. Papéis ficam na sua aplicação: qualquer pacote de papéis ou camada caseira que sustente suas políticas funciona sem mudanças.
 
 ### Travar o painel
 
-Recursos sem uma política registrada permitem todos os usuários autenticados por padrão. Defina `saddle.authorization.require_policy` como `true` para falhar fechado: recursos sem política ficam inacessíveis em vez de abertos. Você também pode adicionar um middleware de gate a `saddle.middleware` para uma verificação geral antes de qualquer rota do painel executar. Se o seu web guard é compartilhado entre usuários finais e administradores, um desses controles é essencial.
+Recursos sem uma política registrada ficam inacessíveis por padrão (falha fechada), então uma política esquecida nunca pode expor dados silenciosamente. Para optar pela convenção de falha aberta, em que um recurso sem política permite todos os usuários autenticados, defina `saddle.authorization.require_policy` como `false`. Você também pode adicionar um middleware de gate a `saddle.middleware` para uma verificação geral antes de qualquer rota do painel executar. Se o seu web guard é compartilhado entre usuários finais e administradores, mantenha a postura padrão de falha fechada.
 
 | Habilidade | Onde é verificada |
 |---|---|

@@ -284,11 +284,11 @@ Les actions publient vers un endpoint protégé. Les enregistrements se résolve
 
 ## Autorisation
 
-Saddle consomme les politiques Laravel standard. Enregistrez une politique pour un modèle et le panneau l'applique partout : index, formulaires, actions de ligne et sélecteurs de relation. Sans politique enregistrée, toutes les capacités sont autorisées pour chaque utilisateur authentifié. Les rôles restent dans votre application : tout paquet de rôles ou couche maison qui alimente vos politiques fonctionne sans changement.
+Saddle consomme les politiques Laravel standard. Enregistrez une politique pour un modèle et le panneau l'applique partout : index, formulaires, actions de ligne et sélecteurs de relation. Saddle échoue fermé par défaut : sans politique enregistrée, chaque capacité est refusée, enregistrez donc une politique pour le modèle de chaque ressource afin d'accorder l'accès. Les rôles restent dans votre application : tout paquet de rôles ou couche maison qui alimente vos politiques fonctionne sans changement.
 
 ### Verrouiller le panneau
 
-Les ressources sans politique enregistrée autorisent chaque utilisateur authentifié par défaut. Définissez `saddle.authorization.require_policy` à `true` pour échouer fermé : les ressources sans politique deviennent inaccessibles au lieu d'être ouvertes. Vous pouvez aussi ajouter un middleware de gate à `saddle.middleware` pour une vérification globale avant toute route du panneau. Si votre web guard est partagé entre utilisateurs finaux et administrateurs, l'un de ces contrôles est essentiel.
+Les ressources sans politique enregistrée sont inaccessibles par défaut (échec fermé), ainsi une politique oubliée ne peut jamais exposer des données silencieusement. Pour adopter la convention d'échec ouvert, où une ressource sans politique autorise chaque utilisateur authentifié, définissez `saddle.authorization.require_policy` à `false`. Vous pouvez aussi ajouter un middleware de gate à `saddle.middleware` pour une vérification globale avant toute route du panneau. Si votre web guard est partagé entre utilisateurs finaux et administrateurs, conservez la posture d'échec fermé par défaut.
 
 | Capacité | Où elle est vérifiée |
 |---|---|

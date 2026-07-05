@@ -284,11 +284,11 @@ Las acciones hacen POST a un endpoint protegido. Los registros se resuelven medi
 
 ## Autorización
 
-Saddle consume políticas estándar de Laravel. Registra una política para un modelo y el panel la aplica en todas partes: índice, formularios, acciones de fila y selectores de relación. Sin una política registrada, todas las habilidades se permiten para cada usuario autenticado. Los roles permanecen en tu aplicación: cualquier paquete de roles o capa casera que respalde tus políticas funciona sin cambios.
+Saddle consume políticas estándar de Laravel. Registra una política para un modelo y el panel la aplica en todas partes: índice, formularios, acciones de fila y selectores de relación. Saddle falla cerrado por defecto: sin una política registrada, todas las habilidades se deniegan, así que registra una política para el modelo de cada recurso para conceder acceso. Los roles permanecen en tu aplicación: cualquier paquete de roles o capa casera que respalde tus políticas funciona sin cambios.
 
 ### Bloquear el panel
 
-Los recursos sin una política registrada permiten a todos los usuarios autenticados por defecto. Define `saddle.authorization.require_policy` como `true` para fallar cerrado: los recursos sin política se vuelven inaccesibles en lugar de abiertos. También puedes agregar un middleware de gate a `saddle.middleware` para una comprobación general antes de que se ejecute cualquier ruta del panel. Si tu web guard se comparte entre usuarios finales y administradores, uno de estos controles es esencial.
+Los recursos sin una política registrada son inaccesibles por defecto (fallo cerrado), por lo que una política olvidada nunca puede exponer datos silenciosamente. Para optar por la convención de fallo abierto, donde un recurso sin política permite a todos los usuarios autenticados, define `saddle.authorization.require_policy` como `false`. También puedes agregar un middleware de gate a `saddle.middleware` para una comprobación general antes de que se ejecute cualquier ruta del panel. Si tu web guard se comparte entre usuarios finales y administradores, conserva la postura predeterminada de fallo cerrado.
 
 | Habilidad | Dónde se comprueba |
 |---|---|

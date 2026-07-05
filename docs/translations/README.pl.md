@@ -284,11 +284,11 @@ Akcje wysyłają POST do chronionego endpointu. Rekordy są rozwiązywane przez 
 
 ## Autoryzacja
 
-Saddle używa standardowych polityk Laravel. Zarejestruj politykę dla modelu, a panel egzekwuje ją wszędzie: indeks, formularze, akcje wierszy i pickery relacji. Bez zarejestrowanej polityki wszystkie zdolności są dozwolone dla każdego uwierzytelnionego użytkownika. Role pozostają w twojej aplikacji: dowolny pakiet ról lub własna warstwa wspierająca polityki działa bez zmian.
+Saddle używa standardowych polityk Laravel. Zarejestruj politykę dla modelu, a panel egzekwuje ją wszędzie: indeks, formularze, akcje wierszy i pickery relacji. Saddle domyślnie działa w trybie fail-closed: bez zarejestrowanej polityki każda zdolność jest odmawiana, dlatego zarejestruj politykę dla modelu każdego zasobu, aby przyznać dostęp. Role pozostają w twojej aplikacji: dowolny pakiet ról lub własna warstwa wspierająca polityki działa bez zmian.
 
 ### Zablokowanie panelu
 
-Zasoby bez zarejestrowanej polityki domyślnie pozwalają każdemu uwierzytelnionemu użytkownikowi. Ustaw `saddle.authorization.require_policy` na `true`, aby zawodzić zamknięte: zasoby bez polityki stają się niedostępne zamiast otwarte. Możesz też dodać middleware gate do `saddle.middleware`, aby wykonać ogólną kontrolę przed każdą trasą panelu. Jeśli twój web guard jest współdzielony między użytkownikami końcowymi i administratorami, jedna z tych kontroli jest niezbędna.
+Zasoby bez zarejestrowanej polityki są domyślnie niedostępne (fail-closed), więc przeoczona polityka nigdy nie może po cichu ujawnić danych. Aby przejść na konwencję fail-open, w której zasób bez polityki pozwala każdemu uwierzytelnionemu użytkownikowi, ustaw `saddle.authorization.require_policy` na `false`. Możesz też dodać middleware gate do `saddle.middleware`, aby wykonać ogólną kontrolę przed każdą trasą panelu. Jeśli twój web guard jest współdzielony między użytkownikami końcowymi i administratorami, zachowaj domyślną postawę fail-closed.
 
 | Zdolność | Gdzie jest sprawdzana |
 |---|---|

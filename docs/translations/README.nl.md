@@ -284,11 +284,11 @@ Acties posten naar een bewaakt endpoint. Records worden opgelost via dezelfde ge
 
 ## Autorisatie
 
-Saddle gebruikt standaard Laravel-beleid. Registreer een beleid voor een model en het paneel dwingt het overal af: index, formulieren, rijacties en relatiepickers. Zonder geregistreerd beleid zijn alle capabilities toegestaan voor elke geauthenticeerde gebruiker. Rollen blijven in je applicatie: elk rollenpakket of zelfgebouwde laag die je beleid ondersteunt werkt ongewijzigd.
+Saddle gebruikt standaard Laravel-beleid. Registreer een beleid voor een model en het paneel dwingt het overal af: index, formulieren, rijacties en relatiepickers. Saddle is standaard fail-closed: zonder geregistreerd beleid wordt elke capability geweigerd, dus registreer beleid voor het model van elke resource om toegang te verlenen. Rollen blijven in je applicatie: elk rollenpakket of zelfgebouwde laag die je beleid ondersteunt werkt ongewijzigd.
 
 ### Het paneel afsluiten
 
-Resources zonder geregistreerd beleid laten standaard elke geauthenticeerde gebruiker toe. Zet `saddle.authorization.require_policy` op `true` om gesloten te falen: resources zonder beleid worden ontoegankelijk in plaats van open. Je kunt ook een gate-middleware toevoegen aan `saddle.middleware` voor een algemene controle voordat een paneelroute draait. Als je web guard wordt gedeeld tussen eindgebruikers en beheerders, is een van deze controles essentieel.
+Resources zonder geregistreerd beleid zijn standaard ontoegankelijk (fail-closed), zodat een vergeten beleid nooit stilzwijgend data kan blootstellen. Om te kiezen voor de fail-open-conventie, waarbij een resource zonder beleid elke geauthenticeerde gebruiker toelaat, zet `saddle.authorization.require_policy` op `false`. Je kunt ook een gate-middleware toevoegen aan `saddle.middleware` voor een algemene controle voordat een paneelroute draait. Als je web guard wordt gedeeld tussen eindgebruikers en beheerders, behoud dan de standaard fail-closed-houding.
 
 | Capability | Waar die wordt gecontroleerd |
 |---|---|

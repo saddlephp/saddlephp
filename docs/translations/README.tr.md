@@ -284,11 +284,11 @@ Aksiyonlar korumalı bir endpoint'e post eder. Kayıtlar her yerde kullanılan a
 
 ## Yetkilendirme
 
-Saddle standart Laravel politikalarını kullanır. Bir model için politika kaydedin, panel bunu her yerde uygular: indeks, formlar, satır aksiyonları ve ilişki seçiciler. Kayıtlı politika yoksa tüm yetenekler her kimliği doğrulanmış kullanıcı için izinlidir. Roller uygulamanızda kalır: politikalarınızı destekleyen herhangi bir rol paketi veya ev yapımı katman değişmeden çalışır.
+Saddle standart Laravel politikalarını kullanır. Bir model için politika kaydedin, panel bunu her yerde uygular: indeks, formlar, satır aksiyonları ve ilişki seçiciler. Saddle varsayılan olarak fail-closed çalışır: kayıtlı politika yoksa her yetenek reddedilir, bu nedenle erişim vermek için her kaynağın modeli için bir politika kaydedin. Roller uygulamanızda kalır: politikalarınızı destekleyen herhangi bir rol paketi veya ev yapımı katman değişmeden çalışır.
 
 ### Paneli kilitleme
 
-Kayıtlı politikası olmayan kaynaklar varsayılan olarak her kimliği doğrulanmış kullanıcıya izin verir. Kapalı başarısız olmak için `saddle.authorization.require_policy` değerini `true` yapın: politikası olmayan kaynaklar açık olmak yerine erişilemez olur. Herhangi bir panel rotası çalışmadan önce genel kontrol için `saddle.middleware` içine bir gate middleware'i de ekleyebilirsiniz. Web guard'ınız son kullanıcılar ve yöneticiler arasında paylaşılıyorsa bu kontrollerden biri zorunludur.
+Kayıtlı politikası olmayan kaynaklar varsayılan olarak erişilemezdir (fail-closed), böylece unutulan bir politika verileri sessizce açığa çıkaramaz. Politikasız bir kaynağın her kimliği doğrulanmış kullanıcıya izin verdiği fail-open kuralına geçmek için `saddle.authorization.require_policy` değerini `false` yapın. Herhangi bir panel rotası çalışmadan önce genel kontrol için `saddle.middleware` içine bir gate middleware'i de ekleyebilirsiniz. Web guard'ınız son kullanıcılar ve yöneticiler arasında paylaşılıyorsa varsayılan fail-closed duruşunu koruyun.
 
 | Yetenek | Nerede kontrol edilir |
 |---|---|

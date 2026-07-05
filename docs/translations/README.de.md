@@ -284,11 +284,11 @@ Aktionen posten an einen geschützten Endpoint. Datensätze werden über dieselb
 
 ## Autorisierung
 
-Saddle nutzt standardmäßige Laravel-Richtlinien. Registriere eine Richtlinie für ein Modell, und das Panel erzwingt sie überall: Index, Formulare, Zeilenaktionen und Beziehungsauswahlen. Wenn keine Richtlinie registriert ist, sind alle Fähigkeiten für jeden authentifizierten Benutzer erlaubt. Rollen bleiben in deiner Anwendung: Jedes Rollenpaket oder jede selbst gebaute Schicht, die deine Richtlinien stützt, funktioniert unverändert.
+Saddle nutzt standardmäßige Laravel-Richtlinien. Registriere eine Richtlinie für ein Modell, und das Panel erzwingt sie überall: Index, Formulare, Zeilenaktionen und Beziehungsauswahlen. Saddle ist standardmäßig fail-closed: Wenn keine Richtlinie registriert ist, wird jede Fähigkeit verweigert, registriere daher für das Modell jeder Ressource eine Richtlinie, um Zugriff zu gewähren. Rollen bleiben in deiner Anwendung: Jedes Rollenpaket oder jede selbst gebaute Schicht, die deine Richtlinien stützt, funktioniert unverändert.
 
 ### Das Panel absichern
 
-Ressourcen ohne registrierte Richtlinie erlauben standardmäßig jeden authentifizierten Benutzer. Setze `saddle.authorization.require_policy` auf `true`, um geschlossen zu scheitern: Ressourcen ohne Richtlinie werden unzugänglich statt offen. Du kannst auch eine Gate-Middleware zu `saddle.middleware` hinzufügen, um vor jeder Panel-Route eine pauschale Prüfung auszuführen. Wenn dein Web-Guard von Endbenutzern und Administratoren gemeinsam genutzt wird, ist eine dieser Kontrollen unverzichtbar.
+Ressourcen ohne registrierte Richtlinie sind standardmäßig unzugänglich (fail-closed), sodass eine vergessene Richtlinie niemals stillschweigend Daten offenlegt. Um die Fail-open-Konvention zu verwenden, bei der eine Ressource ohne Richtlinie jeden authentifizierten Benutzer zulässt, setze `saddle.authorization.require_policy` auf `false`. Du kannst auch eine Gate-Middleware zu `saddle.middleware` hinzufügen, um vor jeder Panel-Route eine pauschale Prüfung auszuführen. Wenn dein Web-Guard von Endbenutzern und Administratoren gemeinsam genutzt wird, behalte die standardmäßige Fail-closed-Haltung bei.
 
 | Fähigkeit | Wo sie geprüft wird |
 |---|---|

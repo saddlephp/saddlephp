@@ -284,11 +284,11 @@ Le azioni inviano POST a un endpoint protetto. I record si risolvono tramite la 
 
 ## Autorizzazione
 
-Saddle usa le policy Laravel standard. Registra una policy per un modello e il pannello la applica ovunque: indice, form, azioni di riga e selettori di relazione. Senza una policy registrata, tutte le capacità sono consentite per ogni utente autenticato. I ruoli restano nella tua applicazione: qualsiasi pacchetto di ruoli o livello fatto in casa che alimenta le tue policy funziona invariato.
+Saddle usa le policy Laravel standard. Registra una policy per un modello e il pannello la applica ovunque: indice, form, azioni di riga e selettori di relazione. Saddle fallisce chiuso per impostazione predefinita: senza una policy registrata, ogni capacità viene negata, quindi registra una policy per il modello di ogni risorsa per concedere l'accesso. I ruoli restano nella tua applicazione: qualsiasi pacchetto di ruoli o livello fatto in casa che alimenta le tue policy funziona invariato.
 
 ### Blindare il pannello
 
-Le risorse senza una policy registrata consentono per impostazione predefinita ogni utente autenticato. Imposta `saddle.authorization.require_policy` a `true` per fallire chiuso: le risorse senza policy diventano inaccessibili invece che aperte. Puoi anche aggiungere un middleware gate a `saddle.middleware` per un controllo globale prima che qualunque rotta del pannello venga eseguita. Se il tuo web guard è condiviso tra utenti finali e amministratori, uno di questi controlli è essenziale.
+Le risorse senza una policy registrata sono inaccessibili per impostazione predefinita (fail-closed), quindi una policy dimenticata non può mai esporre dati in silenzio. Per adottare la convenzione fail-open, in cui una risorsa senza policy consente l'accesso a ogni utente autenticato, imposta `saddle.authorization.require_policy` a `false`. Puoi anche aggiungere un middleware gate a `saddle.middleware` per un controllo globale prima che qualunque rotta del pannello venga eseguita. Se il tuo web guard è condiviso tra utenti finali e amministratori, mantieni l'impostazione predefinita fail-closed.
 
 | Capacità | Dove viene controllata |
 |---|---|
