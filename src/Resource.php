@@ -150,10 +150,10 @@ abstract class Resource
     public static function allows(string $ability, Model|string|null $target = null): bool
     {
         if (Gate::getPolicyFor(static::$model) === null) {
-            // Fail-open by convention: no policy means full CRUD. Panels that
-            // opt into 'authorization.require_policy' flip this to fail-closed
-            // so a missing policy denies rather than exposes.
-            return ! config('saddle.authorization.require_policy', false);
+            // Fail-closed by default: no policy means deny, so a forgotten policy
+            // cannot silently expose data. Set 'authorization.require_policy' to
+            // false to opt into the fail-open convention (no policy = full CRUD).
+            return ! config('saddle.authorization.require_policy', true);
         }
 
         return (bool) Auth::user()?->can($ability, $target ?? static::$model);

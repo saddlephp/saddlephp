@@ -98,15 +98,18 @@ abstract class RelationManager
 
     /**
      * Authorize an ability against the RELATED model's policy, mirroring
-     * Resource::allows (fail-open by default; the require_policy flag flips to
-     * fail-closed when no policy is registered).
+     * Resource::allows (fail-closed by default; set require_policy to false to
+     * opt into fail-open when no policy is registered).
+     *
+     * Note the argument order differs from Resource::allows($ability, $target):
+     * a relation manager needs the $parent first to resolve the related model.
      */
     public static function allows(Model $parent, string $ability, Model|string|null $target = null): bool
     {
         $relatedClass = static::relatedModel($parent);
 
         if (Gate::getPolicyFor($relatedClass) === null) {
-            return ! config('saddle.authorization.require_policy', false);
+            return ! config('saddle.authorization.require_policy', true);
         }
 
         return (bool) Auth::user()?->can($ability, $target ?? $relatedClass);
