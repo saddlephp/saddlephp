@@ -284,11 +284,11 @@ Actions post to a guarded endpoint. Records resolve through the same scoped base
 
 ## Authorization
 
-Saddle consumes standard Laravel policies. Register a policy for a model and the panel enforces it everywhere: index, forms, row actions, and relation pickers. With no policy registered, all abilities are allowed for every authenticated user. Roles stay in your application: any role package or homegrown layer that backs your policies works unchanged.
+Saddle consumes standard Laravel policies. Register a policy for a model and the panel enforces it everywhere: index, forms, row actions, and relation pickers. Saddle is fail-closed by default: with no policy registered, every ability is denied, so register a policy for each resource's model to grant access. Roles stay in your application: any role package or homegrown layer that backs your policies works unchanged.
 
 ### Lock the panel down
 
-Resources without a registered policy allow every authenticated user by default. Set `saddle.authorization.require_policy` to `true` to fail closed: resources without a policy become inaccessible rather than open. You can also add a gate middleware to `saddle.middleware` for a blanket check before any panel route runs. If your web guard is shared between end-users and administrators, one of these controls is essential.
+Resources without a registered policy are inaccessible by default (fail-closed), so a forgotten policy can never silently expose data. To opt into the fail-open convention, where a resource without a policy allows every authenticated user, set `saddle.authorization.require_policy` to `false`. You can also add a gate middleware to `saddle.middleware` for a blanket check before any panel route runs. If your web guard is shared between end-users and administrators, keep the default fail-closed posture.
 
 | Ability | Where it is checked |
 |---|---|

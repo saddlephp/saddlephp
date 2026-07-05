@@ -65,7 +65,7 @@ class RanchResource extends Resource
 
 ### Authorization
 
-Each relation manager authorizes against the **related model's** policy, not the parent's. Listing checks `viewAny`, the New button and store check `create`, and per-row Edit and Delete check `update` and `delete`. With no policy registered for the related model, every ability is allowed (the same no-policy default as resources); turn on `saddle.authorization.require_policy` to make a missing policy fail closed.
+Each relation manager authorizes against the **related model's** policy, not the parent's. Listing checks `viewAny`, the New button and store check `create`, and per-row Edit and Delete check `update` and `delete`. With no policy registered for the related model, every ability is denied by default (the same fail-closed default as resources); set `saddle.authorization.require_policy` to `false` to opt into fail-open.
 
 ### Scoping guarantees
 

@@ -33,4 +33,4 @@ The row **Delete** control soft-deletes a record (it disappears from the default
 
 ### Authorization
 
-Restore and force-delete are gated by the standard Laravel policy abilities `restore` and `forceDelete`. As with every ability, a resource without a registered policy allows them by default (or denies them when `saddle.authorization.require_policy` is on). Multi-tenancy applies too: a trashed record belonging to another tenant can never be restored or purged.
+Restore and force-delete are gated by the standard Laravel policy abilities `restore` and `forceDelete`. As with every ability, a resource without a registered policy denies them by default (fail-closed), unless `saddle.authorization.require_policy` is set to `false`. Multi-tenancy applies too: a trashed record belonging to another tenant can never be restored or purged.

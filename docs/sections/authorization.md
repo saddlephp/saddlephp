@@ -2,7 +2,7 @@ Saddle consumes standard Laravel policies. Register a policy for a model and the
 
 ### No-policy default
 
-When no policy is registered for a model, all abilities are allowed for every authenticated user. This means a fresh install works out of the box without any policy setup.
+Saddle is fail-closed by default: when no policy is registered for a model, every ability is denied (403). Register a policy for each resource's model to grant access, so a forgotten policy can never silently expose data. To opt into the old fail-open convention (a resource without a policy allows every authenticated user), set `saddle.authorization.require_policy` to `false` in `config/saddle.php`. Only do that on panels whose guard is exclusively administrators.
 
 ### Policy abilities
 

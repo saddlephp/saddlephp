@@ -16,6 +16,11 @@ class WorkbenchServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        // The demo resources ship without policies. Production is fail-closed by
+        // default (config/saddle.php), so opt the workbench into the fail-open
+        // convention to keep the demo panel browsable.
+        config(['saddle.authorization.require_policy' => false]);
+
         $this->app->make(Saddle::class)->register([HorseResource::class, RiderResource::class, RanchResource::class]);
 
         $this->app->make(Saddle::class)->registerWidgets([HorseCountWidget::class, HorsesByBreedWidget::class]);

@@ -26,9 +26,18 @@ it('200s the index when require_policy is off and no policy exists (default conv
     $this->get('/admin/resources/horses')->assertOk();
 });
 
-it('200s the index when require_policy is absent and no policy exists (default convention)', function () {
-    // No config()->set at all — the default must remain fail-open.
+it('follows the workbench fail-open opt-out when require_policy is not overridden', function () {
+    // The workbench opts into fail-open (WorkbenchServiceProvider) because its
+    // demo resources have no policies, so with no per-test override the index
+    // stays open.
     $this->actingAsUser();
 
     $this->get('/admin/resources/horses')->assertOk();
+});
+
+it('ships a fail-closed default in the package config', function () {
+    $config = require dirname(__DIR__, 2).'/config/saddle.php';
+
+    // Secure by default: production installs deny policy-less resources.
+    expect($config['authorization']['require_policy'])->toBeTrue();
 });

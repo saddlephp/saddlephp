@@ -54,15 +54,18 @@ return [
     /*
      * Authorization posture for resources that have no registered policy.
      *
-     * By default Saddle is fail-open: a resource without a policy grants full
-     * CRUD to any authenticated panel user. This keeps simple panels
-     * frictionless. Set 'require_policy' to true to flip to fail-closed ,
-     * resources without a policy then deny every ability (403), so a forgotten
-     * policy can never silently expose data. Resources that DO register a
-     * policy are unaffected either way.
+     * Saddle is fail-closed by default: a resource without a registered policy
+     * denies every ability (403), so a forgotten policy can never silently
+     * expose data to every authenticated panel user. Register a policy for each
+     * resource's model to grant access. Resources that DO register a policy are
+     * unaffected either way.
+     *
+     * Set 'require_policy' to false to opt into the fail-open convention, where
+     * a resource without a policy grants full CRUD to any authenticated user.
+     * Only do this on panels whose guard is exclusively administrators.
      */
     'authorization' => [
-        'require_policy' => false,
+        'require_policy' => true,
     ],
 
     // Default storage disk and directory for FileUpload fields (per-field overridable).
