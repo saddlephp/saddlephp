@@ -16,6 +16,14 @@ afterEach(function () {
     File::deleteDirectory(public_path('vendor/saddle'));
 });
 
+it('warns and skips the hook when composer.json cannot be parsed', function () {
+    File::put($this->composerPath, '{ this is not valid json');
+
+    $this->artisan('saddle:install')
+        ->expectsOutputToContain('Could not parse composer.json')
+        ->assertSuccessful();
+});
+
 it('adds the upgrade hook to composer when confirmed', function () {
     $this->artisan('saddle:install')
         ->expectsConfirmation('Keep panel assets fresh automatically? (adds saddle:upgrade to composer post-update-cmd)', 'yes')

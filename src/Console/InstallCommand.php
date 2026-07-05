@@ -49,6 +49,10 @@ class InstallCommand extends Command
         $composer = json_decode(File::get($path), true);
 
         if (! is_array($composer)) {
+            // Don't claim success silently: the developer should know the deploy
+            // hook was skipped because composer.json could not be parsed.
+            $this->components->warn('Could not parse composer.json; skipping the saddle:upgrade deploy hook. Add "@php artisan saddle:upgrade" to scripts.post-update-cmd manually.');
+
             return;
         }
 
