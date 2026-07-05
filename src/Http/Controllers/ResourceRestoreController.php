@@ -6,7 +6,6 @@ namespace SaddlePHP\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use SaddlePHP\Saddle;
 
 class ResourceRestoreController extends Controller
 {
@@ -18,8 +17,6 @@ class ResourceRestoreController extends Controller
 
         $model->restore();
 
-        $indexUrl = '/'.app(Saddle::class)->path().'/resources/'.$resource::uriKey();
-
-        return redirect()->to($indexUrl)->with('success', __('saddle::panel.flash.restored', ['resource' => $resource::singularLabel()]));
+        return $this->redirectToIndex($resource, 'restored');
     }
 }

@@ -6,7 +6,6 @@ namespace SaddlePHP\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use SaddlePHP\Saddle;
 
 class ResourceStoreController extends Controller
 {
@@ -15,23 +14,11 @@ class ResourceStoreController extends Controller
         $resource = $this->resolveResource($resourceKey);
         abort_unless($resource::allows('create'), 403);
 
-        $form = $resource::makeForm();
-        $validated = $request->validate($form->rules());
-
         $record = $resource::newModel();
-        $form->fill($record, $validated);
-
-        $tenant = app(Saddle::class)->tenant();
-
-        if ($resource::$tenant !== null && $tenant !== null) {
-            $record->{$resource::$tenant}()->associate($tenant);
-        }
-
+        $this->validateAndFill($request, $resource::makeForm(), $record);
+        $this->stampTenant($resource, $record);
         $record->save();
 
-        $indexUrl = '/'.app(Saddle::class)->path().'/resources/'.$resource::uriKey();
-
-        return redirect()->to($indexUrl)
-            ->with('success', __('saddle::panel.flash.created', ['resource' => $resource::singularLabel()]));
+        return $this->redirectToIndex($resource, 'created');
     }
 }

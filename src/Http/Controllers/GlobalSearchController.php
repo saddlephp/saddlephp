@@ -9,7 +9,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use SaddlePHP\Resource;
 use SaddlePHP\Saddle;
-use SaddlePHP\Support\Search;
 
 class GlobalSearchController extends Controller
 {
@@ -58,14 +57,9 @@ class GlobalSearchController extends Controller
             return null;
         }
 
-        $records = $resource::query($request)
-            ->where(function ($query) use ($searchable, $term) {
-                foreach ($searchable as $column) {
-                    $query->orWhere($column, 'like', '%'.Search::escapeLike($term).'%');
-                }
-            })
-            ->limit($limit)
-            ->get();
+        $query = $resource::query($request);
+        $this->applySearch($query, $searchable, $term);
+        $records = $query->limit($limit)->get();
 
         if ($records->isEmpty()) {
             return null;

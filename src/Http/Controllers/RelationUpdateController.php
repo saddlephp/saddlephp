@@ -19,9 +19,7 @@ class RelationUpdateController extends Controller
         $model = $manager::relationFor($parent)->findOrFail($related);
         abort_unless($manager::allows($parent, 'update', $model), 403);
 
-        $form = $manager::makeForm($parent);
-        $validated = $request->validate($form->rules());
-        $form->fill($model, $validated);
+        $this->validateAndFill($request, $manager::makeForm($parent), $model);
         $model->save();
 
         return back()->with('success', __('saddle::panel.flash.updated', ['resource' => $manager::singularLabel()]));

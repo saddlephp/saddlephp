@@ -18,11 +18,8 @@ class RelationStoreController extends Controller
         $manager = $this->resolveRelationManager($resource, $relation);
         abort_unless($manager::allows($parent, 'create'), 403);
 
-        $form = $manager::makeForm($parent);
-        $validated = $request->validate($form->rules());
-
         $related = $manager::newRelatedFor($parent); // foreign key already set
-        $form->fill($related, $validated);
+        $this->validateAndFill($request, $manager::makeForm($parent), $related);
         $related->save();
 
         return back()->with('success', __('saddle::panel.flash.created', ['resource' => $manager::singularLabel()]));

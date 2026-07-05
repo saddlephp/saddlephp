@@ -6,8 +6,10 @@ namespace SaddlePHP\Http\Controllers;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use SaddlePHP\Forms\Form;
 use SaddlePHP\RelationManager;
 use SaddlePHP\Resource;
 use SaddlePHP\Saddle;
@@ -45,15 +47,7 @@ abstract class Controller
         $query->with($this->relationColumnRoots($table));
 
         $search = trim((string) $request->query('search', ''));
-        $searchable = $table->searchableColumns();
-
-        if ($search !== '' && $searchable !== []) {
-            $query->where(function ($q) use ($search, $searchable) {
-                foreach ($searchable as $column) {
-                    $q->orWhere($column, 'like', '%'.Search::escapeLike($search).'%');
-                }
-            });
-        }
+        $this->applySearch($query, $table->searchableColumns(), $search);
 
         $requested = $request->query('filter', []);
         $requested = is_array($requested) ? $requested : [];
@@ -81,6 +75,28 @@ abstract class Controller
         $query->orderBy($sort, $direction);
 
         return ['search' => $search, 'sort' => $sort, 'direction' => $direction, 'filter' => $activeFilters];
+    }
+
+    /**
+     * Constrain a query by a search term across the given columns, escaping the
+     * term so LIKE wildcards are matched literally. A no-op for an empty term or
+     * no columns. Shared by the index/export and global search.
+     *
+     * @param  array<int, string>  $columns
+     */
+    protected function applySearch(Builder $query, array $columns, string $term): void
+    {
+        if ($term === '' || $columns === []) {
+            return;
+        }
+
+        $pattern = '%'.Search::escapeLike($term).'%';
+
+        $query->where(function (Builder $q) use ($columns, $pattern) {
+            foreach ($columns as $column) {
+                $q->orWhere($column, 'like', $pattern);
+            }
+        });
     }
 
     /**
@@ -161,9 +177,7 @@ abstract class Controller
             ->through(fn (Model $record) => [
                 'id' => $record->getKey(),
                 'title' => $manager::recordTitle($record),
-                'cells' => collect($table->getColumns())
-                    ->mapWithKeys(fn ($column) => [$column->name() => $column->resolve($record)])
-                    ->all(),
+                'cells' => $this->rowCells($table, $record),
                 'can' => [
                     'update' => $manager::allows($parent, 'update', $record),
                     'delete' => $manager::allows($parent, 'delete', $record),
@@ -178,5 +192,62 @@ abstract class Controller
             'canCreate' => $manager::allows($parent, 'create'),
             'rows' => $rows,
         ];
+    }
+
+    /**
+     * Resolve every column's value for one record into a name => value map.
+     *
+     * @return array<string, mixed>
+     */
+    protected function rowCells(Table $table, Model $record): array
+    {
+        return collect($table->getColumns())
+            ->mapWithKeys(fn ($column) => [$column->name() => $column->resolve($record)])
+            ->all();
+    }
+
+    /**
+     * Validate the request against a form's rules and fill the model with the
+     * validated data. Shared by the resource and relation store/update paths.
+     */
+    protected function validateAndFill(Request $request, Form $form, Model $model): void
+    {
+        $form->fill($model, $request->validate($form->rules()));
+    }
+
+    /**
+     * Stamp the current tenant onto a new record when the resource is
+     * tenant-scoped and tenancy is active. A no-op otherwise.
+     *
+     * @param  class-string<\SaddlePHP\Resource>  $resource
+     */
+    protected function stampTenant(string $resource, Model $record): void
+    {
+        $tenant = app(Saddle::class)->tenant();
+
+        if ($resource::$tenant !== null && $tenant !== null) {
+            $record->{$resource::$tenant}()->associate($tenant);
+        }
+    }
+
+    /**
+     * The absolute URL of a resource's index (tenant prefix included).
+     *
+     * @param  class-string<\SaddlePHP\Resource>  $resource
+     */
+    protected function resourceIndexUrl(string $resource): string
+    {
+        return '/'.app(Saddle::class)->path().'/resources/'.$resource::uriKey();
+    }
+
+    /**
+     * Redirect to a resource's index with a translated success flash.
+     *
+     * @param  class-string<\SaddlePHP\Resource>  $resource
+     */
+    protected function redirectToIndex(string $resource, string $flashKey): RedirectResponse
+    {
+        return redirect()->to($this->resourceIndexUrl($resource))
+            ->with('success', __("saddle::panel.flash.$flashKey", ['resource' => $resource::singularLabel()]));
     }
 }

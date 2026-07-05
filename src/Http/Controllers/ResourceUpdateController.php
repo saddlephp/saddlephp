@@ -6,7 +6,6 @@ namespace SaddlePHP\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use SaddlePHP\Saddle;
 
 class ResourceUpdateController extends Controller
 {
@@ -16,15 +15,9 @@ class ResourceUpdateController extends Controller
         $model = $this->resolveRecord($request, $resource, $record);
         abort_unless($resource::allows('update', $model), 403);
 
-        $form = $resource::makeForm();
-        $validated = $request->validate($form->rules());
-
-        $form->fill($model, $validated);
+        $this->validateAndFill($request, $resource::makeForm(), $model);
         $model->save();
 
-        $indexUrl = '/'.app(Saddle::class)->path().'/resources/'.$resource::uriKey();
-
-        return redirect()->to($indexUrl)
-            ->with('success', __('saddle::panel.flash.updated', ['resource' => $resource::singularLabel()]));
+        return $this->redirectToIndex($resource, 'updated');
     }
 }

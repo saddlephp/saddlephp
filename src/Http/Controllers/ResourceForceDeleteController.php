@@ -6,7 +6,6 @@ namespace SaddlePHP\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use SaddlePHP\Saddle;
 
 class ResourceForceDeleteController extends Controller
 {
@@ -18,8 +17,6 @@ class ResourceForceDeleteController extends Controller
 
         $model->forceDelete();
 
-        $indexUrl = '/'.app(Saddle::class)->path().'/resources/'.$resource::uriKey();
-
-        return redirect()->to($indexUrl)->with('success', __('saddle::panel.flash.force_deleted', ['resource' => $resource::singularLabel()]));
+        return $this->redirectToIndex($resource, 'force_deleted');
     }
 }

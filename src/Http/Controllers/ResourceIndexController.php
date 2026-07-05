@@ -27,9 +27,7 @@ class ResourceIndexController extends Controller
                 'id' => $record->getKey(),
                 'title' => $resource::recordTitle($record),
                 'trashed' => $resource::usesSoftDeletes() && $record->trashed(),
-                'cells' => collect($table->getColumns())
-                    ->mapWithKeys(fn ($column) => [$column->name() => $column->resolve($record)])
-                    ->all(),
+                'cells' => $this->rowCells($table, $record),
                 'can' => [
                     'view' => $resource::allows('view', $record),
                     'update' => $resource::allows('update', $record),

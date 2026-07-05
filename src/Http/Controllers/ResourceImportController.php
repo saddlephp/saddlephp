@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Inertia\Response;
-use SaddlePHP\Saddle;
 
 class ResourceImportController extends Controller
 {
@@ -47,11 +46,10 @@ class ResourceImportController extends Controller
 
         try {
             $header = array_map(fn ($h) => strtolower(trim((string) $h)), fgetcsv($handle) ?: []);
-            $tenant = app(Saddle::class)->tenant();
 
             // Import atomically: a hard error or an over-cap file rolls back the
             // whole batch instead of leaving a partial import behind.
-            [$created, $skipped] = DB::transaction(function () use ($handle, $header, $lowerNames, $fieldNames, $rules, $resource, $tenant, $maxRows, $form) {
+            [$created, $skipped] = DB::transaction(function () use ($handle, $header, $lowerNames, $fieldNames, $rules, $resource, $maxRows, $form) {
                 $created = 0;
                 $skipped = 0;
                 $rows = 0;
@@ -79,11 +77,7 @@ class ResourceImportController extends Controller
 
                     $record = $resource::newModel();
                     $form->fill($record, $validator->validated());
-
-                    if ($resource::$tenant !== null && $tenant !== null) {
-                        $record->{$resource::$tenant}()->associate($tenant);
-                    }
-
+                    $this->stampTenant($resource, $record);
                     $record->save();
                     $created++;
                 }
@@ -94,9 +88,7 @@ class ResourceImportController extends Controller
             fclose($handle);
         }
 
-        $indexUrl = '/'.app(Saddle::class)->path().'/resources/'.$resource::uriKey();
-
-        return redirect()->to($indexUrl)
+        return redirect()->to($this->resourceIndexUrl($resource))
             ->with('success', __('saddle::panel.flash.imported', ['created' => $created, 'skipped' => $skipped]));
     }
 }
