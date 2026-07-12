@@ -4,6 +4,8 @@ Saddle consumes standard Laravel policies. Register a policy for a model and the
 
 Saddle is fail-closed by default: when no policy is registered for a model, every ability is denied (403). Register a policy for each resource's model to grant access, so a forgotten policy can never silently expose data. To opt into the old fail-open convention (a resource without a policy allows every authenticated user), set `saddle.authorization.require_policy` to `false` in `config/saddle.php`. Only do that on panels whose guard is exclusively administrators.
 
+Because `viewAny` also drives the sidebar and global search, a panel with **no policies registered** while fail-closed shows an **empty sidebar** and search returns nothing (every resource is hidden), with no error. If your panel looks empty after registering resources, register policies for their models or set `require_policy` to `false`.
+
 ### Policy abilities
 
 | Ability | Where it is checked |

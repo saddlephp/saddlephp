@@ -40,7 +40,8 @@ Saddle::navUsing(fn (array $nav, Request $request) => [...$nav, [
 
 // Allow extra theme tokens so your styles or custom elements can read them as
 // CSS custom properties (injected as `--color-<token>` when set in
-// `saddle.brand.theme`). Token names must be lowercase CSS identifiers.
+// `saddle.brand.theme`). Token names must start with a letter and contain only
+// lowercase letters, digits, and hyphens (a-z, 0-9, -); other names are ignored.
 Saddle::registerThemeTokens('mood-accent');
 ```
 

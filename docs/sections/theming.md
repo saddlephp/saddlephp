@@ -20,7 +20,7 @@ Override panel colors with the `saddle.brand.theme` config map. Keys are token n
 ],
 ```
 
-Available tokens: `bg`, `surface`, `surface-2`, `ink`, `ink-2`, `ink-3`, `line`, `line-2`, `accent`. Unknown keys and malformed colors are ignored.
+Available tokens: `bg`, `surface`, `surface-2`, `ink`, `ink-2`, `ink-3`, `line`, `line-2`, `accent`. Unknown keys and malformed colors are ignored. Plugins can add tokens to this allowlist with `Saddle::registerThemeTokens(...)` (see the plugins guide).
 
 ### Custom CSS
 

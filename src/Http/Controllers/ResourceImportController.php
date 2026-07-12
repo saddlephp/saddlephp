@@ -88,7 +88,6 @@ class ResourceImportController extends Controller
             fclose($handle);
         }
 
-        return redirect()->to($this->resourceIndexUrl($resource))
-            ->with('success', __('saddle::panel.flash.imported', ['created' => $created, 'skipped' => $skipped]));
+        return $this->redirectToIndex($resource, 'imported', ['created' => $created, 'skipped' => $skipped]);
     }
 }

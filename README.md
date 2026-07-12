@@ -430,6 +430,13 @@ When the authenticated user belongs to more than one tenant, the panel sidebar s
 | `brand.accent` | `'#d9501f'` | Accent colour (buttons, active states). |
 | `uploads.disk` | `'public'` | Default filesystem disk used by `FileUpload` fields when no per-field `disk()` is set. |
 | `uploads.directory` | `'saddle'` | Default upload directory within the disk when no per-field `directory()` is set. |
+| `authorization.require_policy` | `true` | Fail-closed by default: a resource with no registered policy denies every ability. Set to `false` for the fail-open convention. |
+| `global_search.per_resource` | `5` | Max results returned per resource in global search. |
+| `import.max_rows` | `5000` | Max rows a single CSV import may contain; a larger file is rejected whole. |
+| `tenancy.model` | `null` | Eloquent tenant model. `null` disables multi-tenancy. |
+| `tenancy.relationship` | `'users'` | Relation on the tenant model that lists its members. |
+| `tenancy.gate` | `null` | Optional invokable run after tenant resolution (e.g. a billing gate). |
+| `tenancy.registration` | `null` | Optional `RegistersTenants` handler enabling tenant self-registration. |
 
 ## Commands
 

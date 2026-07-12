@@ -262,13 +262,18 @@ abstract class Controller
     }
 
     /**
-     * Redirect to a resource's index with a translated success flash.
+     * Redirect to a resource's index with a translated success flash. The flash
+     * defaults to a :resource replacement; pass $replace to add or override
+     * placeholders (e.g. import's :created / :skipped).
      *
      * @param  class-string<\SaddlePHP\Resource>  $resource
+     * @param  array<string, mixed>  $replace
      */
-    protected function redirectToIndex(string $resource, string $flashKey): RedirectResponse
+    protected function redirectToIndex(string $resource, string $flashKey, array $replace = []): RedirectResponse
     {
+        $replace = array_merge(['resource' => $resource::singularLabel()], $replace);
+
         return redirect()->to($this->resourceIndexUrl($resource))
-            ->with('success', __("saddle::panel.flash.$flashKey", ['resource' => $resource::singularLabel()]));
+            ->with('success', __("saddle::panel.flash.$flashKey", $replace));
     }
 }
