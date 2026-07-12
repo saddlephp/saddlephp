@@ -9,8 +9,15 @@ parameters:
         # SoftDeletes is a per-model trait. This framework is generic over any
         # Eloquent model, so the base Model/Builder type cannot carry the
         # SoftDeletes API. Every one of these calls is guarded at runtime by
-        # Resource::usesSoftDeletes().
-        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\(Builder|Model)(<[^>]*>)?::(withTrashed|onlyTrashed|trashed|restore)\(\)#'
+        # Resource::usesSoftDeletes(). Scoped to the files that make them so a
+        # stray SoftDeletes typo elsewhere still fails analysis.
+        -
+            message: '#Call to an undefined method Illuminate\\Database\\Eloquent\\(Builder|Model)(<[^>]*>)?::(withTrashed|onlyTrashed|trashed|restore)\(\)#'
+            paths:
+                - src/Http/Controllers/Controller.php
+                - src/Http/Controllers/ResourceIndexController.php
+                - src/Http/Controllers/ResourceRestoreController.php
+                - src/Tables/Filters/TrashedFilter.php
         # The panel reads dynamic Eloquent attributes off the host application's
         # user model and Laravel's DatabaseNotification, neither of which the
         # framework owns or can annotate with @property.

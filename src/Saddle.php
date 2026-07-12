@@ -44,6 +44,8 @@ class Saddle
     /**
      * Register a callback contributing extra keys to the shared `saddle` Inertia
      * prop (e.g. a plugin exposing its own frontend data). Core keys always win.
+     *
+     * @param  Closure(Request): array<string, mixed>  $callback
      */
     public function sharing(Closure $callback): static
     {
@@ -53,19 +55,29 @@ class Saddle
     }
 
     /**
-     * The merged extra props from every registered sharing callback.
+     * The merged extra props from every registered sharing callback. Each callback
+     * is guarded like nav(): one throwing (or non-array-returning) plugin callback
+     * contributes nothing rather than 500-ing every panel page.
      *
      * @return array<string, mixed>
      */
     public function sharedProps(Request $request): array
     {
-        return collect($this->sharing)
-            ->reduce(fn (array $carry, Closure $callback) => array_merge($carry, (array) $callback($request)), []);
+        return collect($this->sharing)->reduce(function (array $carry, Closure $callback) use ($request) {
+            $extra = rescue(fn () => $callback($request), [], report: true);
+
+            return array_merge($carry, is_array($extra) ? $extra : []);
+        }, []);
     }
 
     /**
      * Transform the computed navigation array (reorder, filter, or append custom
-     * links) before it is shared with the frontend.
+     * links) before it is shared with the frontend. The callback receives the nav
+     * groups and the request and returns the new list; the result is re-indexed
+     * with array_values(), so any top-level string keys are dropped. Each item
+     * should carry the keys {label, uriKey, icon, active}.
+     *
+     * @param  Closure(array<int, array{group: string|null, items: array<int, array<string, mixed>>}>, Request): array<int, mixed>  $callback
      */
     public function navUsing(Closure $callback): static
     {
@@ -82,7 +94,7 @@ class Saddle
     public function registerThemeTokens(string ...$tokens): static
     {
         foreach ($tokens as $token) {
-            if (preg_match('/^[a-z][a-z0-9-]*$/', $token) === 1 && ! in_array($token, $this->extraThemeTokens, true)) {
+            if (preg_match('/^[a-z][a-z0-9-]*$/D', $token) === 1 && ! in_array($token, $this->extraThemeTokens, true)) {
                 $this->extraThemeTokens[] = $token;
             }
         }
@@ -150,7 +162,7 @@ class Saddle
 
         $accent = trim($accent);
 
-        if (preg_match('/^#[0-9a-fA-F]{3,8}$|^(rgb|hsl|oklch)\([^;{}<>]*\)$/', $accent) === 1) {
+        if (preg_match('/^#[0-9a-fA-F]{3,8}$|^(rgb|hsl|oklch)\([^;{}<>]*\)$/D', $accent) === 1) {
             return $accent;
         }
 
@@ -184,7 +196,7 @@ class Saddle
 
             $value = trim($value);
 
-            if (preg_match('/^#[0-9a-fA-F]{3,8}$|^(rgb|hsl|oklch)\([^;{}<>]*\)$/', $value) === 1) {
+            if (preg_match('/^#[0-9a-fA-F]{3,8}$|^(rgb|hsl|oklch)\([^;{}<>]*\)$/D', $value) === 1) {
                 $valid[$token] = $value;
             }
         }
@@ -328,6 +340,15 @@ class Saddle
             ])
             ->values()->all();
 
-        return $this->navUsing !== null ? array_values((array) ($this->navUsing)($nav, $request)) : $nav;
+        if ($this->navUsing === null) {
+            return $nav;
+        }
+
+        // Guard the transform the same way each nav item is guarded: a throwing
+        // (or non-array) navUsing callback falls back to the untransformed nav
+        // rather than 500-ing every panel page.
+        $transformed = rescue(fn () => ($this->navUsing)($nav, $request), $nav, report: true);
+
+        return array_values(is_array($transformed) ? $transformed : $nav);
     }
 }

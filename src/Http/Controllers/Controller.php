@@ -6,6 +6,7 @@ namespace SaddlePHP\Http\Controllers;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -44,7 +45,7 @@ abstract class Controller
      */
     protected function applyTableQuery(Builder $query, Table $table, Request $request): array
     {
-        $query->with($this->relationColumnRoots($table));
+        $query->with($this->relationColumnRoots($table, $query->getModel()));
 
         $search = trim((string) $request->query('search', ''));
         $this->applySearch($query, $table->searchableColumns(), $search);
@@ -104,17 +105,36 @@ abstract class Controller
      * "rider", "rider.ranch.name" yields "rider.ranch"). Eager-loading these
      * before rendering avoids a lazy load per relation per row (N+1).
      *
+     * A dot-path is only eager-loadable when its first segment is a real
+     * relation on the model: columns can also dot into JSON/array casts
+     * (e.g. "settings.theme"), which resolve via data_get and would make
+     * ->with() throw. Those roots are filtered out.
+     *
      * @return array<int, string>
      */
-    protected function relationColumnRoots(Table $table): array
+    protected function relationColumnRoots(Table $table, Model $model): array
     {
         return collect($table->getColumns())
             ->map(fn ($column) => $column->name())
             ->filter(fn (string $name) => str_contains($name, '.'))
             ->map(fn (string $name) => Str::beforeLast($name, '.'))
             ->unique()
+            ->filter(fn (string $root) => $this->isRelationRoot($model, $root))
             ->values()
             ->all();
+    }
+
+    /** Whether a dot-path root's first segment is a genuine Eloquent relation on the model. */
+    protected function isRelationRoot(Model $model, string $root): bool
+    {
+        $first = Str::before($root, '.');
+
+        if (! method_exists($model, $first)) {
+            return false;
+        }
+
+        // Guard against a same-named non-relation method (or one that throws).
+        return rescue(fn () => $model->{$first}() instanceof Relation, false, report: false);
     }
 
     /** @return class-string<\SaddlePHP\Resource> */
@@ -170,9 +190,10 @@ abstract class Controller
     protected function relationPayload(string $manager, Model $parent): array
     {
         $table = $manager::makeTable();
+        $relation = $manager::relationFor($parent);
 
-        $rows = $manager::relationFor($parent)
-            ->with($this->relationColumnRoots($table))
+        $rows = $relation
+            ->with($this->relationColumnRoots($table, $relation->getRelated()))
             ->paginate((int) config('saddle.per_page', 25))
             ->through(fn (Model $record) => [
                 'id' => $record->getKey(),
