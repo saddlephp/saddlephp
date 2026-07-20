@@ -45,7 +45,7 @@ class ResourceImportController extends Controller
         abort_if($handle === false, 422, 'The import file could not be read.');
 
         try {
-            $header = array_map(fn ($h) => strtolower(trim((string) $h)), fgetcsv($handle) ?: []);
+            $header = array_map(fn ($h) => strtolower(trim((string) $h)), fgetcsv($handle, escape: '') ?: []);
 
             // Import atomically: a hard error or an over-cap file rolls back the
             // whole batch instead of leaving a partial import behind.
@@ -54,7 +54,7 @@ class ResourceImportController extends Controller
                 $skipped = 0;
                 $rows = 0;
 
-                while (($row = fgetcsv($handle)) !== false) {
+                while (($row = fgetcsv($handle, escape: '')) !== false) {
                     abort_if(++$rows > $maxRows, 422, "Import files are limited to {$maxRows} rows.");
 
                     $assoc = [];

@@ -33,6 +33,20 @@ it('neutralizes formula-injection values in exported cells', function () {
     expect($csv)->toContain("'=1+2");
 });
 
+it('exports backslash values as RFC-4180 without spurious quoting', function () {
+    $this->actingAsUser();
+    Horse::factory()->create(['name' => 'dir\\file', 'breed' => 'quarter']);
+
+    $csv = $this->get('/admin/resources/horses/export')->streamedContent();
+
+    // PHP's default fputcsv escape (\) treats a backslash as significant and
+    // wraps the whole cell in quotes ("dir\file"); RFC-4180 output (escape: '')
+    // writes it bare. The quoted/escaped form corrupts round-trips through a
+    // compliant reader and can defeat the formula-injection neutraliser.
+    expect($csv)->toContain('dir\\file')
+        ->and($csv)->not->toContain('"dir\\file"');
+});
+
 it('gates export behind viewAny', function () {
     $this->actingAsUser(['is_admin' => false]);
     Gate::policy(Horse::class, DenyExportViewAnyPolicy::class);

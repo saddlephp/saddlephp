@@ -25,10 +25,13 @@ class ResourceExportController extends Controller
 
         return response()->streamDownload(function () use ($query, $columns, $headers) {
             $out = fopen('php://output', 'w');
-            fputcsv($out, $headers);
+            // escape: '' emits RFC-4180 CSV (no proprietary backslash escaping).
+            // The default escape corrupts backslash/quote cells and can defeat
+            // Csv::neutralize(); it is also deprecated as of PHP 8.4.
+            fputcsv($out, $headers, escape: '');
 
             $query->cursor()->each(function (Model $record) use ($out, $columns) {
-                fputcsv($out, array_map(fn ($column) => Csv::neutralize($column->resolve($record)), $columns));
+                fputcsv($out, array_map(fn ($column) => Csv::neutralize($column->resolve($record)), $columns), escape: '');
             });
 
             fclose($out);
