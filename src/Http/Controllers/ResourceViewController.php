@@ -31,7 +31,12 @@ class ResourceViewController extends Controller
                 ],
             ],
             'fields' => $resource::makeForm()->toDisplay($model),
+            // Only ship relations the user may view. Without this gate the view
+            // page leaks related rows that the dedicated relation endpoint
+            // (RelationIndexController) would 403 — a relation whose policy is
+            // stricter than the parent's.
             'relations' => collect($resource::relations())
+                ->filter(fn (string $manager) => $manager::allows($model, 'viewAny'))
                 ->map(fn (string $manager) => $this->relationPayload($manager, $model))
                 ->values()->all(),
         ]);
