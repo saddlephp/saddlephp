@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Gate;
 use Inertia\Testing\AssertableInertia as Assert;
 use SaddlePHP\Saddle;
+use SaddlePHP\Tests\Fixtures\DenyViewAnyPolicy;
 use Workbench\App\Models\Horse;
 use Workbench\App\Models\Ranch;
 use Workbench\App\Models\User;
@@ -51,6 +52,20 @@ it('includes registered relation managers on the view page', function () {
             ->where('relations.0.rows.data.0.title', 'Cisco')
             ->where('relations.0.canCreate', true)
         );
+});
+
+it('omits relations the user cannot viewAny from the view page', function () {
+    app(Saddle::class)->register([RanchResource::class]);
+    // The related model's viewAny is denied — the dedicated relation endpoint
+    // 403s, so the view page must not ship the rows either.
+    Gate::policy(Horse::class, DenyViewAnyPolicy::class);
+    $this->actingAsUser();
+    $ranch = Ranch::factory()->create();
+    $ranch->horses()->create(['name' => 'Cisco']);
+
+    $this->get("/admin/resources/ranches/{$ranch->id}")
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->where('relations', []));
 });
 
 class DenyHorseViewPolicy
