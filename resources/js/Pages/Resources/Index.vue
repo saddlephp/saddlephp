@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onUnmounted } from 'vue';
-import { Link, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import PanelLayout from '../../Components/PanelLayout.vue';
 import ConfirmDialog from '../../Components/ConfirmDialog.vue';
 import { useI18n } from 'vue-i18n';
@@ -154,6 +154,8 @@ function confirmAction() {
 </script>
 
 <template>
+    <Head :title="resource.label" />
+
     <PanelLayout>
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h1 class="text-2xl font-semibold tracking-tight">{{ resource.label }}</h1>

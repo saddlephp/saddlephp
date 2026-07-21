@@ -1,5 +1,5 @@
 <script setup>
-import { usePage, Link } from '@inertiajs/vue3';
+import { Head, usePage, Link } from '@inertiajs/vue3';
 import PanelLayout from '../Components/PanelLayout.vue';
 import WidgetRenderer from '../Components/Widgets/WidgetRenderer.vue';
 
@@ -9,6 +9,8 @@ const { saddle } = usePage().props;
 </script>
 
 <template>
+    <Head title="Dashboard" />
+
     <PanelLayout>
         <h1 class="text-2xl font-semibold tracking-tight">Howdy{{ saddle.user ? `, ${saddle.user.name}` : '' }}.</h1>
         <p class="mt-1 text-ink-2">Pick a resource and get ridin'.</p>

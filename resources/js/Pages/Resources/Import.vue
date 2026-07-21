@@ -1,5 +1,5 @@
 <script setup>
-import { useForm, usePage, Link } from '@inertiajs/vue3';
+import { Head, useForm, usePage, Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import PanelLayout from '../../Components/PanelLayout.vue';
 
@@ -16,6 +16,8 @@ function submit() {
 </script>
 
 <template>
+    <Head :title="t('actions.import') + ' ' + resource.label" />
+
     <PanelLayout>
         <h1 class="text-2xl font-semibold tracking-tight">{{ t('actions.import') }} {{ resource.label }}</h1>
         <p class="mt-1 text-sm text-ink-2">CSV headers must match field names: {{ fields.join(', ') }}.</p>
