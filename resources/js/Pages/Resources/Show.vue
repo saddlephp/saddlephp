@@ -1,5 +1,5 @@
 <script setup>
-import { Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import PanelLayout from '../../Components/PanelLayout.vue';
 import DisplayRenderer from '../../Components/DisplayRenderer.vue';
 import RelationManagers from '../../Components/RelationManagers.vue';
@@ -14,6 +14,8 @@ const base = `/${saddle.path}/resources/${props.resource.uriKey}`;
 </script>
 
 <template>
+    <Head :title="record.title" />
+
     <PanelLayout>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-semibold tracking-tight">{{ record.title }}</h1>

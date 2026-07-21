@@ -1,5 +1,5 @@
 <script setup>
-import { useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import PanelLayout from '../../Components/PanelLayout.vue';
 import FormRenderer from '../../Components/FormRenderer.vue';
@@ -18,6 +18,8 @@ function submit() {
 </script>
 
 <template>
+    <Head title="New workspace" />
+
     <PanelLayout>
         <h1 class="text-2xl font-semibold tracking-tight">New workspace</h1>
         <form class="mt-6 max-w-lg" @submit.prevent="submit">

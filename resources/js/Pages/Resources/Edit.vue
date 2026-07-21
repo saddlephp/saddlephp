@@ -1,6 +1,6 @@
 <script setup>
 import { provide, reactive } from 'vue';
-import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import PanelLayout from '../../Components/PanelLayout.vue';
 import FormRenderer from '../../Components/FormRenderer.vue';
 import { flattenFields, isFileField } from '../../support/flattenFields';
@@ -44,6 +44,8 @@ function save() {
 </script>
 
 <template>
+    <Head :title="'Edit ' + record.title" />
+
     <PanelLayout>
         <h1 class="text-2xl font-semibold tracking-tight">Edit {{ record.title }}</h1>
         <form class="mt-6 max-w-2xl" @submit.prevent="save">
