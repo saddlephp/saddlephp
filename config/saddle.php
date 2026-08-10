@@ -10,6 +10,15 @@ return [
     'resources' => [
         'path' => app_path('Saddle'),
         'namespace' => 'App\\Saddle',
+
+        /*
+         * Scan the path above for resource classes at boot.
+         *
+         * Discovered resources and any passed to Saddle::register() are merged,
+         * so a plugin registering its own resources no longer hides yours. Set
+         * this to false to skip scanning and curate the list entirely by hand.
+         */
+        'discovery' => true,
     ],
 
     'per_page' => 25,
@@ -23,6 +32,9 @@ return [
     'widgets' => [
         'path' => app_path('Saddle/Widgets'),
         'namespace' => 'App\\Saddle\\Widgets',
+
+        /* As with resources: discovered and registered widgets are merged. */
+        'discovery' => true,
     ],
 
     'brand' => [
@@ -72,6 +84,26 @@ return [
     'uploads' => [
         'disk' => 'public',
         'directory' => 'saddle',
+
+        /*
+         * Ceiling in kilobytes applied to every FileUpload that does not set
+         * its own maxSize(). Fields used to be unbounded unless the developer
+         * remembered to cap them.
+         */
+        'max_size' => 10240,
+
+        /*
+         * Accepted types for a FileUpload with no image() or acceptedTypes()
+         * constraint of its own, matched against the file's *content*.
+         *
+         * The default set omits html, svg, xml, js and the php family on
+         * purpose. Laravel names a stored file from its detected content type,
+         * so allowing those means a user can upload "notes.txt" full of HTML,
+         * have it land as <random>.html on a public disk, and get script
+         * execution on your application's own origin the moment an admin opens
+         * the record. Leave empty to use the framework default set.
+         */
+        'allowed_extensions' => [],
     ],
 
     /*
@@ -81,5 +113,15 @@ return [
      */
     'import' => [
         'max_rows' => 5000,
+    ],
+
+    'export' => [
+        /*
+         * Ceiling on rows written by a CSV export. Exports run synchronously on
+         * the web request, so an uncapped one on a large table holds a worker
+         * open until it times out and hands back a truncated file that still
+         * looks like a success. Set to 0 to remove the cap.
+         */
+        'max_rows' => 50000,
     ],
 ];

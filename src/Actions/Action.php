@@ -11,9 +11,15 @@ use Illuminate\Support\Str;
  * A single-record row action shown on the index table.
  *
  * The handle Closure receives the resolved Eloquent Model instance for the row.
- * When authorize() is unset the action is available to anyone who can see the
- * index. For destructive or sensitive actions declare an ability so the policy
- * is checked per record before the handler runs.
+ *
+ * Actions run arbitrary mutating code, so they are authorized like any other
+ * write: the policy's `update` ability is checked per record before the handler
+ * runs. Call authorize() to check a different ability, or withoutAuthorization()
+ * for an action that genuinely needs no per-record check beyond seeing the index.
+ *
+ * Until 1.3.0 an action with no declared ability was gated only by `viewAny`,
+ * which meant a read-only account could invoke every action a developer had not
+ * remembered to annotate.
  *
  * Color tokens: accent | ink | muted
  */
@@ -25,7 +31,7 @@ class Action
 
     protected ?string $confirm = null;
 
-    protected ?string $ability = null;
+    protected ?string $ability = 'update';
 
     protected ?Closure $callback = null;
 
@@ -74,6 +80,20 @@ class Action
     public function authorize(string $ability): static
     {
         $this->ability = $ability;
+
+        return $this;
+    }
+
+    /**
+     * Run this action with no per-record policy check, so seeing the index is
+     * enough to invoke it.
+     *
+     * Only for actions that neither mutate nor disclose anything the row itself
+     * does not already show. Everything else wants authorize().
+     */
+    public function withoutAuthorization(): static
+    {
+        $this->ability = null;
 
         return $this;
     }

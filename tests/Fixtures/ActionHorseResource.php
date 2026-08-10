@@ -50,6 +50,10 @@ class ActionHorseResource extends Resource
             // Declared without handle() on purpose: hitting it is a developer
             // error and must surface as a LogicException, not a silent no-op.
             Action::make('hollow'),
+            // The explicit opt-out from the fail-closed default.
+            Action::make('unguarded')
+                ->withoutAuthorization()
+                ->handle(fn (Horse $horse) => $horse->update(['name' => 'Freed'])),
         ];
     }
 
