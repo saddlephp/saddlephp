@@ -15,7 +15,7 @@ use SaddlePHP\Widgets\Widget;
 
 class Saddle
 {
-    public const VERSION = '1.2.0';
+    public const VERSION = '1.3.0';
 
     /** @var array<int, class-string<\SaddlePHP\Resource>> */
     protected array $registered = [];
@@ -212,19 +212,29 @@ class Saddle
         return $this;
     }
 
-    /** @return Collection<int, class-string<\SaddlePHP\Resource>> */
+    /**
+     * Every resource the panel knows about: those discovered under the
+     * configured path, plus any registered explicitly.
+     *
+     * These used to be mutually exclusive -- the first register() call anywhere
+     * in the boot cycle suppressed discovery entirely. Since plugins register
+     * from their service providers, installing any plugin silently emptied the
+     * host application's panel: no nav, no global search, 404 on every resource
+     * route. Set `saddle.resources.discovery` to false to opt out of scanning
+     * and curate the list by hand.
+     *
+     * @return Collection<int, class-string<\SaddlePHP\Resource>>
+     */
     public function resources(): Collection
     {
-        if ($this->registered !== []) {
-            return collect($this->registered);
-        }
+        $discovered = config('saddle.resources.discovery', true)
+            ? $this->discovered ??= ResourceDiscovery::in(
+                config('saddle.resources.path', app_path('Saddle')),
+                config('saddle.resources.namespace', 'App\\Saddle'),
+            )
+            : [];
 
-        $this->discovered ??= ResourceDiscovery::in(
-            config('saddle.resources.path', app_path('Saddle')),
-            config('saddle.resources.namespace', 'App\\Saddle'),
-        );
-
-        return collect($this->discovered);
+        return collect(array_values(array_unique([...$discovered, ...$this->registered])));
     }
 
     /** @return class-string<\SaddlePHP\Resource>|null */
@@ -244,17 +254,26 @@ class Saddle
         return $this;
     }
 
-    /** @return Collection<int, class-string<Widget>> */
+    /** @var array<int, class-string<Widget>>|null */
+    protected ?array $discoveredWidgets = null;
+
+    /**
+     * Discovered widgets plus explicitly registered ones, for the same reason
+     * resources() merges rather than choosing. Memoized to match, so repeated
+     * calls do not re-glob and re-reflect the widget directory.
+     *
+     * @return Collection<int, class-string<Widget>>
+     */
     public function widgets(): Collection
     {
-        if ($this->registeredWidgets !== []) {
-            return collect($this->registeredWidgets);
-        }
+        $discovered = config('saddle.widgets.discovery', true)
+            ? $this->discoveredWidgets ??= WidgetDiscovery::in(
+                config('saddle.widgets.path', app_path('Saddle/Widgets')),
+                config('saddle.widgets.namespace', 'App\\Saddle\\Widgets'),
+            )
+            : [];
 
-        return collect(WidgetDiscovery::in(
-            config('saddle.widgets.path', app_path('Saddle/Widgets')),
-            config('saddle.widgets.namespace', 'App\\Saddle\\Widgets'),
-        ));
+        return collect(array_values(array_unique([...$discovered, ...$this->registeredWidgets])));
     }
 
     public function path(): string
