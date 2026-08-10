@@ -35,7 +35,14 @@ Route::post('/notifications/{notification}/read', NotificationReadController::cl
 // capture those words, so static routes keep precedence even if their order
 // ever changes. [^/]+ keeps {record} to a single segment so the slash-less
 // view route (GET .../{record}) cannot swallow deeper paths like .../{record}/edit.
-$recordKey = '^(?!create$|options$|actions$|export$|import$)[^/]+$';
+// Symfony strips a leading ^ and a trailing $ from route requirements
+// (Route::sanitizeRequirement), so the anchors that used to wrap this pattern
+// never reached the compiled regex. The inner $ then meant "end of the whole
+// path" rather than "end of this segment", which made the guard a no-op
+// wherever {record} was not the final segment: /resources/horses/create/edit
+// happily matched with record=create. Anchor on a following slash or the end
+// instead, which survives sanitizing.
+$recordKey = '(?!(create|options|actions|export|import)(/|$))[^/]+';
 
 // Global search — literal segment, registered before the {resourceKey} wildcard.
 Route::get('/resources/search', GlobalSearchController::class)->name('resources.search');

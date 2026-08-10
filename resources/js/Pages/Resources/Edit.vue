@@ -30,16 +30,28 @@ const form = useForm(
 const touchedFiles = reactive(new Set());
 form.__touchFile = (name) => touchedFiles.add(name);
 
+// Inertia serializes the payload as FormData the moment a File is present, and
+// it dispatches the verb it was given -- it does not spoof the method. PHP only
+// parses multipart bodies on POST, so a real PUT arrives with $_POST and $_FILES
+// both empty: every required field fails validation and the upload is dropped.
+// Posting with _method keeps Laravel routing to the PUT handler.
+const isUploading = () => fileNames.some((name) => form[name] instanceof File);
+
 form.transform((data) => {
     const out = { ...data };
     for (const name of fileNames) {
         if (out[name] === null && !touchedFiles.has(name)) delete out[name];
     }
+    if (fileNames.some((name) => out[name] instanceof File)) {
+        out._method = 'put';
+    }
     return out;
 });
 
 function save() {
-    form.put(`${base}/${props.record.id}`);
+    const url = `${base}/${props.record.id}`;
+
+    isUploading() ? form.post(url) : form.put(url);
 }
 </script>
 

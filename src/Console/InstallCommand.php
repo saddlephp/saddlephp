@@ -6,6 +6,7 @@ namespace SaddlePHP\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use JsonException;
 
 class InstallCommand extends Command
 {
@@ -56,7 +57,12 @@ class InstallCommand extends Command
             return;
         }
 
-        $hooks = $composer['scripts']['post-update-cmd'] ?? [];
+        // Composer's schema allows a script hook to be a bare string as well as
+        // a list, and (array) on a string yields a one-element list either way.
+        // Without the cast, in_array() against a string is a fatal TypeError and
+        // the spread below is a fatal Error -- on the host's machine, during
+        // install.
+        $hooks = (array) ($composer['scripts']['post-update-cmd'] ?? []);
 
         if (in_array('@php artisan saddle:upgrade', $hooks, true)) {
             return;
@@ -68,7 +74,27 @@ class InstallCommand extends Command
 
         $composer['scripts']['post-update-cmd'] = [...$hooks, '@php artisan saddle:upgrade'];
 
-        File::put($path, json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES).PHP_EOL);
+        // json_encode returns false on invalid UTF-8 anywhere in the document,
+        // and "false . PHP_EOL" is a single newline. That used to be written
+        // straight over the host's composer.json, destroying it, and the next
+        // line still reported success.
+        try {
+            $encoded = json_encode(
+                $composer,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR,
+            );
+        } catch (JsonException $e) {
+            $this->components->warn('Could not re-encode composer.json ('.$e->getMessage().'); it was left untouched. Add "@php artisan saddle:upgrade" to scripts.post-update-cmd manually.');
+
+            return;
+        }
+
+        if (File::put($path, $encoded.PHP_EOL) === false) {
+            $this->components->warn('Could not write composer.json; it was left untouched. Add "@php artisan saddle:upgrade" to scripts.post-update-cmd manually.');
+
+            return;
+        }
+
         $this->components->info('Added saddle:upgrade to composer post-update-cmd.');
     }
 }

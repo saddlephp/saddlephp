@@ -29,8 +29,17 @@ it('defaults success message to Done.', function () {
     expect(Action::make('foo')->message())->toBe('Done.');
 });
 
-it('defaults ability to null', function () {
-    expect(Action::make('foo')->ability())->toBeNull();
+/**
+ * Actions run arbitrary mutating code, so an undeclared ability has to mean
+ * "check update", not "anyone who can see the index". The old null default let
+ * a read-only account invoke every action a developer had not annotated.
+ */
+it('defaults ability to update so an unannotated action is not fail-open', function () {
+    expect(Action::make('foo')->ability())->toBe('update');
+});
+
+it('withoutAuthorization() is the explicit opt-out', function () {
+    expect(Action::make('foo')->withoutAuthorization()->ability())->toBeNull();
 });
 
 it('defaults callback to null', function () {

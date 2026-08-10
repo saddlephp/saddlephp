@@ -133,3 +133,45 @@ it('denies the endpoint outright when viewAny fails', function () {
 
     expect($horse->fresh()->name)->toBe('Cisco');
 });
+
+// ---------------------------------------------------------------------------
+// Fail-closed action authorization (1.3.0)
+// ---------------------------------------------------------------------------
+
+/**
+ * An action with no declared ability used to be gated only by viewAny, so a
+ * read-only account could invoke every action a developer had not remembered to
+ * annotate -- "approve refund", "reset password", "mark verified". The shipped
+ * example resource had two such actions, so that was the pattern being copied.
+ */
+it('403s an unannotated row action when the policy denies update', function () {
+    Gate::policy(Horse::class, LockedDownHorsePolicy::class);
+    $horse = Horse::factory()->create(['name' => 'Cisco']);
+
+    $this->post('/admin/resources/action-horses/actions/rename', ['record' => $horse->id])
+        ->assertForbidden();
+
+    expect($horse->fresh()->name)->toBe('Cisco');
+});
+
+it('403s an unannotated bulk action when the policy denies update', function () {
+    Gate::policy(Horse::class, LockedDownHorsePolicy::class);
+    $horse = Horse::factory()->create(['breed' => 'Mustang']);
+
+    $this->post('/admin/resources/action-horses/actions/brand', ['records' => [$horse->id]])
+        ->assertForbidden();
+
+    expect($horse->fresh()->breed)->toBe('Mustang');
+});
+
+it('still runs an action that explicitly opts out of authorization', function () {
+    Gate::policy(Horse::class, LockedDownHorsePolicy::class);
+    $horse = Horse::factory()->create(['name' => 'Cisco']);
+
+    // ActionHorseResource declares 'unguarded' with withoutAuthorization().
+    $this->from('/admin/resources/action-horses')
+        ->post('/admin/resources/action-horses/actions/unguarded', ['record' => $horse->id])
+        ->assertRedirect();
+
+    expect($horse->fresh()->name)->toBe('Freed');
+});

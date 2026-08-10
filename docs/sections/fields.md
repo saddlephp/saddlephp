@@ -84,7 +84,7 @@ A textarea with a formatting toolbar. The stored value is a plain string bounded
 Markdown::make('notes'),
 ```
 
-All modifiers inherited from `Textarea` (`rows()`) and the common base (`required()`, `rules()`, `placeholder()`, `helper()`, `canSee()`, `label()`) apply as usual.
+All modifiers from the common base (`required()`, `rules()`, `placeholder()`, `helper()`, `canSee()`, `label()`) apply as usual. `Markdown` extends `Field` directly, not `Textarea`, so it has no `rows()`.
 
 ### FileUpload
 

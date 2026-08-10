@@ -89,7 +89,10 @@ class SaddleServiceProvider extends ServiceProvider
         $tenancyOn = config('saddle.tenancy.model') !== null;
 
         $prefix = config('saddle.path', 'admin');
-        $middleware = config('saddle.middleware', ['web', 'auth']);
+        // Cast: a host writing 'middleware' => 'web' is valid-looking config
+        // that used to fatal on every request when the appends below ran
+        // against a string. The register group below already casts.
+        $middleware = (array) config('saddle.middleware', ['web', 'auth']);
 
         if ($tenancyOn) {
             $prefix .= '/{tenant}';

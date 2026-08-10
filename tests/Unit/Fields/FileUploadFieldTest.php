@@ -16,23 +16,73 @@ it('serializes the file-field component', function () {
     expect(FileUpload::make('photo')->toArray()['component'])->toBe('file-field');
 });
 
-it('defaults to nullable file rules', function () {
-    expect(FileUpload::make('photo')->getRules())->toBe(['nullable', 'file']);
+it('defaults to nullable file rules with a type allowlist and a size cap', function () {
+    $rules = FileUpload::make('photo')->getRules();
+
+    expect($rules[0])->toBe('nullable')
+        ->and($rules[1])->toBe('file')
+        ->and($rules)->toContain('max:10240');
+
+    expect(mimesList($rules))->not->toBeNull();
 });
 
-it('image() adds the image rule', function () {
-    expect(FileUpload::make('photo')->image()->getRules())->toBe(['nullable', 'file', 'image']);
+/**
+ * The default allowlist is the only thing standing between an unrestricted
+ * FileUpload and same-origin script execution: Laravel names a stored file from
+ * its detected content type, so an "invoice.txt" full of HTML lands as
+ * <random>.html on the public disk and runs with the admin's session.
+ */
+it('never allows a type that renders as script from our own origin', function () {
+    $allowed = explode(',', mimesList(FileUpload::make('doc')->getRules()));
+
+    foreach (FileUpload::DENIED_EXTENSIONS as $denied) {
+        expect($allowed)->not->toContain($denied);
+    }
 });
 
-it('acceptedTypes() adds a mimes rule', function () {
+it('always caps the size even when maxSize() is never called', function () {
+    expect(FileUpload::make('photo')->getRules())->toContain('max:10240');
+});
+
+it('image() adds the image rule and skips the default allowlist', function () {
+    $rules = FileUpload::make('photo')->image()->getRules();
+
+    expect($rules)->toBe(['nullable', 'file', 'image', 'max:10240']);
+});
+
+it('acceptedTypes() adds a mimes rule and replaces the default allowlist', function () {
     expect(FileUpload::make('doc')->acceptedTypes(['pdf'])->getRules())
-        ->toBe(['nullable', 'file', 'mimes:pdf']);
+        ->toBe(['nullable', 'file', 'mimes:pdf', 'max:10240']);
 });
 
-it('maxSize() adds a max rule in kilobytes', function () {
-    expect(FileUpload::make('photo')->maxSize(2048)->getRules())
-        ->toBe(['nullable', 'file', 'max:2048']);
+it('maxSize() overrides the configured cap', function () {
+    expect(FileUpload::make('photo')->maxSize(2048)->getRules())->toContain('max:2048');
 });
+
+it('falls back to sane upload paths when a host publishes a partial config block', function () {
+    // mergeConfigFrom is a shallow array_merge, so publishing only
+    // uploads.disk used to leave uploads.directory null and TypeError on
+    // every single upload.
+    config(['saddle.uploads' => ['disk' => 'public']]);
+
+    Storage::fake('public');
+
+    $horse = new Horse;
+    FileUpload::make('photo')->fill($horse, UploadedFile::fake()->image('p.jpg'));
+
+    expect($horse->photo)->toStartWith(FileUpload::DEFAULT_DIRECTORY.'/');
+});
+
+function mimesList(array $rules): ?string
+{
+    foreach ($rules as $rule) {
+        if (is_string($rule) && str_starts_with($rule, 'mimes:')) {
+            return substr($rule, strlen('mimes:'));
+        }
+    }
+
+    return null;
+}
 
 it('composes required with every fluent rule', function () {
     expect(
