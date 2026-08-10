@@ -106,8 +106,21 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      # The bundle is committed and is what Composer ships, so a PR that edits
-      # a .vue file without rebuilding used to pass CI fully green and publish
-      # stale assets. This job regenerated dist/ and then threw it away.
-      - name: Fail if the committed bundle is stale
-        run: git diff --exit-code dist
+      # The bundle is committed and is what Composer ships, and this job used to
+      # regenerate dist/ and throw the result away -- so the one invariant that
+      # matters went unchecked and 1.1.0 and 1.2.0 both shipped a bundle stamped
+      # with an older version.
+      #
+      # Deliberately a version assertion rather than `git diff --exit-code dist`:
+      # Tailwind's output is not byte-identical across platforms, so diffing the
+      # committed bundle against a Linux rebuild is permanently red on a repo
+      # whose maintainer builds on Windows. This checks the thing that actually
+      # broke, and does so against the committed artifact.
+      - name: Fail if the committed bundle does not carry the current version
+        run: |
+          VERSION=$(grep -oP "const VERSION = '\K[^']+" src/Saddle.php)
+          echo "Saddle::VERSION = $VERSION"
+          if ! grep -q "\"$VERSION\"" dist/assets/*.js; then
+            echo "::error::The committed bundle in dist/ does not contain $VERSION. Run 'npm run build' and commit dist/."
+            exit 1
+          fi
