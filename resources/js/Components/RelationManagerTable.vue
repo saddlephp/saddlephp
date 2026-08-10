@@ -25,10 +25,18 @@ const form = useForm({ ...blank });
 
 const touchedFiles = reactive(new Set());
 form.__touchFile = (name) => touchedFiles.add(name);
+// See Edit.vue: Inertia sends FormData once a File is present and does not spoof
+// the verb, and PHP only parses multipart on POST. Update has to go out as a
+// POST carrying _method or the request arrives empty.
+const isUploading = () => leaves().some((f) => isFileField(f) && form[f.name] instanceof File);
+
 form.transform((data) => {
     const out = { ...data };
     for (const f of leaves()) {
         if (isFileField(f) && out[f.name] === null && !touchedFiles.has(f.name)) delete out[f.name];
+    }
+    if (editing.value !== 'create' && isUploading()) {
+        out._method = 'put';
     }
     return out;
 });
@@ -54,9 +62,16 @@ async function startEdit(row) {
 
 function submit() {
     const opts = { preserveScroll: true, onSuccess: () => (editing.value = null) };
-    editing.value === 'create'
-        ? form.post(endpoint, opts)
-        : form.put(`${endpoint}/${editing.value}`, opts);
+
+    if (editing.value === 'create') {
+        form.post(endpoint, opts);
+
+        return;
+    }
+
+    const url = `${endpoint}/${editing.value}`;
+
+    isUploading() ? form.post(url, opts) : form.put(url, opts);
 }
 
 function destroy() {
