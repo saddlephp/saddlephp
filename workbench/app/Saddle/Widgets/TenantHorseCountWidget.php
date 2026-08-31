@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Workbench\App\Saddle\Widgets;
 
 use Illuminate\Http\Request;
-use SaddlePHP\Saddle;
 use SaddlePHP\Widgets\StatWidget;
 use Workbench\App\Models\Horse;
+use Workbench\App\Saddle\HorseResource;
 
 class TenantHorseCountWidget extends StatWidget
 {
+    public static ?string $resource = HorseResource::class;
+
     public function label(): string
     {
         return 'Tenant horses';
@@ -18,10 +20,6 @@ class TenantHorseCountWidget extends StatWidget
 
     public function value(Request $request): int
     {
-        $tenant = app(Saddle::class)->tenant();
-
-        return Horse::query()
-            ->when($tenant, fn ($q) => $q->where('ranch_id', $tenant->getKey()))
-            ->count();
+        return $this->scopeToTenant(Horse::query())->count();
     }
 }

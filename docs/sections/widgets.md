@@ -67,21 +67,42 @@ class HorsesByBreedWidget extends ChartWidget
 
 ### Discovery, ordering, and visibility
 
-Place widget classes in `app/Saddle/Widgets/` and Saddle discovers them automatically, the same way it discovers resources. Widgets render in ascending `$sort` order. Override `canSee(Request $request): bool` to hide a widget from a request or user. To register widgets explicitly instead of by discovery, call `Saddle::registerWidgets([...])` from a service provider. The discovery path is configurable via `config('saddle.widgets')`.
+Place widget classes in `app/Saddle/Widgets/` and Saddle discovers them automatically, the same way it discovers resources. Widgets render in ascending `$sort` order. To register widgets explicitly instead of by discovery, call `Saddle::registerWidgets([...])` from a service provider. The discovery path is configurable via `config('saddle.widgets')`.
+
+### Authorization
+
+Declare the resource a widget summarises, and it is gated by that resource's `viewAny` policy:
+
+```php
+class HorseCountWidget extends StatWidget
+{
+    public static ?string $resource = HorseResource::class;
+}
+```
+
+An aggregate discloses more than it looks like it does. A bare count on a shared dashboard tells a competitor tenant your customer count, your order volume, and — watched over time — your growth rate.
+
+A widget that declares **no** resource cannot be authorized by anything, so it is hidden. You have three ways to show one deliberately:
+
+- point it at a resource with `$resource` (recommended),
+- override `canSee(Request $request): bool` to return `true` for a genuinely public tile,
+- or set `saddle.authorization.require_widget_resource` to `false` to restore the old fail-open behaviour panel-wide.
+
+`canSee()` still overrides everything, so any existing gate you have written keeps working.
 
 ### Tenancy
 
-Widgets are **not** auto-scoped to a tenant, because they may query anything. When a widget should be tenant-aware, read the bound tenant from the manager and scope your own query:
+Widgets query models directly, so `Resource::query()`'s tenant scoping never applies to them. Wrap the query in `scopeToTenant()` and it is confined to the bound tenant using the relation declared on the widget's `$resource`:
 
 ```php
 public function value(Request $request): int
 {
-    $tenant = app(\SaddlePHP\Saddle::class)->tenant();
-
-    return Horse::query()
-        ->when($tenant, fn ($q) => $q->where('ranch_id', $tenant->getKey()))
-        ->count();
+    return $this->scopeToTenant(Horse::query())->count();
 }
 ```
+
+It is a no-op when tenancy is off, when no tenant is bound, or when the declared resource is global by design, so it is safe to leave in place either way. Pass a relation name explicitly (`scopeToTenant($query, 'ranch')`) when the widget's model is scoped differently from its resource.
+
+Forgetting this is quiet rather than loud: the tile simply reports the **global** figure to every tenant.
 
 One widget that throws while building is skipped (and reported) rather than breaking the whole dashboard.
