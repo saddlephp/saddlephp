@@ -30,7 +30,8 @@ it('sorts by a sortable column ascending and descending', function () {
 });
 
 it('falls back to key desc for non-sortable sort params', function () {
-    $this->get('/admin/resources/horses?sort=notes')
+    // `breed` is a real column that was never marked ->sortable().
+    $this->get('/admin/resources/horses?sort=breed')
         ->assertInertia(fn (Assert $page) => $page
             ->where('query.sort', 'id')
             ->where('query.direction', 'desc')

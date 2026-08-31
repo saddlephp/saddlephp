@@ -38,3 +38,27 @@ Textarea::make('notes')->rows(3)
 The callback receives the current `Request` and must return a real boolean. Keep the closure cheap and idempotent because it may be called several times per request (once per call to `visibleFields()`). Avoid database queries inside the closure; prefer pre-loaded authorisation decisions.
 
 **Return a real boolean.** Using `Gate::inspect(...)` is a common mistake: its `Response` object is always truthy and will never hide the field. Use `Gate::allows('ability', $model)` instead.
+
+### Column visibility with `canSee`
+
+Gating a field does **not** gate the column of the same name. The form and the
+table are separate surfaces, and a field's gate never reaches the index cells,
+the CSV export, or the sort and search lists. Columns take the same modifier:
+
+```php
+use Illuminate\Http\Request;
+
+TextColumn::make('notes')->sortable()->searchable()
+    ->canSee(fn (Request $request) => (bool) $request->user()?->is_admin),
+```
+
+A hidden column is dropped from four places at once: the index `cells` payload,
+the `columns` payload, the CSV export, and the sortable and searchable lists.
+
+Dropping it from the last two matters as much as hiding the value. A column that
+is merely un-rendered is still an oracle: `?sort=notes` leaks the ordering of a
+hidden attribute, and `?search=` leaks which rows match a guess, one guess at a
+time. Both are closed by the same gate.
+
+If you gate a field, check whether a column of the same name needs the same
+rule.

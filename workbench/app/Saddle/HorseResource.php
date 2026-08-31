@@ -105,6 +105,12 @@ class HorseResource extends Resource
                 'appaloosa' => 'muted',
             ]),
             BooleanColumn::make('is_saddled'),
+            // Gated with the same rule as the `notes` form field above. A column
+            // repeating a field's gate has to repeat it here too -- the form
+            // gate does not reach the index cells, the export or the sort and
+            // search lists.
+            TextColumn::make('notes')->sortable()->searchable()
+                ->canSee(fn (Request $request) => (bool) $request->user()?->is_admin),
             TextColumn::make('rider.name')->label('Rider'),
             TextColumn::make('created_at')->date('M j, Y')->sortable(),
         ])->filters([
