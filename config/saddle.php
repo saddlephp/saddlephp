@@ -78,6 +78,15 @@ return [
      */
     'authorization' => [
         'require_policy' => true,
+
+        /*
+         * Dashboard widgets are gated on the viewAny policy of the resource
+         * they declare via `public static ?string $resource`. A widget that
+         * declares none cannot be authorized by anything, so it is hidden.
+         * Set this to false to show unowned widgets to every panel user
+         * instead (the pre-1.4 behaviour).
+         */
+        'require_widget_resource' => true,
     ],
 
     // Default storage disk and directory for FileUpload fields (per-field overridable).

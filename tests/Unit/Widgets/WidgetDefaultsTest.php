@@ -51,6 +51,12 @@ it('serializes a chart widget with no data as empty labels and values', function
     ]);
 });
 
-it('makes widgets visible by default', function () {
+it('hides a widget that declares no resource, because nothing can authorize it', function () {
+    expect(DefaultsOnlyStatWidget::canSee(new Request))->toBeFalse();
+});
+
+it('restores the fail-open default when require_widget_resource is off', function () {
+    config()->set('saddle.authorization.require_widget_resource', false);
+
     expect(DefaultsOnlyStatWidget::canSee(new Request))->toBeTrue();
 });
