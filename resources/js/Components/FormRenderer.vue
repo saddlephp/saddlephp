@@ -13,6 +13,7 @@ import CustomFieldShim from './Fields/CustomFieldShim.vue';
 import SectionLayout from './Layout/SectionLayout.vue';
 import GridLayout from './Layout/GridLayout.vue';
 import TabsLayout from './Layout/TabsLayout.vue';
+import { resolveField, resolveLayout } from '../registry';
 
 defineProps({ fields: Array, form: Object });
 
@@ -35,6 +36,11 @@ const layouts = {
     grid: GridLayout,
     tabs: TabsLayout,
 };
+
+// Plugin-registered components win over the built-in maps, so a plugin can add
+// a new component key or override a shipped one without editing these tables.
+const fieldFor = (name) => resolveField(name, map);
+const layoutFor = (name) => resolveLayout(name, layouts);
 </script>
 
 <template>
@@ -42,7 +48,7 @@ const layouts = {
         <template v-for="(node, index) in fields" :key="node.name ?? `node-${index}`">
             <component
                 v-if="node.layout"
-                :is="layouts[node.layout]"
+                :is="layoutFor(node.layout)"
                 :node="node"
                 :form="form"
             />
@@ -51,7 +57,7 @@ const layouts = {
                     {{ node.label }} <span v-if="node.required" class="text-accent">*</span>
                 </label>
                 <component
-                    :is="map[node.component]"
+                    :is="fieldFor(node.component)"
                     :field="node"
                     v-model="form[node.name]"
                     @touched="node.component === 'file-field' ? form.__touchFile?.(node.name) : null"
