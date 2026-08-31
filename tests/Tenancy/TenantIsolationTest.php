@@ -258,3 +258,31 @@ it('shows only the correct ranch horses when the same user switches tenant conte
             ->where('rows.data.0.cells.name', 'Bandit')
         );
 });
+
+// ---------------------------------------------------------------------------
+// 7c. A cross-tenant FK must not render the foreign row's title. currentOption()
+//     bypassed scopeToTenant, so the bound value of a searchable BelongsTo
+//     leaked another tenant's label even though the picker itself was scoped.
+// ---------------------------------------------------------------------------
+it('does not render the label of a rider belonging to another ranch', function () {
+    $user = $this->actingAsUser();
+    $ranchA = makeRanchWithMember('Alpha Ranch', $user);
+    $ranchB = Ranch::factory()->create(['name' => 'Beta Ranch']);
+
+    $foreignRider = Rider::factory()->create(['name' => 'Bob', 'ranch_id' => $ranchB->id]);
+    $horse = Horse::factory()->create([
+        'name' => 'Bandit',
+        'ranch_id' => $ranchA->id,
+        'rider_id' => $foreignRider->id,
+    ]);
+
+    RiderResource::$tenant = 'ranch';
+
+    try {
+        $this->get("/admin/{$ranchA->getRouteKey()}/resources/horses/{$horse->id}/edit")
+            ->assertOk()
+            ->assertDontSee('Bob');
+    } finally {
+        RiderResource::$tenant = null;
+    }
+});

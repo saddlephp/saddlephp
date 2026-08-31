@@ -131,7 +131,21 @@ Set `titleAttribute('name')` explicitly if the related model has no registered r
 
 **Async picker.** `searchable()` switches from a static list to an async picker that queries the related table as you type. On the edit form, only the currently saved value is embedded; the full list is never loaded up front.
 
-**Scoping options.** `modifyOptionsQuery(fn ($query) => ...)` scopes the option list for tenancy or visibility. It applies to both the static list and async search results. A record's saved foreign key always renders its label even when the related row falls outside the scope.
+**Scoping options.** `modifyOptionsQuery(fn ($query) => ...)` scopes the option list for tenancy or visibility. It applies to both the static list and async search results. A record's saved foreign key always renders its label even when the related row falls outside `modifyOptionsQuery`'s scope -- but **not** outside the tenant: a foreign key pointing at another tenant's row renders no label at all.
+
+**Authorization.** The option list is gated on the **related** resource's
+`viewAny` policy, not the resource being edited. The rows returned belong to the
+related resource, and the endpoint accepts a search term, so an ungated picker
+would let anyone able to open the form walk the entire related table a prefix at
+a time.
+
+If the related model has no registered resource there is no `viewAny` to
+consult, so the list fails closed and comes back empty. For genuine lookup
+tables -- countries, currencies, breeds -- opt out explicitly:
+
+```php
+BelongsTo::make('country')->publicOptions(),
+```
 
 ### CustomField
 

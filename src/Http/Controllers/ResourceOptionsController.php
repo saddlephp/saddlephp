@@ -26,6 +26,12 @@ class ResourceOptionsController extends Controller
 
         abort_if($match === null, 404);
 
+        // The rows returned here belong to the *related* resource, so that is
+        // what has to authorize them. Authorizing only the owning resource meant
+        // anyone who could create a Comment could enumerate every User, one
+        // search prefix at a time.
+        abort_unless($match->optionsVisible(), 403);
+
         return response()->json([
             'options' => $match->searchOptions(trim((string) $request->query('search', ''))),
         ]);

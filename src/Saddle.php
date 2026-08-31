@@ -243,6 +243,20 @@ class Saddle
         return $this->resources()->first(fn (string $resource) => $resource::uriKey() === $uriKey);
     }
 
+    /**
+     * The registered resource managing a model class, if there is one.
+     *
+     * Used to authorize a relation lookup against the resource that owns the
+     * rows being returned, rather than the resource being edited.
+     *
+     * @param  class-string<Model>  $model
+     * @return class-string<\SaddlePHP\Resource>|null
+     */
+    public function resourceForModel(string $model): ?string
+    {
+        return $this->resources()->first(fn (string $resource) => $resource::$model === $model);
+    }
+
     /** @var array<int, class-string<Widget>> */
     protected array $registeredWidgets = [];
 
