@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SaddlePHP\Tables\Columns;
 
+use Closure;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use LogicException;
 
@@ -18,7 +20,38 @@ abstract class Column
 
     protected string $type = 'text';
 
+    protected ?Closure $canSee = null;
+
     final public function __construct(protected string $name) {}
+
+    /**
+     * Gate this column per request, mirroring `Field::canSee()`.
+     *
+     * A hidden column is dropped from the index cells, the columns payload, the
+     * CSV export, and the sortable and searchable lists. Dropping it from the
+     * last two matters as much as the cells: a column that is merely un-rendered
+     * is still an oracle, because `?sort=` leaks ordering and `?search=` leaks
+     * which rows match a guess.
+     *
+     * The callback may be invoked several times per request, so keep it cheap
+     * and idempotent. Prefer pre-loaded authorisation decisions over database
+     * queries inside the closure.
+     *
+     * Return a real boolean. For example, use `Gate::allows('view', $model)`
+     * rather than `Gate::inspect(...)` -- a `Response` object is always truthy
+     * and would never hide the column.
+     */
+    public function canSee(Closure $callback): static
+    {
+        $this->canSee = $callback;
+
+        return $this;
+    }
+
+    public function visibleTo(Request $request): bool
+    {
+        return $this->canSee === null || (bool) ($this->canSee)($request);
+    }
 
     public static function make(string $name): static
     {
