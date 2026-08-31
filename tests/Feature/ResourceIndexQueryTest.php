@@ -37,3 +37,24 @@ it('falls back to key desc for non-sortable sort params', function () {
             ->where('rows.data.0.cells.name', 'Willow')
         );
 });
+
+it('matches an underscore in a search term literally rather than as a wildcard', function () {
+    Horse::factory()->create(['name' => 'Rio_Grande', 'breed' => 'criollo']);
+    Horse::factory()->create(['name' => 'RioXGrande', 'breed' => 'criollo']);
+
+    $this->get('/admin/resources/horses?search=Rio_Grande')
+        ->assertInertia(fn (Assert $page) => $page
+            ->count('rows.data', 1)
+            ->where('rows.data.0.cells.name', 'Rio_Grande')
+        );
+});
+
+it('matches a percent sign in a search term literally', function () {
+    Horse::factory()->create(['name' => '50% Off', 'breed' => 'draft']);
+
+    $this->get('/admin/resources/horses?search=50%25 Off')
+        ->assertInertia(fn (Assert $page) => $page
+            ->count('rows.data', 1)
+            ->where('rows.data.0.cells.name', '50% Off')
+        );
+});
