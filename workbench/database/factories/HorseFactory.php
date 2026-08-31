@@ -16,7 +16,12 @@ class HorseFactory extends Factory
         return [
             'name' => fake()->unique()->firstName(),
             'breed' => fake()->randomElement(['quarter', 'mustang', 'appaloosa']),
-            'notes' => fake()->sentence(),
+            // Deliberately null, not fake()->sentence(). The notes column is
+            // searchable, so a random sentence made every exact-match search
+            // assertion in the suite a coin flip -- GlobalSearchTest asserting
+            // q=Com matches only 'Comanche' went red whenever faker produced a
+            // sentence containing "Com". Tests that need notes set them.
+            'notes' => null,
             'is_saddled' => fake()->boolean(),
         ];
     }
