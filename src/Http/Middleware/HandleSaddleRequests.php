@@ -19,6 +19,19 @@ class HandleSaddleRequests extends Middleware
         return AssetManifest::hash();
     }
 
+    /**
+     * Shared props for the panel shell.
+     *
+     * Inertia\Middleware::handle() calls this unconditionally, before the
+     * request is even handled, so anything eager here is paid by every request
+     * that passes through the panel -- including the global-search XHR fired on
+     * every keystroke pause, the async options picker, the CSV download, and
+     * every write that only redirects. None of those render the shell.
+     *
+     * The expensive keys are therefore closures. Inertia resolves a closure prop
+     * only when it actually builds a page response, and filters by partial path
+     * BEFORE resolving, so an excluded closure is never invoked at all.
+     */
     public function share(Request $request): array
     {
         $saddle = app(Saddle::class);
@@ -30,7 +43,7 @@ class HandleSaddleRequests extends Middleware
             'path' => $saddle->path(),
             'locale' => app()->getLocale(),
             'translations' => trans('saddle::panel'),
-            'nav' => $saddle->nav($request),
+            'nav' => fn () => $saddle->nav($request),
             'user' => $request->user() ? [
                 'name' => (string) $request->user()->name,
                 'email' => (string) $request->user()->email,
@@ -44,7 +57,7 @@ class HandleSaddleRequests extends Middleware
         $user = $request->user();
 
         if ($user !== null && in_array(Notifiable::class, class_uses_recursive($user), true)) {
-            $shared['notifications'] = [
+            $shared['notifications'] = fn () => [
                 'unread' => $user->unreadNotifications()->count(),
                 'items' => $user->notifications()->latest()->limit(10)->get()->map(fn ($n) => [
                     'id' => $n->id,
@@ -58,7 +71,7 @@ class HandleSaddleRequests extends Middleware
 
         if ($saddle->tenant() !== null) {
             $shared['tenant'] = $this->tenant($saddle);
-            $shared['tenants'] = $this->tenants($saddle, $request);
+            $shared['tenants'] = fn () => $this->tenants($saddle, $request);
             $shared['canRegisterTenant'] = $saddle->canRegisterTenant();
         }
 
