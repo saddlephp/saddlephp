@@ -64,9 +64,35 @@ public function boot(): void
 
 Users install the assets with `php artisan vendor:publish --tag=mood-board-assets`.
 
+### Registering Vue components
+
+The panel is a Vue app, so the most direct way to ship a renderer is a Vue SFC. Register it against a component key and the panel's dispatch tables will use it:
+
+```js
+import ColorPicker from './ColorPicker.vue';
+
+window.Saddle.registerField('color-picker-field', ColorPicker);
+window.Saddle.registerLayout('accordion', AccordionLayout);
+window.Saddle.registerWidget('gauge-widget', GaugeWidget);
+```
+
+Plugin scripts registered with `Saddle::script()` load on every panel page and run before the app mounts, so registering at script top level is enough.
+
+The registry is consulted **before** the built-in maps, so you can add a new key or override a shipped one.
+
+On the PHP side, point a field at your key:
+
+```php
+Text::make('brand_color')->component('color-picker-field'),
+```
+
+`Field::component()` reads the key with no argument and sets it with one. `Widget::component()` reads a widget's key, which is what `registerWidget()` matches on — so `Widget` is now genuinely open to subclassing beyond `StatWidget` and `ChartWidget`.
+
+A registered field component receives the same props as a built-in one: `field` (the serialized field) and `modelValue`, and it should emit `update:modelValue`.
+
 ### Custom fields and columns
 
-Plugins can ship their own field and column renderers as custom elements. On the PHP side:
+If you would rather not ship Vue — for a renderer you want to reuse outside the panel, or to avoid a build step — plugins can ship field and column renderers as custom elements instead. On the PHP side:
 
 ```php
 CustomField::make('mood')->tag('mood-picker')->rules('max:32'),

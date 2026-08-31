@@ -15,6 +15,29 @@ abstract class Field
     /** The frontend component that renders this field. Subclasses MUST set this. */
     protected string $component;
 
+    /**
+     * Read, or set, the frontend component key this field dispatches on.
+     *
+     * A plugin shipping a Vue component needs to name the key it registers
+     * against, and previously the only way to reach it was a protected
+     * property. Called with an argument it overrides the component, so a plugin
+     * can point an existing field type at its own renderer:
+     *
+     *     Text::make('brand_color')->component('color-picker-field')
+     *
+     * Pair with `window.Saddle.registerField('color-picker-field', Component)`.
+     */
+    public function component(?string $component = null): static|string
+    {
+        if ($component === null) {
+            return $this->component;
+        }
+
+        $this->component = $component;
+
+        return $this;
+    }
+
     protected ?string $label = null;
 
     protected bool $required = false;

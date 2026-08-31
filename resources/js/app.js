@@ -3,6 +3,12 @@ import '../css/panel.css';
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { createI18n } from 'vue-i18n';
+import { exposeRegistry } from './registry';
+
+// Exposed at module top level, not inside setup(): plugin scripts are
+// deferred and run after this bundle's synchronous code but before Vue
+// mounts, so the seam has to exist by the time they execute.
+exposeRegistry(window);
 
 const pages = import.meta.glob('./Pages/**/*.vue', { eager: true });
 
