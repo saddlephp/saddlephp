@@ -100,7 +100,16 @@ class BelongsTo extends Field
 
         // Deliberately bypasses modifyOptionsQuery: a persisted FK must keep
         // rendering its label even when the row falls outside the hook's scope.
-        $related = $this->relatedModel::query()->whereKey($key)->first();
+        //
+        // Tenancy is NOT in that category. It bypassed scopeToTenant too, so an
+        // FK pointing at another tenant's row rendered that row's title -- the
+        // one thing tenant isolation is supposed to prevent. A cross-tenant FK
+        // now resolves to no label rather than leaking one.
+        $query = $this->relatedModel::query()->whereKey($key);
+
+        $this->scopeToTenant($query);
+
+        $related = $query->first();
 
         return $related === null ? [] : $this->mapOptions(new Collection([$related]), $this->resolveTitleAttribute());
     }
@@ -170,7 +179,7 @@ class BelongsTo extends Field
     /** @return array<int, array{value: mixed, label: string}> */
     public function searchOptions(string $search = ''): array
     {
-        if ($this->relatedModel === null) {
+        if ($this->relatedModel === null || ! $this->optionsVisible()) {
             return [];
         }
 
@@ -189,7 +198,7 @@ class BelongsTo extends Field
     /** @return array<int, array{value: mixed, label: string}> */
     protected function options(): array
     {
-        if ($this->relatedModel === null) {
+        if ($this->relatedModel === null || ! $this->optionsVisible()) {
             return [];
         }
 
@@ -298,7 +307,48 @@ class BelongsTo extends Field
     /** @return class-string<\SaddlePHP\Resource>|null */
     protected function relatedResource(): ?string
     {
-        return app(Saddle::class)->resources()
-            ->first(fn (string $resource) => $resource::$model === $this->relatedModel);
+        return $this->relatedModel === null
+            ? null
+            : app(Saddle::class)->resourceForModel($this->relatedModel);
+    }
+
+    protected bool $publicOptions = false;
+
+    /**
+     * Opt this relation out of the related resource's `viewAny` gate.
+     *
+     * For genuine lookup tables -- countries, currencies, breeds -- whose rows
+     * are not sensitive and often have no resource of their own. Everything else
+     * should stay gated: the options endpoint accepts a search term, so an
+     * ungated picker lets anyone who can open the form walk the entire related
+     * table a page at a time.
+     */
+    public function publicOptions(bool $public = true): static
+    {
+        $this->publicOptions = $public;
+
+        return $this;
+    }
+
+    /**
+     * Whether the current user may enumerate the related model's rows.
+     *
+     * Gated on the *related* resource's viewAny, not the owning resource's:
+     * the rows being returned belong to the related resource, and authorizing
+     * the owning one let anyone who could create a Comment enumerate every User.
+     *
+     * Fails closed when the related model has no registered resource, so a
+     * relation to an unmanaged model is silent rather than open. Use
+     * `publicOptions()` for real lookup tables.
+     */
+    public function optionsVisible(): bool
+    {
+        if ($this->publicOptions) {
+            return true;
+        }
+
+        $resource = $this->relatedResource();
+
+        return $resource !== null && $resource::allows('viewAny');
     }
 }
