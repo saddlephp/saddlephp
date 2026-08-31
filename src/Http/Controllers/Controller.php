@@ -92,11 +92,10 @@ abstract class Controller
         }
 
         $pattern = '%'.Search::escapeLike($term).'%';
-        $operator = Search::likeOperator($query);
 
-        $query->where(function (Builder $q) use ($columns, $pattern, $operator) {
+        $query->where(function (Builder $q) use ($columns, $pattern) {
             foreach ($columns as $column) {
-                $q->orWhere($column, $operator, $pattern);
+                $q->orWhereRaw(Search::condition($q, $column), [$pattern]);
             }
         });
     }

@@ -179,7 +179,7 @@ class BelongsTo extends Field
 
         if ($search !== '') {
             $title !== null
-                ? $query->where($title, Search::likeOperator($query), '%'.Search::escapeLike($search).'%')
+                ? $query->whereRaw(Search::condition($query, $title), ['%'.Search::escapeLike($search).'%'])
                 : $query->whereKey($search);
         }
 
