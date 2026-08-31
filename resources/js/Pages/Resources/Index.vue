@@ -30,10 +30,16 @@ const exportQuery = computed(() => {
 
 const search = ref(props.query.search);
 let timer;
+// Search, sort and filter only ever change `rows` and `query`. Without `only`,
+// every keystroke pause re-serializes columns, filters, actions and bulkActions
+// as well -- and because Inertia filters by partial path BEFORE resolving, the
+// excluded shared closures are never invoked either.
+const RELOAD_ROWS = { preserveState: true, replace: true, only: ['rows', 'query'] };
+
 watch(search, (value) => {
     clearTimeout(timer);
     timer = setTimeout(
-        () => router.get(base, { ...props.query, search: value, page: 1 }, { preserveState: true, replace: true }),
+        () => router.get(base, { ...props.query, search: value, page: 1 }, RELOAD_ROWS),
         350,
     );
 });
@@ -42,14 +48,14 @@ onUnmounted(() => clearTimeout(timer));
 function sortBy(column) {
     if (!column.sortable) return;
     const direction = props.query.sort === column.name && props.query.direction === 'asc' ? 'desc' : 'asc';
-    router.get(base, { ...props.query, sort: column.name, direction }, { preserveState: true, replace: true });
+    router.get(base, { ...props.query, sort: column.name, direction }, RELOAD_ROWS);
 }
 
 function setFilter(name, value) {
     const filter = { ...props.query.filter };
     if (value === '') delete filter[name];
     else filter[name] = value;
-    router.get(base, { ...props.query, filter, page: 1 }, { preserveState: true, replace: true });
+    router.get(base, { ...props.query, filter, page: 1 }, RELOAD_ROWS);
 }
 
 const deleting = ref(null);
@@ -310,6 +316,8 @@ function confirmAction() {
                         v-for="link in rows.links"
                         :key="link.label"
                         :href="link.url ?? '#'"
+                        preserve-state
+                        :only="['rows', 'query']"
                         class="rounded border px-2 py-1"
                         :class="link.active ? 'border-ink bg-ink text-white' : 'border-line bg-bg'"
                     >{{ paginatorLabel(link.label) }}</Link>
