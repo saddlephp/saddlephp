@@ -25,7 +25,8 @@ it('shares exactly the non-tenant saddle keys when tenancy is off', function () 
         ->assertInertia(fn (Assert $page) => $page
             ->has('saddle', fn (Assert $saddle) => $saddle
                 ->has('name')->has('accent')->has('version')->has('path')
-                ->has('locale')->has('translations')->has('nav')->has('user')
+                ->has('locale')->has('translations')->has('nav')
+                ->has('greeting')->has('subgreeting')->has('user')
                 ->has('flash')->has('notifications')
             )
         );

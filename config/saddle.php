@@ -40,6 +40,21 @@ return [
     'brand' => [
         'name' => 'Saddle',
         'accent' => '#d9501f',
+
+        /*
+         * The dashboard's opening two lines. null on both keeps Saddle's own
+         * wording ("Howdy, :name." / "Pick a resource and get ridin'.").
+         *
+         * `greeting` may contain the placeholder `:name`, replaced with the
+         * signed-in user's name. With nobody signed in the placeholder and its
+         * leading separator are removed, so "Welcome, :name." reads "Welcome."
+         * rather than "Welcome, .".
+         *
+         * A panel whose opening screen is a financial report wants a different
+         * register than a cattle drive.
+         */
+        'greeting' => null,
+        'subgreeting' => null,
     ],
 
     /*

@@ -12,8 +12,10 @@ const { saddle } = usePage().props;
     <Head title="Dashboard" />
 
     <PanelLayout>
-        <h1 class="text-2xl font-semibold tracking-tight">Howdy{{ saddle.user ? `, ${saddle.user.name}` : '' }}.</h1>
-        <p class="mt-1 text-ink-2">Pick a resource and get ridin'.</p>
+        <h1 class="text-2xl font-semibold tracking-tight">
+            {{ saddle.greeting || `Howdy${saddle.user ? `, ${saddle.user.name}` : ''}.` }}
+        </h1>
+        <p class="mt-1 text-ink-2">{{ saddle.subgreeting || "Pick a resource and get ridin'." }}</p>
         <WidgetRenderer :widgets="widgets" class="mt-6" />
         <div class="mt-6 grid max-w-3xl gap-3 sm:grid-cols-2">
             <template v-for="(group, gi) in saddle.nav" :key="gi">

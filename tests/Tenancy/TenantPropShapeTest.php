@@ -17,7 +17,8 @@ it('shares the non-tenant keys plus exactly the tenant keys when tenancy is on',
         ->assertInertia(fn (Assert $page) => $page
             ->has('saddle', fn (Assert $saddle) => $saddle
                 ->has('name')->has('accent')->has('version')->has('path')
-                ->has('locale')->has('translations')->has('nav')->has('user')
+                ->has('locale')->has('translations')->has('nav')
+                ->has('greeting')->has('subgreeting')->has('user')
                 ->has('flash')->has('notifications')
                 ->has('tenant')->has('tenants')->has('canRegisterTenant')
             )

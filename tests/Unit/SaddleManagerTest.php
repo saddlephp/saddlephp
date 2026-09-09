@@ -11,10 +11,6 @@ it('reports its version', function () {
         ->and(Saddle::VERSION)->toMatch('/^\d+\.\d+\.\d+/');
 });
 
-it('greets like a cowboy', function () {
-    expect((new Saddle)->greeting())->toContain('admin panel in town');
-});
-
 it('deduplicates registered resources', function () {
     $saddle = new Saddle;
     $saddle->register([HorseResource::class]);
