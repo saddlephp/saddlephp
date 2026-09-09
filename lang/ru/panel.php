@@ -22,6 +22,11 @@ return [
         'empty' => 'В загоне пока пусто.',
         'search' => 'Поиск…',
     ],
+    'booleans' => [
+        'yes' => 'Да',
+        'no' => 'Нет',
+        'unknown' => 'Неизвестно',
+    ],
     'confirm' => [
         'delete' => 'Удалить {title}?',
         'force_delete' => 'Удалить {title} навсегда?',

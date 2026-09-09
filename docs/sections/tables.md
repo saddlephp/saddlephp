@@ -33,13 +33,32 @@ Available color tokens: `accent`, `ink`, `muted`. Values not present in the map 
 
 ### BooleanColumn
 
-Renders a check mark for truthy values and a dash for falsy ones.
+Renders an accent check mark for `true` and a muted cross for `false`.
 
 ```php
 BooleanColumn::make('is_saddled'),
 ```
 
-The resolved value is cast to a real `bool` before being passed to the frontend.
+The resolved value is cast to a real `bool` before being passed to the frontend,
+so a `BooleanColumn` on its own only ever renders one of those two marks.
+
+Before 1.5.0, `false` rendered an em dash. That made the pair read as
+"yes / unknown" rather than "yes / no", because an em dash means *no value*
+everywhere else in the panel -- it is what a `StatWidget` shows for a null. On a
+table of integrations, "switched off" and "we have no idea" are different facts
+and both rendered identically.
+
+The em dash is now reserved for a boolean cell with no value at all. A
+`BooleanColumn` never produces one by itself, but `formatUsing()` can, which is
+how you say "unmeasured" on a boolean column:
+
+```php
+BooleanColumn::make('connected')
+    ->formatUsing(fn (mixed $value, Model $record) => $record->checked_at === null ? null : $value),
+```
+
+All three cell states carry a translated `aria-label` (`booleans.yes`,
+`booleans.no`, `booleans.unknown`).
 
 ### CustomColumn
 

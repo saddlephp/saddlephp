@@ -22,6 +22,11 @@ return [
         'empty' => 'Ağılda henüz bir şey yok.',
         'search' => 'Ara…',
     ],
+    'booleans' => [
+        'yes' => 'Evet',
+        'no' => 'Hayır',
+        'unknown' => 'Bilinmiyor',
+    ],
     'confirm' => [
         'delete' => '{title} silinsin mi?',
         'force_delete' => '{title} kalıcı olarak silinsin mi?',

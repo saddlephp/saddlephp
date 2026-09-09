@@ -22,6 +22,11 @@ return [
         'empty' => 'Ainda não há nada no curral.',
         'search' => 'Buscar…',
     ],
+    'booleans' => [
+        'yes' => 'Sim',
+        'no' => 'Não',
+        'unknown' => 'Desconhecido',
+    ],
     'confirm' => [
         'delete' => 'Excluir {title}?',
         'force_delete' => 'Excluir permanentemente {title}?',

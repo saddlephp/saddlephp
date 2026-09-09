@@ -22,6 +22,11 @@ return [
         'empty' => 'Noch nichts im Gehege.',
         'search' => 'Suchen…',
     ],
+    'booleans' => [
+        'yes' => 'Ja',
+        'no' => 'Nein',
+        'unknown' => 'Unbekannt',
+    ],
     'confirm' => [
         'delete' => '{title} löschen?',
         'force_delete' => '{title} endgültig löschen?',
