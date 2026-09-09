@@ -22,7 +22,47 @@ abstract class Column
 
     protected ?Closure $canSee = null;
 
+    /** @var (Closure(mixed, Model): mixed)|null */
+    protected ?Closure $formatUsing = null;
+
     final public function __construct(protected string $name) {}
+
+    /**
+     * Transform a cell's value between resolving it and rendering it.
+     *
+     * A cell used to render exactly `data_get($record, $name)`, with no hook in
+     * between, so an application could not print a null as anything but an
+     * empty cell -- and could not reach for a model accessor instead, because
+     * an accessor cannot be `->sortable()`: sorting happens in the database and
+     * the accessor does not exist there. On a panel where "a null is not a
+     * zero" is a stated rule, the same figure was an em dash in a StatWidget
+     * (whose value() returns a string) and an empty gap in the table below it.
+     *
+     *     TextColumn::make('spend')
+     *         ->sortable()
+     *         ->formatUsing(fn (mixed $value) => $value === null ? '—' : Number::currency($value));
+     *
+     * The callback receives the value AND the record, so it can format from a
+     * related field without a second query. It runs AFTER the value is
+     * resolved, which is the whole reason it belongs here: `sortable()` and
+     * `searchable()` still refer to the real database column.
+     *
+     * It applies wherever a cell's value is resolved, the CSV export included
+     * -- an export of a formatted column exports the formatted text.
+     *
+     * On a `TextColumn` that also declares `date()`, the callback sees the raw
+     * value (a `DateTimeInterface`, typically) and `date()` then formats only
+     * what is still a date afterwards. Format the date yourself in the callback
+     * if you want both.
+     *
+     * @param  Closure(mixed, Model): mixed  $callback
+     */
+    public function formatUsing(Closure $callback): static
+    {
+        $this->formatUsing = $callback;
+
+        return $this;
+    }
 
     /**
      * Gate this column per request, mirroring `Field::canSee()`.
@@ -120,7 +160,19 @@ abstract class Column
 
     public function resolve(Model $record): mixed
     {
-        return data_get($record, $this->name);
+        return $this->format(data_get($record, $this->name), $record);
+    }
+
+    /**
+     * Apply the formatting callback, if one is registered.
+     *
+     * Subclasses that resolve a value of their own route it through here, so
+     * `formatUsing()` means the same thing on every column type rather than
+     * silently doing nothing on the ones that override resolve().
+     */
+    protected function format(mixed $value, Model $record): mixed
+    {
+        return $this->formatUsing === null ? $value : ($this->formatUsing)($value, $record);
     }
 
     /** @return array<string, mixed> */
