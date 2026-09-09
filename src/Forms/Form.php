@@ -149,6 +149,21 @@ class Form
     }
 
     /**
+     * Alias of toInertia().
+     *
+     * Field::toArray() and Column::toArray() serialize a leaf; Form and Table
+     * named the same operation toInertia(), so reaching for Form::toArray() on
+     * the reasonable assumption that it matched got you "Call to undefined
+     * method" instead. Both names now work.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function toArray(?Model $record = null): array
+    {
+        return $this->toInertia($record);
+    }
+
+    /**
      * @param  array<int, Field|Layout>  $nodes
      * @return array<int, array<string, mixed>>
      */

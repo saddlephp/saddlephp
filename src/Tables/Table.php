@@ -84,6 +84,18 @@ class Table
         return collect($this->visibleColumns($request))->map->toArray()->values()->all();
     }
 
+    /**
+     * Alias of toInertia(), for the same reason Form::toArray() exists: the
+     * leaves serialize with toArray() and the containers did not, so the
+     * consistent name was the one that did not resolve.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function toArray(?Request $request = null): array
+    {
+        return $this->toInertia($request);
+    }
+
     /** @var array<int, Filter> */
     protected array $filters = [];
 
