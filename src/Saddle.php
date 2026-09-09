@@ -186,9 +186,45 @@ class Saddle
         return self::VERSION;
     }
 
-    public function greeting(): string
+    /**
+     * The dashboard's headline, or null to keep Saddle's own wording.
+     *
+     * This used to return a fixed cowboy one-liner that nothing rendered:
+     * Dashboard.vue hard-coded its own "Howdy{name}." instead, so an
+     * application could not change the first line of its own admin panel
+     * without a JavaScript shim that string-matched the default text in the
+     * DOM. The configured string may contain `:name`.
+     *
+     * With no name to interpolate the placeholder is removed *with its leading
+     * separator*, because a plain str_replace() leaves the punctuation
+     * stranded: "Welcome, :name." renders "Welcome, ." on the first screen a
+     * signed-out panel shows. A separator *following* a leading `:name` is
+     * deliberately left alone -- stripping it would mangle "Howdy :name," which
+     * is the commoner shape by far.
+     */
+    public function greeting(?string $name = null): ?string
     {
-        return "Saddle up, cowboy. There's a new admin panel in town.";
+        $greeting = config('saddle.brand.greeting');
+
+        if (! is_string($greeting) || $greeting === '') {
+            return null;
+        }
+
+        if ($name !== null && $name !== '') {
+            return str_replace(':name', $name, $greeting);
+        }
+
+        $greeting = (string) preg_replace('/[,;:]?\s*:name/u', '', $greeting);
+
+        return trim((string) preg_replace('/\s{2,}/u', ' ', $greeting));
+    }
+
+    /** The dashboard's second line, or null to keep Saddle's own wording. */
+    public function subgreeting(): ?string
+    {
+        $sub = config('saddle.brand.subgreeting');
+
+        return is_string($sub) && $sub !== '' ? $sub : null;
     }
 
     /**

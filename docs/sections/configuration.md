@@ -18,6 +18,8 @@ Saddle ships with a single config file published by `saddle:install`. All keys h
 | `widgets.discovery` | `true` | As `resources.discovery`, for widgets. |
 | `brand.name` | `'Saddle'` | Panel name shown in the sidebar and browser tab. |
 | `brand.accent` | `'#d9501f'` | Accent colour used for buttons and active states. |
+| `brand.greeting` | `null` | Dashboard headline. May contain `:name`. `null` keeps Saddle's own wording. |
+| `brand.subgreeting` | `null` | The line under the headline. `null` keeps Saddle's own wording. |
 | `authorization.require_policy` | `true` | Deny when a model has no registered policy. Setting this to `false` makes the panel fail open. |
 | `tenancy.model` | `null` | Tenant model class. Tenancy is off entirely while this is `null`. |
 | `tenancy.foreign_key` | `'tenant_id'` | Column used to scope tenant-owned records. |
@@ -29,6 +31,28 @@ Saddle ships with a single config file published by `saddle:install`. All keys h
 | `uploads.allowed_extensions` | `[]` | Accepted types for a `FileUpload` with no `image()` or `acceptedTypes()` of its own. Empty uses the framework default set. |
 | `import.max_rows` | `5000` | Rows accepted by a CSV import before the request is rejected with a 422. |
 | `export.max_rows` | `50000` | Rows written by a CSV export. `0` removes the cap. |
+
+### Dashboard greeting
+
+The dashboard opens with two lines. Both are configurable, and both default to
+`null`, which keeps the wording Saddle has always shipped ("Howdy, Matthew." /
+"Pick a resource and get ridin'.").
+
+```php
+'brand' => [
+    'greeting' => 'Welcome, :name.',
+    'subgreeting' => 'Spend, by channel, for the last 30 days.',
+],
+```
+
+`:name` is replaced with the signed-in user's name. With nobody signed in the
+placeholder is removed **along with the separator in front of it**, so
+`'Welcome, :name.'` reads `Welcome.` rather than `Welcome, .`.
+
+One rough edge worth knowing: a separator *after* a leading placeholder is kept,
+so `':name — spend'` degrades to `'— spend'`. Removing it would mangle
+`'Howdy :name,'`, which is the far commoner shape. Put the placeholder last if
+that matters for your wording.
 
 ### Upload safety
 

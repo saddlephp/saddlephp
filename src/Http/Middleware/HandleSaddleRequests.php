@@ -35,6 +35,7 @@ class HandleSaddleRequests extends Middleware
     public function share(Request $request): array
     {
         $saddle = app(Saddle::class);
+        $user = $request->user();
 
         $shared = [
             'name' => config('saddle.brand.name', 'Saddle'),
@@ -44,17 +45,17 @@ class HandleSaddleRequests extends Middleware
             'locale' => app()->getLocale(),
             'translations' => trans('saddle::panel'),
             'nav' => fn () => $saddle->nav($request),
-            'user' => $request->user() ? [
-                'name' => (string) $request->user()->name,
-                'email' => (string) $request->user()->email,
+            'greeting' => $saddle->greeting($user === null ? null : (string) $user->name),
+            'subgreeting' => $saddle->subgreeting(),
+            'user' => $user ? [
+                'name' => (string) $user->name,
+                'email' => (string) $user->email,
             ] : null,
             'flash' => [
                 'success' => $request->hasSession() ? $request->session()->get('success') : null,
                 'error' => $request->hasSession() ? $request->session()->get('error') : null,
             ],
         ];
-
-        $user = $request->user();
 
         if ($user !== null && in_array(Notifiable::class, class_uses_recursive($user), true)) {
             $shared['notifications'] = fn () => [

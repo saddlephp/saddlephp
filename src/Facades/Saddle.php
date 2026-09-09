@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static string version()
- * @method static string greeting()
+ * @method static string|null greeting(string|null $name = null)
+ * @method static string|null subgreeting()
  * @method static \SaddlePHP\Saddle resolveNonceUsing(\Closure $callback)
  * @method static string|null nonce()
  *
