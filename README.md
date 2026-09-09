@@ -455,6 +455,8 @@ When the authenticated user belongs to more than one tenant, the panel sidebar s
 
 **Deploy note.** Add `php artisan saddle:upgrade` to your deploy script after `composer install` or `composer update`. The panel displays a warning banner in the UI when the published assets are out of sync with the installed package version.
 
+Since 1.5.0 the compiled bundle also publishes under Laravel's own `laravel-assets` tag, which a stock `composer.json` already calls on `post-update-cmd` -- so on an unmodified Laravel application `composer update` refreshes it with no Saddle-specific setup. This matters more than it sounds: the bundle is a published file under `public/`, so upgrading the package replaces the PHP and leaves that file alone. A panel in that state passes every server-side check while rendering the previous frontend, and the only symptom is that the feature you upgraded for appears to be missing.
+
 ## Local development
 
 ```bash
