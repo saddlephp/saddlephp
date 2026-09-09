@@ -227,85 +227,87 @@ function confirmAction() {
         </div>
 
         <div class="mt-4 overflow-hidden rounded-xl border border-line bg-bg">
-            <table class="w-full text-left text-sm">
-                <thead class="border-b border-line bg-surface text-xs uppercase tracking-wide text-ink-3">
-                    <tr>
-                        <th v-if="bulkActions.length" class="w-10 px-4 py-3">
-                            <input
-                                type="checkbox"
-                                aria-label="Select all"
-                                :checked="allOnPageSelected"
-                                @change="toggleAllOnPage"
-                            />
-                        </th>
-                        <th v-for="column in columns" :key="column.name" class="px-4 py-3 font-medium">
-                            <button
-                                v-if="column.sortable"
-                                type="button"
-                                class="inline-flex items-center gap-1 uppercase"
-                                @click="sortBy(column)"
-                            >
-                                {{ column.label }}
-                                <span v-if="query.sort === column.name">{{ query.direction === 'asc' ? '↑' : '↓' }}</span>
-                            </button>
-                            <span v-else>{{ column.label }}</span>
-                        </th>
-                        <th class="w-28"></th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-line">
-                    <tr v-for="row in rows.data" :key="row.id" class="transition hover:bg-surface">
-                        <td v-if="bulkActions.length" class="w-10 px-4 py-3">
-                            <input
-                                type="checkbox"
-                                :aria-label="`Select ${row.title}`"
-                                :checked="selected.includes(row.id)"
-                                @change="toggleRow(row.id)"
-                            />
-                        </td>
-                        <td v-for="column in columns" :key="column.name" class="px-4 py-3">
-                            <span
-                                v-if="column.type === 'badge' && row.cells[column.name] != null"
-                                :class="['inline-flex rounded-full px-2 py-0.5 text-[0.72rem] font-medium', badgeClass(column, row.cells[column.name])]"
-                            >{{ row.cells[column.name] }}</span>
-                            <svg
-                                v-else-if="column.type === 'boolean' && row.cells[column.name]"
-                                role="img" aria-label="Yes"
-                                viewBox="0 0 24 24" class="h-4 w-4 text-accent" fill="none" stroke="currentColor" stroke-width="2.4"
-                            ><path d="m20 6-11 11-5-5" /></svg>
-                            <span v-else-if="column.type === 'boolean'" aria-label="No" class="text-ink-3">&mdash;</span>
-                            <component
-                                v-else-if="column.type === 'custom'"
-                                :is="column.tag"
-                                :value.prop="row.cells[column.name]"
-                                :column.prop="column"
-                            />
-                            <template v-else>{{ row.cells[column.name] }}</template>
-                        </td>
-                        <td class="px-4 py-3 text-right text-xs">
-                            <template v-if="!row.trashed">
-                                <Link v-if="row.can.view" :href="`${base}/${row.id}`" class="text-ink-2 hover:text-ink">{{ t('rows.view') }}</Link>
-                                <Link v-if="row.can.update" :href="`${base}/${row.id}/edit`" class="ml-3 text-ink-2 hover:text-ink">{{ t('rows.edit') }}</Link>
-                                <button v-if="row.can.delete" type="button" class="ml-3 text-accent" @click="deleting = row">{{ t('rows.delete') }}</button>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="border-b border-line bg-surface text-xs uppercase tracking-wide text-ink-3">
+                        <tr>
+                            <th v-if="bulkActions.length" class="w-10 px-4 py-3">
+                                <input
+                                    type="checkbox"
+                                    aria-label="Select all"
+                                    :checked="allOnPageSelected"
+                                    @change="toggleAllOnPage"
+                                />
+                            </th>
+                            <th v-for="column in columns" :key="column.name" class="px-4 py-3 font-medium">
                                 <button
-                                    v-for="action in actions"
-                                    :key="action.name"
+                                    v-if="column.sortable"
                                     type="button"
-                                    :class="['ml-3', actionClass(action)]"
-                                    @click="runRowAction(action, row)"
-                                >{{ action.label }}</button>
-                            </template>
-                            <template v-else>
-                                <button v-if="row.can.restore" type="button" class="text-ink-2 hover:text-ink" @click="restore(row)">{{ t('rows.restore') }}</button>
-                                <button v-if="row.can.forceDelete" type="button" class="ml-3 text-accent" @click="forceDeleting = row">{{ t('rows.force_delete') }}</button>
-                            </template>
-                        </td>
-                    </tr>
-                    <tr v-if="!rows.data.length">
-                        <td :colspan="columns.length + (bulkActions.length ? 2 : 1)" class="px-4 py-10 text-center text-ink-3">{{ t('index.empty') }}</td>
-                    </tr>
-                </tbody>
-            </table>
+                                    class="inline-flex items-center gap-1 uppercase"
+                                    @click="sortBy(column)"
+                                >
+                                    {{ column.label }}
+                                    <span v-if="query.sort === column.name">{{ query.direction === 'asc' ? '↑' : '↓' }}</span>
+                                </button>
+                                <span v-else>{{ column.label }}</span>
+                            </th>
+                            <th class="w-px"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-line">
+                        <tr v-for="row in rows.data" :key="row.id" class="transition hover:bg-surface">
+                            <td v-if="bulkActions.length" class="w-10 px-4 py-3">
+                                <input
+                                    type="checkbox"
+                                    :aria-label="`Select ${row.title}`"
+                                    :checked="selected.includes(row.id)"
+                                    @change="toggleRow(row.id)"
+                                />
+                            </td>
+                            <td v-for="column in columns" :key="column.name" class="px-4 py-3">
+                                <span
+                                    v-if="column.type === 'badge' && row.cells[column.name] != null"
+                                    :class="['inline-flex rounded-full px-2 py-0.5 text-[0.72rem] font-medium', badgeClass(column, row.cells[column.name])]"
+                                >{{ row.cells[column.name] }}</span>
+                                <svg
+                                    v-else-if="column.type === 'boolean' && row.cells[column.name]"
+                                    role="img" aria-label="Yes"
+                                    viewBox="0 0 24 24" class="h-4 w-4 text-accent" fill="none" stroke="currentColor" stroke-width="2.4"
+                                ><path d="m20 6-11 11-5-5" /></svg>
+                                <span v-else-if="column.type === 'boolean'" aria-label="No" class="text-ink-3">&mdash;</span>
+                                <component
+                                    v-else-if="column.type === 'custom'"
+                                    :is="column.tag"
+                                    :value.prop="row.cells[column.name]"
+                                    :column.prop="column"
+                                />
+                                <template v-else>{{ row.cells[column.name] }}</template>
+                            </td>
+                            <td class="whitespace-nowrap px-4 py-3 text-right text-xs">
+                                <template v-if="!row.trashed">
+                                    <Link v-if="row.can.view" :href="`${base}/${row.id}`" class="text-ink-2 hover:text-ink">{{ t('rows.view') }}</Link>
+                                    <Link v-if="row.can.update" :href="`${base}/${row.id}/edit`" class="ml-3 text-ink-2 hover:text-ink">{{ t('rows.edit') }}</Link>
+                                    <button v-if="row.can.delete" type="button" class="ml-3 text-accent" @click="deleting = row">{{ t('rows.delete') }}</button>
+                                    <button
+                                        v-for="action in actions"
+                                        :key="action.name"
+                                        type="button"
+                                        :class="['ml-3', actionClass(action)]"
+                                        @click="runRowAction(action, row)"
+                                    >{{ action.label }}</button>
+                                </template>
+                                <template v-else>
+                                    <button v-if="row.can.restore" type="button" class="text-ink-2 hover:text-ink" @click="restore(row)">{{ t('rows.restore') }}</button>
+                                    <button v-if="row.can.forceDelete" type="button" class="ml-3 text-accent" @click="forceDeleting = row">{{ t('rows.force_delete') }}</button>
+                                </template>
+                            </td>
+                        </tr>
+                        <tr v-if="!rows.data.length">
+                            <td :colspan="columns.length + (bulkActions.length ? 2 : 1)" class="px-4 py-10 text-center text-ink-3">{{ t('index.empty') }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div
                 v-if="rows.last_page > 1"
                 class="flex items-center justify-between border-t border-line bg-surface px-4 py-2.5 text-xs text-ink-3"
