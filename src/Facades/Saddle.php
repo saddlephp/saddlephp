@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @method static string version()
  * @method static string greeting()
+ * @method static \SaddlePHP\Saddle resolveNonceUsing(\Closure $callback)
+ * @method static string|null nonce()
  *
  * @see \SaddlePHP\Saddle
  */

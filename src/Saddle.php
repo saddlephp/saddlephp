@@ -35,6 +35,9 @@ class Saddle
     /** Transform the computed navigation before it is shared, or null for none. */
     protected ?Closure $navUsing = null;
 
+    /** Resolve the CSP nonce for the current request, or null for none. */
+    protected ?Closure $nonceUsing = null;
+
     /** @var array<int, string> Extra theme tokens registered by plugins/hosts. */
     protected array $extraThemeTokens = [];
 
@@ -84,6 +87,50 @@ class Saddle
         $this->navUsing = $callback;
 
         return $this;
+    }
+
+    /**
+     * Supply the Content-Security-Policy nonce for the panel shell's one inline
+     * script (the pre-paint dark-mode bootstrap).
+     *
+     * The package cannot know an application's nonce convention -- a container
+     * binding, `Vite::cspNonce()`, a value stashed on the request by middleware
+     * -- so it takes a callback instead of a value:
+     *
+     *     Saddle::resolveNonceUsing(fn () => app('csp.nonce'));
+     *
+     * @param  Closure(): mixed  $callback
+     */
+    public function resolveNonceUsing(Closure $callback): static
+    {
+        $this->nonceUsing = $callback;
+
+        return $this;
+    }
+
+    /**
+     * The nonce for the current request, or null when the host has registered
+     * none (the default, which leaves the rendered shell byte-identical).
+     *
+     * Called once per shell render rather than memoized: a nonce reused across
+     * requests is not a nonce, and on a long-lived server (Octane) the manager
+     * is a singleton that outlives the request.
+     *
+     * Failures are swallowed on purpose -- and, unlike nav() and sharedProps(),
+     * not even reported. A misconfigured nonce provider must not 500 every page
+     * of the panel; without a nonce the browser refuses one inline script and
+     * the panel still works, minus the pre-paint theme class. A provider that
+     * throws on every request would otherwise flood the log from the shell.
+     */
+    public function nonce(): ?string
+    {
+        if ($this->nonceUsing === null) {
+            return null;
+        }
+
+        $nonce = rescue(fn () => ($this->nonceUsing)(), null, report: false);
+
+        return is_string($nonce) && $nonce !== '' ? $nonce : null;
     }
 
     /**
