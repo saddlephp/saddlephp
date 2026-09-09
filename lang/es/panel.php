@@ -22,6 +22,11 @@ return [
         'empty' => 'Aún no hay nada en el corral.',
         'search' => 'Buscar…',
     ],
+    'booleans' => [
+        'yes' => 'Sí',
+        'no' => 'No',
+        'unknown' => 'Desconocido',
+    ],
     'confirm' => [
         'delete' => '¿Eliminar {title}?',
         'force_delete' => '¿Eliminar permanentemente {title}?',

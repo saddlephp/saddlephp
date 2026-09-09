@@ -22,6 +22,11 @@ return [
         'empty' => 'Rien dans l\'enclos pour l\'instant.',
         'search' => 'Rechercher…',
     ],
+    'booleans' => [
+        'yes' => 'Oui',
+        'no' => 'Non',
+        'unknown' => 'Inconnu',
+    ],
     'confirm' => [
         'delete' => 'Supprimer {title} ?',
         'force_delete' => 'Supprimer définitivement {title} ?',

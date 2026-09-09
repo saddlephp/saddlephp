@@ -271,10 +271,15 @@ function confirmAction() {
                                 >{{ row.cells[column.name] }}</span>
                                 <svg
                                     v-else-if="column.type === 'boolean' && row.cells[column.name]"
-                                    role="img" aria-label="Yes"
+                                    role="img" :aria-label="t('booleans.yes')"
                                     viewBox="0 0 24 24" class="h-4 w-4 text-accent" fill="none" stroke="currentColor" stroke-width="2.4"
                                 ><path d="m20 6-11 11-5-5" /></svg>
-                                <span v-else-if="column.type === 'boolean'" aria-label="No" class="text-ink-3">&mdash;</span>
+                                <svg
+                                    v-else-if="column.type === 'boolean' && row.cells[column.name] != null"
+                                    role="img" :aria-label="t('booleans.no')"
+                                    viewBox="0 0 24 24" class="h-4 w-4 text-ink-3" fill="none" stroke="currentColor" stroke-width="2.4"
+                                ><path d="M18 6 6 18M6 6l12 12" /></svg>
+                                <span v-else-if="column.type === 'boolean'" :aria-label="t('booleans.unknown')" class="text-ink-3">&mdash;</span>
                                 <component
                                     v-else-if="column.type === 'custom'"
                                     :is="column.tag"

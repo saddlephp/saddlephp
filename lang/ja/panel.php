@@ -22,6 +22,11 @@ return [
         'empty' => 'まだ何もありません。',
         'search' => '検索…',
     ],
+    'booleans' => [
+        'yes' => 'はい',
+        'no' => 'いいえ',
+        'unknown' => '不明',
+    ],
     'confirm' => [
         'delete' => '{title}を削除しますか？',
         'force_delete' => '{title}を完全に削除しますか？',

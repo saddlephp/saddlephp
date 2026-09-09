@@ -22,6 +22,11 @@ return [
         'empty' => 'لا شيء في الحظيرة بعد.',
         'search' => 'بحث…',
     ],
+    'booleans' => [
+        'yes' => 'نعم',
+        'no' => 'لا',
+        'unknown' => 'غير معروف',
+    ],
     'confirm' => [
         'delete' => 'حذف {title}؟',
         'force_delete' => 'حذف {title} نهائيًا؟',

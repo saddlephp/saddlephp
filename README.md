@@ -229,7 +229,7 @@ $form->schema([
 |---|---|
 | `TextColumn` | Renders the raw attribute value. Modifiers: `sortable()`, `searchable()`, `label(string)`, `date(string $format)` (formats DateTime attributes; default format `Y-m-d H:i`). |
 | `BadgeColumn` | Renders a pill badge. Use `colors(['value' => 'token'])` to map option values to color tokens (`accent`, `ink`, `muted`). |
-| `BooleanColumn` | Renders a check mark for truthy values and a dash for falsy ones. |
+| `BooleanColumn` | Renders an accent check mark for `true` and a muted cross for `false`. The resolved value is cast to a real `bool`, so those are the only two marks a plain `BooleanColumn` produces; the em dash is reserved for a cell with no value, which `formatUsing()` returning `null` can produce. |
 
 **Formatting a cell.** `formatUsing(fn (mixed $value, Model $record) => ...)` is available on every column type and runs after the value is resolved -- so `sortable()` and `searchable()` still refer to the real database column, which is what a model accessor cannot give you. It applies wherever a cell is resolved, the CSV export included.
 

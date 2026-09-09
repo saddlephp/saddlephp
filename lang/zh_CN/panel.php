@@ -22,6 +22,11 @@ return [
         'empty' => '围栏里还空着。',
         'search' => '搜索…',
     ],
+    'booleans' => [
+        'yes' => '是',
+        'no' => '否',
+        'unknown' => '未知',
+    ],
     'confirm' => [
         'delete' => '删除{title}？',
         'force_delete' => '永久删除{title}？',

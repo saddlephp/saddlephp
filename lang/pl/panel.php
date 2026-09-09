@@ -22,6 +22,11 @@ return [
         'empty' => 'Na razie pusto w zagrodzie.',
         'search' => 'Szukaj…',
     ],
+    'booleans' => [
+        'yes' => 'Tak',
+        'no' => 'Nie',
+        'unknown' => 'Nieznane',
+    ],
     'confirm' => [
         'delete' => 'Usunąć {title}?',
         'force_delete' => 'Trwale usunąć {title}?',

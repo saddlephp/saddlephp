@@ -22,6 +22,11 @@ return [
         'empty' => 'Nog niets in de kraal.',
         'search' => 'Zoeken…',
     ],
+    'booleans' => [
+        'yes' => 'Ja',
+        'no' => 'Nee',
+        'unknown' => 'Onbekend',
+    ],
     'confirm' => [
         'delete' => '{title} verwijderen?',
         'force_delete' => '{title} permanent verwijderen?',

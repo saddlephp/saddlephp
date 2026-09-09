@@ -22,6 +22,13 @@ return [
         'empty' => 'Nothing in the corral yet.',
         'search' => 'Search…',
     ],
+    // Cell states for boolean columns. `unknown` is deliberately distinct
+    // from `no`: an em dash means "no value" everywhere in the panel.
+    'booleans' => [
+        'yes' => 'Yes',
+        'no' => 'No',
+        'unknown' => 'Unknown',
+    ],
     'confirm' => [
         'delete' => 'Delete {title}?',
         'force_delete' => 'Permanently delete {title}?',

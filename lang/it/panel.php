@@ -22,6 +22,11 @@ return [
         'empty' => 'Ancora niente nel recinto.',
         'search' => 'Cerca…',
     ],
+    'booleans' => [
+        'yes' => 'Sì',
+        'no' => 'No',
+        'unknown' => 'Sconosciuto',
+    ],
     'confirm' => [
         'delete' => 'Eliminare {title}?',
         'force_delete' => 'Eliminare definitivamente {title}?',

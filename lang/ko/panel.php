@@ -22,6 +22,11 @@ return [
         'empty' => '아직 아무것도 없습니다.',
         'search' => '검색…',
     ],
+    'booleans' => [
+        'yes' => '예',
+        'no' => '아니오',
+        'unknown' => '알 수 없음',
+    ],
     'confirm' => [
         'delete' => '{title}을(를) 삭제할까요?',
         'force_delete' => '{title}을(를) 영구 삭제할까요?',
