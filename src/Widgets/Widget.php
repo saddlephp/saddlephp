@@ -6,6 +6,8 @@ namespace SaddlePHP\Widgets;
 
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use LogicException;
 use SaddlePHP\Resource;
 use SaddlePHP\Saddle;
 
@@ -62,7 +64,50 @@ abstract class Widget
             return $resource::allows('viewAny');
         }
 
-        return ! config('saddle.authorization.require_widget_resource', true);
+        if (! config('saddle.authorization.require_widget_resource', true)) {
+            return true;
+        }
+
+        static::reportUnauthorizableWidget();
+
+        return false;
+    }
+
+    /**
+     * Say why a widget vanished from the dashboard.
+     *
+     * The fail-closed default is right -- an aggregate discloses more than it
+     * looks like it does -- but a widget that declares no resource and does not
+     * override canSee() simply did not appear, with nothing anywhere saying so.
+     * The dashboard was just missing a tile, which is a confusing absence rather
+     * than a one-line fix, and only someone who read the 1.4.0 diff would know
+     * the rule exists.
+     *
+     * This is dead configuration in every case: such a widget can never render
+     * under the default, so there is no legitimate instance of it to be noisy
+     * about. Locally it throws, matching how the package already treats
+     * unusable declarations (a relation column asked to sort, a CustomColumn
+     * with no tag). Everywhere else it logs, because a live panel losing a tile
+     * must not become a live panel losing its dashboard.
+     *
+     * The way to silence it is to fix the widget -- declare `$resource`,
+     * override `canSee()`, or turn `require_widget_resource` off, at which
+     * point the widget renders and there is nothing to report.
+     */
+    protected static function reportUnauthorizableWidget(): void
+    {
+        $message = sprintf(
+            'Saddle hid widget [%s]: it declares no $resource and does not override canSee(), so no policy can '
+            .'authorize it. Set `public static ?string $resource = YourResource::class`, override canSee(), or set '
+            .'saddle.authorization.require_widget_resource to false to show unowned widgets to every panel user.',
+            static::class,
+        );
+
+        if (app()->environment('local')) {
+            throw new LogicException($message);
+        }
+
+        Log::warning($message);
     }
 
     /**

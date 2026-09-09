@@ -100,6 +100,11 @@ return [
          * declares none cannot be authorized by anything, so it is hidden.
          * Set this to false to show unowned widgets to every panel user
          * instead (the pre-1.4 behaviour).
+         *
+         * A widget hidden for that reason is not hidden silently: it throws
+         * naming the class in the local environment and logs a warning
+         * everywhere else, so a missing tile is a one-line fix rather than a
+         * mystery.
          */
         'require_widget_resource' => true,
     ],
