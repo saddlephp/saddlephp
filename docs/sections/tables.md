@@ -15,6 +15,7 @@ TextColumn::make('created_at')->date('M j, Y')->sortable(),
 | `searchable()` | Includes this column in the panel's full-text search. |
 | `label(string)` | Overrides the auto-generated column heading. |
 | `date(string $format)` | Formats a `DateTimeInterface` attribute with the given format string. The default format when `date()` is called without an argument is `Y-m-d H:i`. |
+| `formatUsing(Closure)` | Transforms the resolved value before it is rendered. Available on every column type — see [Formatting a cell](#formatting-a-cell). |
 
 ### BadgeColumn
 
@@ -47,6 +48,39 @@ Renders a custom element supplied by a plugin. The column sets `value` and `colu
 ```php
 CustomColumn::make('mood')->tag('mood-cell'),
 ```
+
+### Formatting a cell
+
+`formatUsing()` sits between resolving a cell's value and rendering it. It is
+available on every column type.
+
+```php
+TextColumn::make('spend')
+    ->sortable()
+    ->formatUsing(fn (mixed $value) => $value === null ? '—' : Number::currency($value)),
+
+TextColumn::make('name')
+    ->formatUsing(fn (mixed $value, Model $record) => "{$value} ({$record->breed})"),
+```
+
+The callback receives the value **and the record**, so it can format from a
+related field without a second query.
+
+The reason this belongs on the column rather than on a model accessor is
+sorting. An accessor cannot be `->sortable()` — sorting happens in the database
+and the accessor does not exist there. `formatUsing()` runs *after* the value is
+resolved, so `sortable()` and `searchable()` still refer to the real column
+while the cell renders whatever you want. Without it, a panel that renders a
+null as an em dash in a `StatWidget` (whose `value()` returns a string) has no
+way to do the same in the table underneath.
+
+Two things worth knowing:
+
+- It applies wherever a cell's value is resolved, **including the CSV export**.
+  An export of a formatted column exports the formatted text.
+- On a `TextColumn` that also calls `date()`, the callback sees the raw value
+  (a `DateTimeInterface`), and `date()` then formats only what is still a date
+  afterwards. Format the date inside the callback if you want both.
 
 ### Relation columns and eager loading
 

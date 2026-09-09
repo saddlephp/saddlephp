@@ -12,6 +12,8 @@ class BooleanColumn extends Column
 
     public function resolve(Model $record): mixed
     {
-        return (bool) data_get($record, $this->name);
+        // Cast first, then format: the callback sees the boolean the panel
+        // would otherwise have rendered, not the raw column value.
+        return $this->format((bool) data_get($record, $this->name), $record);
     }
 }
