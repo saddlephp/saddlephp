@@ -90,6 +90,17 @@ A widget that declares **no** resource cannot be authorized by anything, so it i
 
 `canSee()` still overrides everything, so any existing gate you have written keeps working.
 
+**Saddle tells you when it hides one.** A missing tile with no explanation is a
+confusing absence rather than a one-line fix, so a widget hidden for this reason
+throws a `LogicException` naming the class in the `local` environment, and logs a
+warning everywhere else. The split is deliberate: a live panel losing a tile must
+not become a live panel losing its dashboard.
+
+There is nothing to silence. Any of the three fixes above makes the widget
+authorizable, and an authorizable widget says nothing — including one whose
+policy simply denies the current user, which is a decision rather than a
+misconfiguration.
+
 ### Tenancy
 
 Widgets query models directly, so `Resource::query()`'s tenant scoping never applies to them. Wrap the query in `scopeToTenant()` and it is confined to the bound tenant using the relation declared on the widget's `$resource`:
