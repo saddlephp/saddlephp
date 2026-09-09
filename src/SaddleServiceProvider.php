@@ -43,9 +43,22 @@ class SaddleServiceProvider extends ServiceProvider
                 __DIR__.'/../config/saddle.php' => $this->app->configPath('saddle.php'),
             ], 'saddle-config');
 
+            // Two tags on purpose. `laravel-assets` is the convention a fresh
+            // Laravel application's composer.json already calls on
+            // post-update-cmd (`vendor:publish --tag=laravel-assets --force`),
+            // and it is the only thing that republishes the compiled bundle
+            // automatically on `composer update`.
+            //
+            // Published under `saddle-assets` alone, upgrading the package
+            // updated the PHP and left public/vendor/saddle/ holding the
+            // PREVIOUS bundle. Every server-side check passed -- the version
+            // constant, the new classes, the new methods -- while the panel
+            // still rendered the old frontend. A silent failure whose only
+            // symptom is "the feature I upgraded for isn't there", hit by every
+            // consumer on every upgrade.
             $this->publishes([
                 __DIR__.'/../dist' => public_path('vendor/saddle'),
-            ], 'saddle-assets');
+            ], ['saddle-assets', 'laravel-assets']);
 
             $this->publishes([
                 __DIR__.'/../database/migrations' => $this->app->databasePath('migrations'),

@@ -39,6 +39,19 @@ php artisan saddle:upgrade
 
 If you accepted the `post-update-cmd` prompt during install, Composer runs this for you automatically.
 
+Since 1.5.0 the bundle also publishes under Laravel's own `laravel-assets` tag,
+which a fresh Laravel application's `composer.json` already calls on
+`post-update-cmd`. On such an application the assets are refreshed by
+`composer update` with no Saddle-specific setup at all.
+
+**This is not optional maintenance.** The compiled Vue bundle is a published
+file under `public/`; upgrading the package replaces the PHP and leaves that
+file exactly where it was. A panel in that state passes every server-side check
+-- the version constant, the new classes, the new methods -- while rendering the
+*previous* frontend, so the only symptom is that the feature you upgraded for
+appears to be missing. If you pin a specific tag, or deploy from a build
+artifact, make sure republishing the assets is part of that pipeline.
+
 ### Generating a resource
 
 ```bash

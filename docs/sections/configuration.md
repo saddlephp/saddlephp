@@ -74,5 +74,5 @@ better, and storing on a private disk with signed URLs is better again.
 | Command | Description |
 |---|---|
 | `saddle:install` | Publishes the config file, publishes panel assets to `public/vendor/saddle/`, and creates `app/Saddle/`. Offers to add `saddle:upgrade` to `composer.json`'s `post-update-cmd`. |
-| `saddle:upgrade` | Re-publishes the panel assets. Run after every package update. If you accepted the `post-update-cmd` prompt, Composer runs this for you automatically. |
+| `saddle:upgrade` | Re-publishes the panel assets. Run after every package update. If you accepted the `post-update-cmd` prompt, Composer runs this for you automatically. Since 1.5.0 the bundle also carries Laravel's `laravel-assets` tag, so a stock `composer.json` republishes it on `composer update` regardless. |
 | `saddle:resource NameResource --model=Name` | Scaffolds a new resource class in `app/Saddle/`. The `--model` option is optional; when omitted the model name is inferred from the resource class name. |
