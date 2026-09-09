@@ -104,7 +104,7 @@ function destroy() {
             <tbody>
                 <tr v-for="row in relation.rows.data" :key="row.id" class="border-b border-line/60">
                     <td v-for="col in relation.columns" :key="col.name" class="px-2 py-2">{{ row.cells[col.name] }}</td>
-                    <td class="px-2 py-2 text-right">
+                    <td class="whitespace-nowrap px-2 py-2 text-right">
                         <button v-if="row.can.update" type="button" class="text-ink-2 hover:text-ink" @click="startEdit(row)">Edit</button>
                         <button v-if="row.can.delete" type="button" class="ml-3 text-accent" @click="deleting = row">Delete</button>
                     </td>
