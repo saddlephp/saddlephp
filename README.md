@@ -212,6 +212,7 @@ $form->schema([
 | Field | Description |
 |---|---|
 | `Text` | Single-line text input. Modifiers: `required()`, `rules(string\|array)`, `placeholder()`. |
+| `Password` | Masked input that leaves the stored value alone when submitted blank. An edit form cannot show the current password, so the field always renders empty -- a plain field therefore sets the password to an empty string on any edit, and Laravel's `hashed` cast faithfully hashes that, locking the account out with no error. `resolve()` returns `null`, so the stored hash never reaches the edit page or the Inertia payload. Pair with `'password' => 'hashed'` in the model's casts; Saddle does not hash for you. Leave it optional -- `required()` forces a retype on every edit. |
 | `Textarea` | Multi-line text input. Modifiers: `rows(int)`. |
 | `Select` | Fixed-options dropdown. Pass an associative array to `options(['value' => 'Label'])`. |
 | `Toggle` | Boolean switch. Stores `true`/`false`. |
@@ -229,6 +230,8 @@ $form->schema([
 | `TextColumn` | Renders the raw attribute value. Modifiers: `sortable()`, `searchable()`, `label(string)`, `date(string $format)` (formats DateTime attributes; default format `Y-m-d H:i`). |
 | `BadgeColumn` | Renders a pill badge. Use `colors(['value' => 'token'])` to map option values to color tokens (`accent`, `ink`, `muted`). |
 | `BooleanColumn` | Renders a check mark for truthy values and a dash for falsy ones. |
+
+**Formatting a cell.** `formatUsing(fn (mixed $value, Model $record) => ...)` is available on every column type and runs after the value is resolved -- so `sortable()` and `searchable()` still refer to the real database column, which is what a model accessor cannot give you. It applies wherever a cell is resolved, the CSV export included.
 
 **Relation columns and eager loading.** Dotted names like `TextColumn::make('rider.name')` read through a loaded relation. Declare `public static array $with = ['rider']` on the resource so the index query eager-loads the relation before rendering. Relation columns are not sortable or searchable yet.
 
@@ -428,6 +431,8 @@ When the authenticated user belongs to more than one tenant, the panel sidebar s
 | `per_page` | `25` | Default rows per page on index tables. |
 | `brand.name` | `'Saddle'` | Panel name (sidebar + browser tab). |
 | `brand.accent` | `'#d9501f'` | Accent colour (buttons, active states). |
+| `brand.greeting` | `null` | Dashboard headline. May contain `:name`. `null` keeps Saddle's own wording. |
+| `brand.subgreeting` | `null` | The line under the headline. `null` keeps Saddle's own wording. |
 | `uploads.disk` | `'public'` | Default filesystem disk used by `FileUpload` fields when no per-field `disk()` is set. |
 | `uploads.directory` | `'saddle'` | Default upload directory within the disk when no per-field `directory()` is set. |
 | `authorization.require_policy` | `true` | Fail-closed by default: a resource with no registered policy denies every ability. Set to `false` for the fail-open convention. |
@@ -437,6 +442,8 @@ When the authenticated user belongs to more than one tenant, the panel sidebar s
 | `tenancy.relationship` | `'users'` | Relation on the tenant model that lists its members. |
 | `tenancy.gate` | `null` | Optional invokable run after tenant resolution (e.g. a billing gate). |
 | `tenancy.registration` | `null` | Optional `RegistersTenants` handler enabling tenant self-registration. |
+
+**Content-Security-Policy.** The panel shell carries one inline `<script>`: the pre-paint dark-mode bootstrap. Under a strict CSP the browser refuses it, so dark-mode users get a flash of the light theme on every navigation. Hand Saddle a nonce callback from a service provider -- `Saddle::resolveNonceUsing(fn () => app('csp.nonce'))` -- and it is stamped on that tag, resolved fresh per render. Register nothing and the shell renders exactly as before.
 
 ## Commands
 
