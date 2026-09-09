@@ -10,6 +10,42 @@ Text::make('name')->required()->placeholder('Full name')->rules('max:120'),
 
 Modifiers specific to `Text`: `type(string)` changes the HTML input type (e.g. `'email'`, `'number'`). The default type is `'text'`, which also adds a `string` validation rule. `'email'` adds an `email` rule; `'number'` adds `numeric`.
 
+### Password
+
+A masked input that **leaves the stored value alone when it is submitted blank**.
+
+```php
+Password::make('password')->helper('Leave blank to keep the current password.'),
+```
+
+Masking on its own was never the missing piece — `Text::make('password')->type('password')`
+does that. The behaviour every panel that manages users has to write for itself
+is this one: an edit form cannot show the current password, so the field always
+renders empty, and a plain field therefore **sets the password to an empty
+string every time somebody edits a user's name**.
+
+Laravel's `hashed` cast makes that worse rather than better. It faithfully
+hashes `''`, so the account keeps a valid-looking bcrypt hash and the only
+symptom is that nobody can sign in as them again. No error, no log line.
+
+`Password` also returns `null` from `resolve()`, so the stored hash never
+reaches the edit page's HTML, the Inertia payload, or the read-only view page.
+It is unusable in a form, and shipping it to the browser buys nothing.
+
+Saddle does not hash for you — the hasher, and whether the column is hashed at
+all, belongs to the application:
+
+```php
+protected function casts(): array
+{
+    return ['password' => 'hashed'];
+}
+```
+
+Leave the field optional. `required()` works, but because the field always
+renders empty it forces the password to be retyped on every edit of any other
+attribute.
+
 ### Textarea
 
 A multi-line text input.
