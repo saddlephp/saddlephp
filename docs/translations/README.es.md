@@ -454,7 +454,7 @@ El directorio `workbench/` contiene una aplicación anfitriona mínima usada por
 
 ## Stack
 
-Creado para **Laravel 13+ / PHP 8.4+**, **Inertia 2**, **Vue 3**, **Tailwind CSS 4**.
+Creado para **Laravel 11.48+ / PHP 8.4+**, **Inertia 2**, **Vue 3**, **Tailwind CSS 4**.
 
 ## Licencia
 

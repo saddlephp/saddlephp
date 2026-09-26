@@ -454,7 +454,7 @@ vendor/bin/pest
 
 ## 스택
 
-**Laravel 13+ / PHP 8.4+**, **Inertia 2**, **Vue 3**, **Tailwind CSS 4**용으로 구축되었습니다.
+**Laravel 11.48+ / PHP 8.4+**, **Inertia 2**, **Vue 3**, **Tailwind CSS 4**용으로 구축되었습니다.
 
 ## 라이선스
 

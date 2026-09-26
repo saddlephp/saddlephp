@@ -454,7 +454,7 @@ vendor/bin/pest
 
 ## 技术栈
 
-为 **Laravel 13+ / PHP 8.4+**、**Inertia 2**、**Vue 3**、**Tailwind CSS 4** 构建。
+为 **Laravel 11.48+ / PHP 8.4+**、**Inertia 2**、**Vue 3**、**Tailwind CSS 4** 构建。
 
 ## 许可证
 

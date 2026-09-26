@@ -2,8 +2,11 @@ Saddle is the open-source admin panel framework for Laravel, built on Inertia an
 
 ### Requirements
 
-- **Laravel 13+** and **PHP 8.4+**
+- **Laravel 11.48+, 12 or 13** and **PHP 8.4+**. Every supported Laravel version runs the full test suite in CI.
+- **`inertiajs/inertia-laravel` 3.1+** on the server. An app still on the 2.x adapter must upgrade it first.
 - **Inertia 2**, **Vue 3**, and **Tailwind CSS 4** (the panel bundle brings these; your app just needs a working Vite setup)
+
+> **Laravel 11 is end-of-life.** It stopped receiving security fixes in March 2026, and every 11.x release is affected by an unpatched advisory (`PKSA-mdq4-51ck-6kdq`), so Composer refuses to install it unless advisory blocking is turned off. Saddle keeps working on it to ease upgrades, but run new panels on Laravel 12 or 13.
 
 ### Install
 

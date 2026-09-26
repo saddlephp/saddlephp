@@ -454,7 +454,7 @@ vendor/bin/pest
 
 ## スタック
 
-**Laravel 13+ / PHP 8.4+**、**Inertia 2**、**Vue 3**、**Tailwind CSS 4** 向けに構築されています。
+**Laravel 11.48+ / PHP 8.4+**、**Inertia 2**、**Vue 3**、**Tailwind CSS 4** 向けに構築されています。
 
 ## ライセンス
 

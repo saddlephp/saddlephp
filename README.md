@@ -470,7 +470,7 @@ The `workbench/` directory contains a minimal host application used by the test 
 
 ## Stack
 
-Built for **Laravel 13+ / PHP 8.4+**, **Inertia 2**, **Vue 3**, **Tailwind CSS 4**.
+Built for **Laravel 11.48+, 12 and 13 / PHP 8.4+**, **Inertia 2** (with the `inertia-laravel` 3.1+ server adapter), **Vue 3**, **Tailwind CSS 4**. Laravel 11 is end-of-life and carries an unpatched advisory, so prefer 12 or 13.
 
 ## License
 
