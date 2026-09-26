@@ -7,18 +7,25 @@ on:
 
 jobs:
   php:
-    name: PHP ${{ matrix.php }} / ${{ matrix.dependencies }}
+    name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }} / ${{ matrix.dependencies }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
         php: ['8.4', '8.5']
+        laravel: ['11', '12', '13']
         dependencies: [highest]
+        exclude:
+          # Laravel 11 reached end-of-life before PHP 8.5 shipped and never
+          # supported it; its bundled config trips 8.5 deprecations.
+          - php: '8.5'
+            laravel: '11'
         include:
           # composer.json advertises ranges; the committed lock only ever proves
           # one point in them. This run proves the lower bounds resolve and pass.
           - php: '8.4'
+            laravel: '11'
             dependencies: lowest
 
     steps:
@@ -30,6 +37,9 @@ jobs:
 
       - run: composer validate --strict
 
+      - name: Pin Laravel ${{ matrix.laravel }}
+        run: bash .github/scripts/pin-laravel.sh "${{ matrix.laravel }}"
+
       - name: Install dependencies
         run: |
           if [ "${{ matrix.dependencies }}" = "lowest" ]; then
@@ -37,6 +47,8 @@ jobs:
           else
             composer update --prefer-dist --no-interaction
           fi
+
+      - run: composer show laravel/framework | grep versions
 
       - run: vendor/bin/pint --test
       - run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
@@ -48,13 +60,14 @@ jobs:
   # coerces types MySQL and Postgres reject outright -- so a query that 500s in
   # production can be green here. These jobs are what make that visible.
   databases:
-    name: ${{ matrix.db }}
+    name: ${{ matrix.db }} / Laravel ${{ matrix.laravel }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
         db: [mysql, pgsql]
+        laravel: ['11', '12', '13']
 
     services:
       mysql:
@@ -83,6 +96,9 @@ jobs:
           php-version: '8.4'
           extensions: pdo_mysql, pdo_pgsql
           coverage: none
+
+      - name: Pin Laravel ${{ matrix.laravel }}
+        run: bash .github/scripts/pin-laravel.sh "${{ matrix.laravel }}"
 
       - run: composer update --prefer-dist --no-interaction
 

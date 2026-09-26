@@ -454,7 +454,7 @@ Das Verzeichnis `workbench/` enthält eine minimale Host-Anwendung, die von der 
 
 ## Stack
 
-Gebaut für **Laravel 13+ / PHP 8.4+**, **Inertia 2**, **Vue 3**, **Tailwind CSS 4**.
+Gebaut für **Laravel 11.48+ / PHP 8.4+**, **Inertia 2**, **Vue 3**, **Tailwind CSS 4**.
 
 ## Lizenz
 

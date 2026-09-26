@@ -454,7 +454,7 @@ vendor/bin/pest
 
 ## الحزمة التقنية
 
-مبني من أجل **Laravel 13+ / PHP 8.4+** و **Inertia 2** و **Vue 3** و **Tailwind CSS 4**.
+مبني من أجل **Laravel 11.48+ / PHP 8.4+** و **Inertia 2** و **Vue 3** و **Tailwind CSS 4**.
 
 ## الترخيص
 

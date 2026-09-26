@@ -454,7 +454,7 @@ De map `workbench/` bevat een minimale hostapplicatie die wordt gebruikt door de
 
 ## Stack
 
-Gebouwd voor **Laravel 13+ / PHP 8.4+**, **Inertia 2**, **Vue 3**, **Tailwind CSS 4**.
+Gebouwd voor **Laravel 11.48+ / PHP 8.4+**, **Inertia 2**, **Vue 3**, **Tailwind CSS 4**.
 
 ## Licentie
 

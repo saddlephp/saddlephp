@@ -454,7 +454,7 @@ Le répertoire `workbench/` contient une application hôte minimale utilisée pa
 
 ## Stack
 
-Conçu pour **Laravel 13+ / PHP 8.4+**, **Inertia 2**, **Vue 3**, **Tailwind CSS 4**.
+Conçu pour **Laravel 11.48+ / PHP 8.4+**, **Inertia 2**, **Vue 3**, **Tailwind CSS 4**.
 
 ## Licence
 
