@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   php:
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }} / ${{ matrix.dependencies }}
@@ -40,12 +43,25 @@ jobs:
       - name: Pin Laravel ${{ matrix.laravel }}
         run: bash .github/scripts/pin-laravel.sh "${{ matrix.laravel }}"
 
+      - name: Locate Composer download cache
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ matrix.php }}-${{ matrix.laravel }}-${{ matrix.dependencies }}-${{ hashFiles('composer.json') }}
+          restore-keys: composer-${{ runner.os }}-
+
       - name: Install dependencies
+        env:
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
+          COMPOSER_MAX_PARALLEL_HTTP: '4'
         run: |
           if [ "${{ matrix.dependencies }}" = "lowest" ]; then
-            composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable
+            bash .github/scripts/composer-update.sh --prefer-lowest --prefer-stable
           else
-            composer update --prefer-dist --no-interaction
+            bash .github/scripts/composer-update.sh
           fi
 
       - run: composer show laravel/framework | grep versions
@@ -100,7 +116,21 @@ jobs:
       - name: Pin Laravel ${{ matrix.laravel }}
         run: bash .github/scripts/pin-laravel.sh "${{ matrix.laravel }}"
 
-      - run: composer update --prefer-dist --no-interaction
+      - name: Locate Composer download cache
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-db-${{ matrix.db }}-${{ matrix.laravel }}-${{ hashFiles('composer.json') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: Install dependencies
+        env:
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
+          COMPOSER_MAX_PARALLEL_HTTP: '4'
+        run: bash .github/scripts/composer-update.sh
 
       - name: Run the suite against ${{ matrix.db }}
         env:
@@ -116,6 +146,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Verify Composer retry behavior
+        run: bash .github/scripts/test-composer-update.sh
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
