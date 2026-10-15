@@ -33,6 +33,10 @@ plugins, and multi-tenancy.
 
 ## Installation
 
+Requires PHP 8.4+ and Laravel 11.48+, 12, or 13, as declared in
+[composer.json](composer.json). Composer installs the Inertia Laravel server adapter
+(`^3.1`) with the package.
+
 ```bash
 composer require saddlephp/saddlephp
 php artisan saddle:install
@@ -40,6 +44,15 @@ php artisan saddle:resource HorseResource --model=Horse
 ```
 
 The service provider is auto-discovered. `saddle:install` publishes the config file, publishes panel assets, and creates `app/Saddle/` for your resource classes. Visit `/admin` to see the panel.
+
+The panel uses your application's existing authentication (`web` and `auth` middleware
+by default); sign in through your application's login flow first. Register a Laravel
+policy for each resource's model before trying its CRUD screens: resources without a
+policy deny access by default. See [Authorization](#authorization) for the policy abilities.
+
+After a package update, run `php artisan saddle:upgrade` during deployment to refresh
+the published frontend assets. See [Commands](#commands) for the
+installer's optional Composer hook.
 
 ## Define a resource
 
