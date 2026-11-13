@@ -104,6 +104,10 @@ The panel derives the URL key and navigation label automatically from the class 
 
 The class base name (everything before the `Resource` suffix) is pluralised and converted to kebab-case for the URI, and to headline case for the label.
 
+### Reserved route keys
+
+The panel owns the static path segments `create`, `options`, `actions`, `export`, and `import` under each resource, so a record whose route key is literally one of those words is not reachable by its view, edit, update, or delete URLs. Use an integer key or a different slug for such records.
+
 ### Record titles
 
 `recordTitle()` returns the string the panel uses to identify a record in breadcrumbs and relation pickers. It reads the attribute named by `$title`. When `$title` is `null`, it falls back to the primary key.

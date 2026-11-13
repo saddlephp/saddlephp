@@ -54,7 +54,7 @@ function switchTenant(event) {
                         :key="item.uriKey"
                         :href="`${base}/resources/${item.uriKey}`"
                         class="mb-0.5 flex items-center rounded-md px-3 py-2 text-sm transition"
-                        :class="item.active ? 'bg-ink font-medium text-white' : 'text-ink-2 hover:bg-surface-2'"
+                        :class="item.active ? 'bg-ink font-medium text-bg' : 'text-ink-2 hover:bg-surface-2'"
                     >{{ item.label }}</Link>
                 </div>
             </nav>
