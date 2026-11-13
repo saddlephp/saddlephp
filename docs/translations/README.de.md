@@ -1,8 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../../art/logo-dark.png">
-    <img src="../../art/logo.png" alt="Saddle" width="220">
-  </picture>
+  <img src="../../.github/og.png" alt="Saddle, there's a new admin panel in town" width="820">
 </p>
 
 <h3 align="center">Das Open-Source-Framework für Admin-Panels in Laravel, gebaut für Inertia und Vue.</h3>
@@ -30,17 +27,6 @@
   <a href="README.tr.md">Türkçe</a> •
   <a href="README.zh-CN.md">简体中文</a>
 </p>
-
-<br>
-
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../../.github/screenshots/dashboard-dark.png">
-    <img src="../../.github/screenshots/dashboard-light.png" alt="Das Saddle-Dashboard mit Kennzahlen-Widgets und einem Diagramm" width="100%">
-  </picture>
-</p>
-
-<p align="center"><em>Sattel auf, Cowboy, in der Stadt gibt es ein neues Admin-Panel.</em></p>
 
 ## Was ist Saddle?
 
