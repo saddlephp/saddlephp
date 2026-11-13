@@ -16,7 +16,7 @@ const options = [
             :key="o.value"
             type="button"
             class="flex-1 rounded-md px-2 py-1 transition"
-            :class="mode === o.value ? 'bg-ink text-white' : 'text-ink-2 hover:bg-surface-2'"
+            :class="mode === o.value ? 'bg-ink text-bg' : 'text-ink-2 hover:bg-surface-2'"
             @click="setMode(o.value)"
         >{{ o.label }}</button>
     </div>

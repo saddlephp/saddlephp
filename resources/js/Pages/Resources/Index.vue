@@ -80,7 +80,7 @@ function paginatorLabel(raw) {
 
 const badgeStyles = {
     accent: 'bg-accent/10 text-accent',
-    ink: 'bg-ink text-white',
+    ink: 'bg-ink text-bg',
     muted: 'bg-surface-2 text-ink-2',
 };
 
@@ -326,7 +326,7 @@ function confirmAction() {
                         preserve-state
                         :only="['rows', 'query']"
                         class="rounded border px-2 py-1"
-                        :class="link.active ? 'border-ink bg-ink text-white' : 'border-line bg-bg'"
+                        :class="link.active ? 'border-ink bg-ink text-bg' : 'border-line bg-bg'"
                     >{{ paginatorLabel(link.label) }}</Link>
                 </div>
             </div>
