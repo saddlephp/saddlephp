@@ -1,8 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../../art/logo-dark.png">
-    <img src="../../art/logo.png" alt="Saddle" width="220">
-  </picture>
+  <img src="../../.github/og.png" alt="Saddle, there's a new admin panel in town" width="820">
 </p>
 
 <h3 align="center">面向 Laravel 的开源后台管理面板框架，专为 Inertia 和 Vue 打造。</h3>
@@ -30,17 +27,6 @@
   <a href="README.tr.md">Türkçe</a> •
   <b>简体中文</b>
 </p>
-
-<br>
-
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../../.github/screenshots/dashboard-dark.png">
-    <img src="../../.github/screenshots/dashboard-light.png" alt="Saddle 仪表盘，包含统计小组件和一张图表" width="100%">
-  </picture>
-</p>
-
-<p align="center"><em>牛仔，备好马鞍，镇上来了个新的后台管理面板。</em></p>
 
 ## Saddle 是什么？
 

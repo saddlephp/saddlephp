@@ -1,8 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../../art/logo-dark.png">
-    <img src="../../art/logo.png" alt="Saddle" width="220">
-  </picture>
+  <img src="../../.github/og.png" alt="Saddle, there's a new admin panel in town" width="820">
 </p>
 
 <h3 align="center">Inertia와 Vue를 위해 만든 Laravel용 오픈 소스 관리자 패널 프레임워크.</h3>
@@ -30,17 +27,6 @@
   <a href="README.tr.md">Türkçe</a> •
   <a href="README.zh-CN.md">简体中文</a>
 </p>
-
-<br>
-
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../../.github/screenshots/dashboard-dark.png">
-    <img src="../../.github/screenshots/dashboard-light.png" alt="통계 위젯과 차트가 있는 Saddle 대시보드" width="100%">
-  </picture>
-</p>
-
-<p align="center"><em>안장을 얹어라, 카우보이. 마을에 새로운 관리자 패널이 등장했다.</em></p>
 
 ## Saddle이란?
 
