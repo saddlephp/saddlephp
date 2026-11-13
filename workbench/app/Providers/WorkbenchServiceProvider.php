@@ -9,6 +9,9 @@ use SaddlePHP\Saddle;
 use Workbench\App\Saddle\HorseResource;
 use Workbench\App\Saddle\RanchResource;
 use Workbench\App\Saddle\RiderResource;
+use Workbench\App\Saddle\Widgets\Demo\RanchCountWidget;
+use Workbench\App\Saddle\Widgets\Demo\RiderCountWidget;
+use Workbench\App\Saddle\Widgets\Demo\SaddledWidget;
 use Workbench\App\Saddle\Widgets\HorseCountWidget;
 use Workbench\App\Saddle\Widgets\HorsesByBreedWidget;
 
@@ -23,7 +26,10 @@ class WorkbenchServiceProvider extends ServiceProvider
 
         $this->app->make(Saddle::class)->register([HorseResource::class, RiderResource::class, RanchResource::class]);
 
-        $this->app->make(Saddle::class)->registerWidgets([HorseCountWidget::class, HorsesByBreedWidget::class]);
+        $this->app->make(Saddle::class)->registerWidgets(env('SADDLE_DEMO')
+            // A fuller dashboard for browsing the demo and for the README screenshots.
+            ? [HorseCountWidget::class, SaddledWidget::class, RiderCountWidget::class, RanchCountWidget::class, HorsesByBreedWidget::class]
+            : [HorseCountWidget::class, HorsesByBreedWidget::class]);
 
         $this->app->make(Saddle::class)
             ->script('/vendor/saddle-demo/rating-field.js')

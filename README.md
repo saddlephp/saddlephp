@@ -1,4 +1,20 @@
 <p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="art/logo-dark.png">
+    <img src="art/logo.png" alt="Saddle" width="220">
+  </picture>
+</p>
+
+<h3 align="center">The open-source admin panel framework for Laravel, built for Inertia and Vue.</h3>
+
+<p align="center">
+  <a href="docs/sections/getting-started.md"><b>Docs</b></a> ·
+  <a href="https://packagist.org/packages/saddlephp/saddlephp"><b>Packagist</b></a> ·
+  <a href="https://github.com/SaddlePHP/saddlephp/releases"><b>Changelog</b></a> ·
+  <a href="CONTRIBUTING.md"><b>Contributing</b></a>
+</p>
+
+<p align="center">
   <a href="docs/translations/README.ar.md">العربية</a> •
   <a href="docs/translations/README.de.md">Deutsch</a> •
   <b>English</b> •
@@ -15,27 +31,228 @@
   <a href="docs/translations/README.zh-CN.md">简体中文</a>
 </p>
 
-<p align="center">
-  <a href="https://saddlephp.com"><img src=".github/og.png" alt="Saddle, there's a new admin panel in town" width="820"></a>
-</p>
+<br>
 
 <p align="center">
-  <em>Saddle up cowboy, there's a new admin panel in town.</em>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/screenshots/dashboard-dark.png">
+    <img src=".github/screenshots/dashboard-light.png" alt="The Saddle dashboard with stat widgets and a chart" width="100%">
+  </picture>
 </p>
 
----
+<p align="center"><em>Saddle up cowboy, there's a new admin panel in town.</em></p>
 
-**Saddle** is the open-source admin panel framework for Laravel, built the modern way for **Inertia and
-Vue**. Round up your Eloquent models into polished resource panels, with form and table builders, roles and access,
-plugins, and multi-tenancy.
+## What is Saddle?
 
-> **Status: v1.0 — CSV import/export and tenancy extras.** The marketing site lives at **[saddlephp.com](https://saddlephp.com)** ([SaddlePHP/saddlephp.com](https://github.com/SaddlePHP/saddlephp.com)).
+Saddle turns your Eloquent models into a polished admin panel. You describe each model once, as a PHP resource class with a form and a table, and Saddle builds the list, create, edit and view screens, the search, the filters and the actions. It renders with Inertia and Vue, uses your existing Laravel login and policies, and stays out of the rest of your app.
 
-## Installation
+<table>
+<tr>
+<td width="50%" valign="middle">
 
-Requires PHP 8.4+ and Laravel 11.48+, 12, or 13, as declared in
-[composer.json](composer.json). Composer installs the Inertia Laravel server adapter
-(`^3.1`) with the package.
+### Tables that do the work
+
+Sortable, searchable columns with badges and booleans, filters, row actions and bulk actions with confirmation. Export the current view to CSV, or import a CSV through the same validation your form uses.
+
+[Tables and columns →](docs/sections/tables.md)
+
+</td>
+<td width="50%">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/screenshots/table-dark.png">
+  <img src=".github/screenshots/table-light.png" alt="A Saddle resource table with filters and a bulk-action bar">
+</picture>
+</td>
+</tr>
+<tr>
+<td width="50%">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/screenshots/form-dark.png">
+  <img src=".github/screenshots/form-light.png" alt="A Saddle edit form with a section, a two-column grid and tabs">
+</picture>
+</td>
+<td width="50%" valign="middle">
+
+### Forms with real layout
+
+Eleven field types, from text and selects to searchable relation pickers, file uploads and Markdown. Arrange them in sections, grids and tabs. Validation, visibility and saving all follow the same field definitions.
+
+[Fields →](docs/sections/fields.md) · [Form layout →](docs/sections/forms-layout.md)
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="middle">
+
+### One class per model
+
+A resource is plain PHP. Drop it in `app/Saddle/` and it is discovered at boot: no routes, controllers or Vue files to write. Access follows your Laravel policies and is closed by default.
+
+[Resources →](docs/sections/resources.md) · [Authorization →](docs/sections/authorization.md)
+
+</td>
+<td width="50%">
+
+```php
+class HorseResource extends Resource
+{
+    public static string $model = Horse::class;
+
+    public static function form(Form $form): Form
+    {
+        return $form->schema([
+            Text::make('name')->required(),
+            BelongsTo::make('rider')->searchable(),
+            Toggle::make('is_saddled'),
+        ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table->columns([
+            TextColumn::make('name')->sortable()->searchable(),
+            BooleanColumn::make('is_saddled'),
+        ]);
+    }
+}
+```
+
+</td>
+</tr>
+</table>
+
+## Features
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+**Resources**
+- Auto-discovered resource classes
+- List, create, edit and read-only view pages
+- `saddle:resource` generator
+- Eager loading and relation columns
+
+</td>
+<td width="33%" valign="top">
+
+**Forms**
+- Text, password, textarea, number, select, toggle
+- Date, date-time, Markdown, file upload
+- Searchable `BelongsTo` picker
+- Sections, grids and tabs
+
+</td>
+<td width="33%" valign="top">
+
+**Tables**
+- Text, badge and boolean columns
+- Sorting, search and `formatUsing`
+- Select and boolean filters
+- Pagination
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+**Actions**
+- Row actions and bulk actions
+- Confirmation dialogs
+- Per-record policy checks
+- Transactional bulk runs
+
+</td>
+<td valign="top">
+
+**Relations**
+- `HasMany` relation managers
+- Create, edit and delete related records in place
+- Scoped to the parent record
+
+</td>
+<td valign="top">
+
+**Dashboard**
+- Stat widgets with mini charts
+- Chart widgets
+- Database notifications with a bell
+- Global search across resources
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+**Access**
+- Standard Laravel policies
+- Fail-closed by default
+- Per-field visibility with `canSee`
+- Uses your existing login
+
+</td>
+<td valign="top">
+
+**Multi-tenancy**
+- URL-scoped tenants (`/admin/{tenant}`)
+- Automatic query scoping and tenant stamping
+- Tenant switcher and self-registration
+- Access gate hook for billing
+
+</td>
+<td valign="top">
+
+**Data**
+- CSV export of the current view
+- CSV import through form validation
+- Soft deletes with restore and force delete
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+**Look and language**
+- Light, dark and system themes
+- Brand name, accent and theme tokens
+- Panel translated into 14 languages
+- CSP nonce support
+
+</td>
+<td valign="top">
+
+**Plugins**
+- Plain Composer packages
+- Custom fields and columns as web components
+- Hooks for shared props, navigation and theme tokens
+
+</td>
+<td valign="top">
+
+**Developer experience**
+- Pest and PHPUnit testing helpers
+- `saddle:install` and `saddle:upgrade`
+- Stale-asset warning after upgrades
+- Laravel 11, 12 and 13
+
+</td>
+</tr>
+</table>
+
+## Built with
+
+<p>
+  <img src="https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
+  <img src="https://img.shields.io/badge/PHP_8.4+-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.4+">
+  <img src="https://img.shields.io/badge/Inertia-9553E9?style=for-the-badge&logo=inertia&logoColor=white" alt="Inertia">
+  <img src="https://img.shields.io/badge/Vue_3-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white" alt="Vue 3">
+  <img src="https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4">
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite">
+</p>
+
+## Quick start
+
+Requires PHP 8.4+ and Laravel 11.48+, 12 or 13.
 
 ```bash
 composer require saddlephp/saddlephp
@@ -43,448 +260,17 @@ php artisan saddle:install
 php artisan saddle:resource HorseResource --model=Horse
 ```
 
-The service provider is auto-discovered. `saddle:install` publishes the config file, publishes panel assets, and creates `app/Saddle/` for your resource classes. Visit `/admin` to see the panel.
+Sign in through your app's login, register a policy for the model, then visit `/admin`. Run `php artisan saddle:upgrade` after each package update. The [getting started guide](docs/sections/getting-started.md) walks through each step.
 
-The panel uses your application's existing authentication (`web` and `auth` middleware
-by default); sign in through your application's login flow first. Register a Laravel
-policy for each resource's model before trying its CRUD screens: resources without a
-policy deny access by default. See [Authorization](#authorization) for the policy abilities.
+## Learn more
 
-After a package update, run `php artisan saddle:upgrade` during deployment to refresh
-the published frontend assets. See [Commands](#commands) for the
-installer's optional Composer hook.
-
-## Define a resource
-
-Place resource classes in `app/Saddle/`. Each class extends `SaddlePHP\Resource` and implements `form()` and `table()`.
-
-```php
-<?php
-
-declare(strict_types=1);
-
-namespace App\Saddle;
-
-use App\Models\Horse;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
-use SaddlePHP\Actions\Action;
-use SaddlePHP\Actions\BulkAction;
-use SaddlePHP\Fields\BelongsTo;
-use SaddlePHP\Fields\Date;
-use SaddlePHP\Fields\DateTime;
-use SaddlePHP\Fields\FileUpload;
-use SaddlePHP\Fields\Markdown;
-use SaddlePHP\Fields\Number;
-use SaddlePHP\Fields\Select;
-use SaddlePHP\Fields\Text;
-use SaddlePHP\Fields\Toggle;
-use SaddlePHP\Forms\Form;
-use SaddlePHP\Forms\Layout\Grid;
-use SaddlePHP\Forms\Layout\Section;
-use SaddlePHP\Forms\Layout\Tab;
-use SaddlePHP\Forms\Layout\Tabs;
-use SaddlePHP\Resource;
-use SaddlePHP\Tables\Columns\BadgeColumn;
-use SaddlePHP\Tables\Columns\BooleanColumn;
-use SaddlePHP\Tables\Columns\TextColumn;
-use SaddlePHP\Tables\Filters\BooleanFilter;
-use SaddlePHP\Tables\Filters\SelectFilter;
-use SaddlePHP\Tables\Table;
-
-class HorseResource extends Resource
-{
-    public static string $model = Horse::class;
-
-    public static ?string $title = 'name';
-
-    public static ?string $icon = 'collection';
-
-    public static array $with = ['rider'];
-
-    public static function form(Form $form): Form
-    {
-        return $form->schema([
-            Section::make('Identity')->description('Who this horse is on the ranch.')->schema([
-                Grid::make(2)->schema([
-                    Text::make('name')->required()->rules('max:120'),
-                    Select::make('breed')->options([
-                        'quarter' => 'Quarter Horse',
-                        'mustang' => 'Mustang',
-                        'appaloosa' => 'Appaloosa',
-                    ]),
-                ]),
-                FileUpload::make('photo')->image()->directory('horses')->maxSize(4096),
-            ]),
-            Tabs::make([
-                Tab::make('Care')->schema([
-                    Markdown::make('notes')
-                        ->canSee(fn (Request $request) => (bool) $request->user()?->is_admin),
-                    DateTime::make('last_vet_visit'),
-                    Number::make('age')->integer()->min(0)->max(50),
-                    Date::make('foaled_on'),
-                ]),
-                Tab::make('Assignment')->schema([
-                    BelongsTo::make('rider')->searchable(),
-                    Toggle::make('is_saddled'),
-                ]),
-            ]),
-        ]);
-    }
-
-    public static function actions(): array
-    {
-        return [
-            Action::make('unsaddle')
-                ->handle(fn (Horse $horse) => $horse->update(['is_saddled' => false]))
-                ->requiresConfirmation('Unsaddle this horse?')
-                ->color('accent'),
-        ];
-    }
-
-    public static function bulkActions(): array
-    {
-        return [
-            BulkAction::make('saddle-up')
-                ->label('Saddle up')
-                ->handle(fn (Collection $horses) => $horses->each->update(['is_saddled' => true])),
-            BulkAction::delete(),
-        ];
-    }
-
-    public static function table(Table $table): Table
-    {
-        return $table->columns([
-            TextColumn::make('name')->sortable()->searchable(),
-            BadgeColumn::make('breed')->colors([
-                'quarter' => 'accent',
-                'mustang' => 'ink',
-                'appaloosa' => 'muted',
-            ]),
-            BooleanColumn::make('is_saddled'),
-            TextColumn::make('rider.name')->label('Rider'),
-            TextColumn::make('created_at')->date('M j, Y')->sortable(),
-        ])->filters([
-            SelectFilter::make('breed')->options([
-                'quarter' => 'Quarter Horse',
-                'mustang' => 'Mustang',
-                'appaloosa' => 'Appaloosa',
-            ]),
-            BooleanFilter::make('is_saddled'),
-        ]);
-    }
-}
-```
-
-Resources are discovered automatically by scanning `app/Saddle/` at boot, no manual registration needed.
-
-> **Reserved route keys.** The panel owns the static path segments `create`, `options`, and `actions` under each resource, so a record whose route key is literally one of those words is not reachable by its edit/update/delete URLs. Use an integer key or a different slug for such records.
-
-## Form layout
-
-Fields can be grouped into layout containers. Containers nest freely inside one another.
-
-```php
-use SaddlePHP\Forms\Layout\Grid;
-use SaddlePHP\Forms\Layout\Section;
-use SaddlePHP\Forms\Layout\Tab;
-use SaddlePHP\Forms\Layout\Tabs;
-
-$form->schema([
-    Section::make('Identity')->description('Who this horse is on the ranch.')->schema([
-        Grid::make(2)->schema([
-            Text::make('name')->required(),
-            Select::make('breed')->options([...]),
-        ]),
-        FileUpload::make('photo')->image()->directory('horses')->maxSize(4096),
-    ]),
-    Tabs::make([
-        Tab::make('Care')->schema([
-            Markdown::make('notes'),
-            DateTime::make('last_vet_visit'),
-        ]),
-        Tab::make('Assignment')->schema([
-            BelongsTo::make('rider')->searchable(),
-            Toggle::make('is_saddled'),
-        ]),
-    ]),
-]);
-```
-
-| Container | Description |
+| | |
 |---|---|
-| `Section` | A labeled card group. `description(string)` adds a subtitle. Accepts `schema([...])` of fields and nested containers. |
-| `Grid` | Arranges its children in a CSS grid. `Grid::make(2)` creates a two-column grid. Fields inside a Grid use `columnSpan(int)` to span multiple columns. |
-| `Tabs` | Wraps one or more `Tab` containers in a tabbed interface. |
-| `Tab` | A single pane inside a `Tabs` group. `Tab::make('Label')->schema([...])`. When any field inside a tab fails validation, the tab shows an error indicator so users can locate the problem without switching to every pane. |
-
-**Flat schemas still work.** Passing a plain list of fields to `$form->schema([...])` with no containers is fully supported and produces the same layout as before. Validation and authorization treat fields identically regardless of whether they live inside a container or at the top level.
-
-## Fields
-
-| Field | Description |
-|---|---|
-| `Text` | Single-line text input. Modifiers: `required()`, `rules(string\|array)`, `placeholder()`. |
-| `Password` | Masked input that leaves the stored value alone when submitted blank. An edit form cannot show the current password, so the field always renders empty -- a plain field therefore sets the password to an empty string on any edit, and Laravel's `hashed` cast faithfully hashes that, locking the account out with no error. `resolve()` returns `null`, so the stored hash never reaches the edit page or the Inertia payload. Pair with `'password' => 'hashed'` in the model's casts; Saddle does not hash for you. Leave it optional -- `required()` forces a retype on every edit. |
-| `Textarea` | Multi-line text input. Modifiers: `rows(int)`. |
-| `Select` | Fixed-options dropdown. Pass an associative array to `options(['value' => 'Label'])`. |
-| `Toggle` | Boolean switch. Stores `true`/`false`. |
-| `BelongsTo` | Relation select. The argument is the Eloquent relation method name on the model (`BelongsTo::make('rider')` reads `$model->rider()` and submits the foreign key). Option labels resolve from `titleAttribute('name')`, falling back to the related model's registered resource `$title`, then its key. If neither a `titleAttribute()` nor a registered resource is available, options are labeled by primary key, so set `titleAttribute('name')` for readable labels. Options are capped at 100 by default; override with `limit(int)`. `searchable()` switches to an async picker that searches the related table as you type via an authenticated endpoint; on edit, only the current selection is embedded (the full list is not loaded). `modifyOptionsQuery(fn ($query) => ...)` scopes the option list for tenancy or visibility; it applies to listed and searched options, while a record's saved selection keeps rendering its label even when it falls outside the scope. |
-| `Number` | Numeric input. Modifiers: `min()`, `max()`, `step()`, `integer()`. |
-| `Date` | Date input. Values render as `Y-m-d`. |
-| `DateTime` | Date-and-time input (`datetime-local`). Values are stored and read back via your model's datetime cast; a `DateTimeInterface` value is formatted to `Y-m-d\TH:i` for the browser. |
-| `Markdown` | Textarea with a formatting toolbar. Stored as a plain string and bounded to 65 535 characters (equivalent to a MySQL `TEXT` column). |
-| `FileUpload` | Multipart file upload. Modifiers: `disk(string)`, `directory(string)`, `image()` (restricts to image types), `acceptedTypes(array)` (MIME extensions, e.g. `['pdf', 'docx']`), `maxSize(int $kilobytes)`. The stored value is the file path returned by `Storage::put`. On the edit form: leaving the input untouched keeps the existing file, clearing it stores `null`, and picking a new file replaces the path. Replaced or cleared files are not deleted from disk automatically. |
-
-## Columns
-
-| Column | Description |
-|---|---|
-| `TextColumn` | Renders the raw attribute value. Modifiers: `sortable()`, `searchable()`, `label(string)`, `date(string $format)` (formats DateTime attributes; default format `Y-m-d H:i`). |
-| `BadgeColumn` | Renders a pill badge. Use `colors(['value' => 'token'])` to map option values to color tokens (`accent`, `ink`, `muted`). |
-| `BooleanColumn` | Renders an accent check mark for `true` and a muted cross for `false`. The resolved value is cast to a real `bool`, so those are the only two marks a plain `BooleanColumn` produces; the em dash is reserved for a cell with no value, which `formatUsing()` returning `null` can produce. |
-
-**Formatting a cell.** `formatUsing(fn (mixed $value, Model $record) => ...)` is available on every column type and runs after the value is resolved -- so `sortable()` and `searchable()` still refer to the real database column, which is what a model accessor cannot give you. It applies wherever a cell is resolved, the CSV export included.
-
-**Relation columns and eager loading.** Dotted names like `TextColumn::make('rider.name')` read through a loaded relation. Declare `public static array $with = ['rider']` on the resource so the index query eager-loads the relation before rendering. Relation columns are not sortable or searchable yet.
-
-## Filters
-
-Filters are declared on the table via `->filters([...])`. On the index, the panel applies them from `filter[name]=value` query string parameters. Requested values are validated against the declaration, so unknown filter names and undeclared option values are silently ignored.
-
-| Filter | Description |
-|---|---|
-| `SelectFilter` | Exact-match dropdown. `options(['value' => 'Label'])` defines both the dropdown choices and the allowlist of accepted values. |
-| `BooleanFilter` | Yes/No dropdown over a boolean column. |
-
-## Actions
-
-Actions appear as buttons on each row of the index table. Bulk actions appear in a toolbar when one or more rows are selected.
-
-```php
-use SaddlePHP\Actions\Action;
-use SaddlePHP\Actions\BulkAction;
-
-public static function actions(): array
-{
-    return [
-        Action::make('unsaddle')
-            ->handle(fn (Horse $horse) => $horse->update(['is_saddled' => false]))
-            ->requiresConfirmation('Unsaddle this horse?')
-            ->color('accent'),
-    ];
-}
-
-public static function bulkActions(): array
-{
-    return [
-        BulkAction::make('saddle-up')
-            ->label('Saddle up')
-            ->handle(fn (Collection $horses) => $horses->each->update(['is_saddled' => true])),
-        BulkAction::delete(),
-    ];
-}
-```
-
-| Fluent | Description |
-|---|---|
-| `label(string)` | Display label shown on the button. When omitted, the name is converted to title case. |
-| `color(string)` | Color token for the button: `accent`, `ink`, or `muted`. Defaults to `ink`. |
-| `requiresConfirmation(?string)` | Show a confirmation dialog before running. Pass a custom message or omit to use the default prompt. |
-| `authorize(string)` | Name a policy ability checked per record before the handler runs. |
-| `successMessage(string)` | Flash message shown after a successful run. Defaults to `Done.`. |
-
-Actions post to a guarded endpoint. Records resolve through the same scoped base query used everywhere else, so tenancy, filters, and per-resource query scopes apply automatically. When `authorize('ability')` is declared, the policy is checked per record before the handler runs. Bulk runs execute inside a database transaction and are capped at 100 records per request; if any requested record is missing from the scoped fetch the entire operation aborts with 404 rather than silently applying to the subset that resolved. Declare `authorize()` on any destructive action.
-
-`BulkAction::delete()` is a pre-built preset: name `delete`, label `Delete`, color `accent`, confirmation `Delete the selected records?`, and `authorize('delete')` already wired.
-
-## Authorization
-
-Saddle consumes standard Laravel policies. Register a policy for a model and the panel enforces it everywhere: index, forms, row actions, and relation pickers. Saddle is fail-closed by default: with no policy registered, every ability is denied, so register a policy for each resource's model to grant access. Roles stay in your application: any role package or homegrown layer that backs your policies works unchanged.
-
-### Lock the panel down
-
-Resources without a registered policy are inaccessible by default (fail-closed), so a forgotten policy can never silently expose data. To opt into the fail-open convention, where a resource without a policy allows every authenticated user, set `saddle.authorization.require_policy` to `false`. You can also add a gate middleware to `saddle.middleware` for a blanket check before any panel route runs. If your web guard is shared between end-users and administrators, keep the default fail-closed posture.
-
-| Ability | Where it is checked |
-|---|---|
-| `viewAny` | Resource index page, sidebar visibility |
-| `create` | Create form, store action, relation options endpoint |
-| `update` | Edit form, update action, per-row Edit link, relation options endpoint (checked against a fresh model when no record is in scope) |
-| `delete` | Destroy action, per-row Delete button |
-
-### Field visibility with `canSee`
-
-Individual fields can be gated per request using `canSee`. The `notes` field in `HorseResource` is a working example:
-
-```php
-use Illuminate\Http\Request;
-
-Textarea::make('notes')->rows(3)
-    ->canSee(fn (Request $request) => (bool) $request->user()?->is_admin),
-```
-
-Hidden fields are stripped from the form payload (stored values are never serialized to the frontend), contribute no validation rules, are never written on save, and their relation options endpoint returns 404. The callback may run several times per request, so keep it cheap and return a real boolean. For example, use `Gate::allows('view-notes', $model)` rather than `Gate::inspect(...)`, whose `Response` object is always truthy and will never hide the field.
-
-## Plugins
-
-A plugin is a regular Composer package. Its service provider registers resources, scripts, and styles through the `Saddle` facade, and Laravel's package auto-discovery boots it automatically alongside your application.
-
-```php
-public function boot(): void
-{
-    Saddle::register([MoodBoardResource::class]);
-    Saddle::script('/vendor/mood-board/field.js');
-    Saddle::style('/vendor/mood-board/field.css');
-}
-```
-
-Publish compiled assets from the plugin's service provider to `public/vendor/{plugin}` using the standard `$this->publishes([...])` mechanism, then point `Saddle::script()` at the published path. Plugin scripts and stylesheets are loaded on every panel page after the core panel bundle.
-
-### Custom elements
-
-Plugins can ship their own field and column renderers as custom elements. On the PHP side:
-
-```php
-CustomField::make('mood')->tag('mood-picker')->rules('max:32'),
-CustomColumn::make('mood')->tag('mood-cell'),
-```
-
-The panel fulfils this contract: for fields, it sets the element's `value` and `field` DOM properties and listens for a `saddle:input` CustomEvent whose `detail` is the new value. For columns, it sets `value` and `column` DOM properties (read-only; no input event expected).
-
-A minimal vanilla custom element implementing the field contract:
-
-```js
-class MoodPicker extends HTMLElement {
-    connectedCallback() {
-        // The panel may set the value property before the element is
-        // connected, so seed the input from whatever arrived early.
-        this._input = document.createElement('input');
-        this._input.value = this._value ?? '';
-        this._input.addEventListener('input', () => {
-            this.dispatchEvent(new CustomEvent('saddle:input', {
-                bubbles: true,
-                detail: this._input.value.toUpperCase(),
-            }));
-        });
-        this.appendChild(this._input);
-    }
-
-    set value(v) {
-        this._value = v ?? '';
-        if (this._input) this._input.value = this._value;
-    }
-
-    get value() { return this._input ? this._input.value : (this._value ?? ''); }
-}
-
-customElements.define('mood-picker', MoodPicker);
-```
-
-Define elements at the top level of your script; the browser upgrades any matching elements the panel has already rendered as soon as `customElements.define` runs, so load order never matters.
-
-The contract is framework-agnostic. Anything that compiles to a standard custom element works: Vue's `defineCustomElement`, Lit, React or Svelte wrappers. Plugin authors are not tied to the panel's internals.
-
-## Multi-tenancy
-
-Saddle supports opt-in, URL-scoped multi-tenancy. Enable it by pointing `tenancy.model` at any Eloquent class:
-
-```php
-// config/saddle.php
-'tenancy' => [
-    'model' => App\Models\Ranch::class, // null disables (default)
-    'relationship' => 'users',          // relation that lists the tenant's members
-],
-```
-
-When tenancy is active, the panel mounts under `/admin/{tenant}` instead of `/admin`. The `{tenant}` segment resolves by route-key lookup on the configured model. Unknown tenant keys return **404**; authenticated users who are not a member of the resolved tenant are rejected with **403**.
-
-### Scoping resources
-
-Declare the record's BelongsTo relationship to the tenant on each resource you want scoped:
-
-```php
-class HorseResource extends Resource
-{
-    public static ?string $tenant = 'ranch'; // Eloquent relation name on Horse
-}
-```
-
-Resources without `$tenant` (shared lookup tables, global configuration) remain unscoped by design.
-
-### Automatic scope guarantees
-
-Every data path checks the bound tenant server-side:
-
-- **Index, search, and filters** run through the scoped base query (`whereBelongsTo` on the declared relation).
-- **Record lookups** for edit, update, and destroy resolve via the same scoped query, so cross-tenant IDs return 404 before any policy runs.
-- **Stores** stamp the current tenant server-side after filling the form. Any tenant foreign key submitted by the client is overwritten.
-- **Relation option lists** apply the same scope when the related model's registered resource is also tenant-scoped.
-
-### Tenant switcher
-
-When the authenticated user belongs to more than one tenant, the panel sidebar shows a select that lists all their memberships. Switching navigates to the same panel path under the selected tenant.
-
-### Caveats
-
-- **Do not expose the `$tenant` relation as a form field on a scoped resource.** The store controller stamps the relationship server-side, but an editable BelongsTo field pointing at the tenant relation on an update form would let a submitted value re-point the record to a different tenant.
-- **A saved relation label still renders on the edit form even when the related row falls outside the current scope.** `BelongsTo` resolves the current selection with an unscoped query so the label never disappears after a scope change. Only the option list for new selections is filtered.
-- **Changing the tenancy config requires `php artisan route:clear`**, because the `{tenant}` prefix is decided at boot. Long-running application servers (FPM workers kept alive across requests) must ensure that request state is reset between requests; the bound tenant lives on the Saddle singleton, which is resolved fresh per request under the default container lifetime. When Octane is installed, the panel resets the bound tenant automatically via the Octane request-lifecycle hooks.
-
-## Configuration
-
-`saddle:install` publishes `config/saddle.php`. Available keys:
-
-| Key | Default | Description |
-|---|---|---|
-| `path` | `'admin'` | URL prefix for the panel (e.g. `'admin'` → `/admin`). |
-| `middleware` | `['web', 'auth']` | Middleware stack applied to all panel routes. |
-| `resources.path` | `app_path('Saddle')` | Filesystem path scanned for resource classes. |
-| `resources.namespace` | `'App\\Saddle'` | PHP namespace corresponding to `resources.path`. |
-| `per_page` | `25` | Default rows per page on index tables. |
-| `brand.name` | `'Saddle'` | Panel name (sidebar + browser tab). |
-| `brand.accent` | `'#d9501f'` | Accent colour (buttons, active states). |
-| `brand.greeting` | `null` | Dashboard headline. May contain `:name`. `null` keeps Saddle's own wording. |
-| `brand.subgreeting` | `null` | The line under the headline. `null` keeps Saddle's own wording. |
-| `uploads.disk` | `'public'` | Default filesystem disk used by `FileUpload` fields when no per-field `disk()` is set. |
-| `uploads.directory` | `'saddle'` | Default upload directory within the disk when no per-field `directory()` is set. |
-| `authorization.require_policy` | `true` | Fail-closed by default: a resource with no registered policy denies every ability. Set to `false` for the fail-open convention. |
-| `global_search.per_resource` | `5` | Max results returned per resource in global search. |
-| `import.max_rows` | `5000` | Max rows a single CSV import may contain; a larger file is rejected whole. |
-| `tenancy.model` | `null` | Eloquent tenant model. `null` disables multi-tenancy. |
-| `tenancy.relationship` | `'users'` | Relation on the tenant model that lists its members. |
-| `tenancy.gate` | `null` | Optional invokable run after tenant resolution (e.g. a billing gate). |
-| `tenancy.registration` | `null` | Optional `RegistersTenants` handler enabling tenant self-registration. |
-
-**Content-Security-Policy.** The panel shell carries one inline `<script>`: the pre-paint dark-mode bootstrap. Under a strict CSP the browser refuses it, so dark-mode users get a flash of the light theme on every navigation. Hand Saddle a nonce callback from a service provider -- `Saddle::resolveNonceUsing(fn () => app('csp.nonce'))` -- and it is stamped on that tag, resolved fresh per render. Register nothing and the shell renders exactly as before.
-
-## Commands
-
-| Command | Description |
-|---|---|
-| `saddle:install` | Publish config, publish panel assets, create `app/Saddle/`. Offers to add `saddle:upgrade` to `composer post-update-cmd` so assets stay fresh. |
-| `saddle:upgrade` | Re-publish panel assets. Run after every package update. |
-| `saddle:resource NameResource --model=Name` | Scaffold a new resource class. The `--model` option is optional; it is inferred from the resource name when omitted. |
-
-**Deploy note.** Add `php artisan saddle:upgrade` to your deploy script after `composer install` or `composer update`. The panel displays a warning banner in the UI when the published assets are out of sync with the installed package version.
-
-Since 1.5.0 the compiled bundle also publishes under Laravel's own `laravel-assets` tag, which a stock `composer.json` already calls on `post-update-cmd` -- so on an unmodified Laravel application `composer update` refreshes it with no Saddle-specific setup. This matters more than it sounds: the bundle is a published file under `public/`, so upgrading the package replaces the PHP and leaves that file alone. A panel in that state passes every server-side check while rendering the previous frontend, and the only symptom is that the feature you upgraded for appears to be missing.
-
-## Local development
-
-```bash
-composer install
-npm install
-npm run build
-vendor/bin/pest
-```
-
-The `workbench/` directory contains a minimal host application used by the test suite and for manual poking. `vendor/bin/testbench serve` boots it with `HorseResource` registered; note that panel routes sit behind the `auth` middleware and the workbench ships only a stub `/login` route, so for interactive browsing either temporarily set `'middleware' => ['web']` in `config/saddle.php` or browse through the feature tests instead. There is no demo seeder yet.
-
-## Stack
-
-Built for **Laravel 11.48+, 12 and 13 / PHP 8.4+**, **Inertia 2** (with the `inertia-laravel` 3.1+ server adapter), **Vue 3**, **Tailwind CSS 4**. Laravel 11 is end-of-life and carries an unpatched advisory, so prefer 12 or 13.
+| **Building** | [Resources](docs/sections/resources.md) · [Fields](docs/sections/fields.md) · [Form layout](docs/sections/forms-layout.md) · [Tables](docs/sections/tables.md) · [Filters](docs/sections/filters.md) · [Actions](docs/sections/actions.md) · [Relation managers](docs/sections/relations.md) |
+| **Panel** | [Dashboard widgets](docs/sections/widgets.md) · [Global search](docs/sections/search.md) · [Notifications](docs/sections/notifications.md) · [Soft deletes](docs/sections/soft-deletes.md) · [Import and export](docs/sections/import-export.md) |
+| **Running it** | [Authorization](docs/sections/authorization.md) · [Multi-tenancy](docs/sections/tenancy.md) · [Tenancy extras](docs/sections/tenancy-extras.md) · [Configuration](docs/sections/configuration.md) · [Theming](docs/sections/theming.md) · [Localization](docs/sections/i18n.md) |
+| **Extending** | [Plugins](docs/sections/plugins.md) · [Testing helpers](docs/sections/testing.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) |
 
 ## License
 
-MIT.
+Saddle is open-source software licensed under the [MIT license](LICENSE).
